@@ -2,6 +2,8 @@
 
 [![NPM](https://img.shields.io/npm/v/react-pts-canvas.svg)](https://www.npmjs.com/package/react-pts-canvas)
 
+![cover](./example/cover.png)
+
 This is a React Component for canvas drawing using [Pts](https://ptsjs.org). Pts is a javascript library for visualization and creative-coding. 
 
 
@@ -10,6 +12,10 @@ This is a React Component for canvas drawing using [Pts](https://ptsjs.org). Pts
 ```bash
 npm install --save react-pts-canvas
 ```
+
+## Examples
+- The [example](./example) folder provides a quick example of using PtsCanvas in a React app
+- Take a look at more examples in [pts-react-example](https://github.com/williamngan/pts-react-example) repo.
 
 ## Quick Start
 

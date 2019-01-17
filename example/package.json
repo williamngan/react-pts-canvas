@@ -6,10 +6,11 @@
   "private": true,
   "dependencies": {
     "prop-types": "^15.6.2",
+    "pts": "^0.6.7",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "react-scripts": "^1.1.4",
-    "react-pts-canvas": "file:.."
+    "react-pts-canvas": "file:..",
+    "react-scripts": "^1.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
