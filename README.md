@@ -95,7 +95,11 @@ class Example extends React.Component {
 - `touch`
   - A boolean value to set whether the canvas should track mouse and touch events. Default is `true`.
 - `name`
-  - The css class name of the container `<div>`. Default value is "pts-react".   
+  - The css class name of the container `<div>`. Default value is "pts-react". Use this class name to set custom styles in your .css file. 
+- `style`
+  - Optionally override css styles of the container `<div>`.
+- `canvasStyle`
+  - Optionally override css styles of the `<canvas>` itself. Avoid using this except for special use cases.
 
 
 ## License
