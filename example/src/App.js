@@ -32,7 +32,7 @@ export default class App extends Component {
   render () {
     return (
       <div>
-        <ExampleComponent background="#0c9" />
+        <ExampleComponent background="#0c9" name="pts-tester" style={{opacity: 0.95}} />
       </div>
     )
   }

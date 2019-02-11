@@ -66,8 +66,8 @@ export default class PtsCanvas extends React.Component {
 
   render() {
     return (
-      <div className={ this.props.name || "" }>
-        <canvas ref={ c => (this.canvRef=c) }></canvas>
+      <div className={ this.props.name || "" } style={ this.props.style }>
+        <canvas className={ this.props.name ? this.props.name+"-canvas" : "" } ref={ c => (this.canvRef=c) } style={ this.props.canvasStyle }></canvas>
       </div>
     );
   }
@@ -80,5 +80,7 @@ PtsCanvas.defaultProps = {
   resize: true,
   retina: true,
   play: true,
-  touch: true
+  touch: true,
+  style: {},
+  canvasStyle: {}
 }

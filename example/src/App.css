@@ -1,4 +1,8 @@
-.pts-react {
+.pts-tester {
     width: 100vw;
     height: 100vh;
+}
+
+.pts-tester-canvas {
+    /* canvas style if needed */
 }
