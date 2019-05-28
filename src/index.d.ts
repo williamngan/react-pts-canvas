@@ -1,7 +1,7 @@
 import * as React from "react";
 import {CanvasSpace, Bound, Group, CanvasForm} from "pts";
 
-export interface PtsCanvasProps {
+export interface PtsCanvasProps extends React.Props {
   name?:string,
   background?:string,
   resize?:boolean,
@@ -18,6 +18,7 @@ export default class PtsCanvas extends React.Component<PtsCanvasProps, any> {
   form: CanvasForm;
   _touch: boolean;
 
+  constructor( props: Readonly<PtsCanvasProps> );
   animate( time:number, ftime:number ): void;
   start( bound:Bound, space:CanvasSpace ): void;
   resize( size:Group, evt:Event ): void;
