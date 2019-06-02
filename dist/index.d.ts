@@ -12,7 +12,14 @@ export interface PtsCanvasProps extends React.Props {
   canvasStyle?:object
 }
 
-export default class PtsCanvas extends React.Component<PtsCanvasProps, any> {
+export interface QuickStartProps extends PtsCanvasProps {
+  onStart: (bound?:Bound, space?:CanvasSpace) => void,
+  onAnimate: (space?:CanvasSpace, form?:CanvasForm, time?:number, ftime?:number) => void,
+  onResize: (space?:CanvasSpace, form?:CanvasForm, size?:Group, evt?:Event) => void,
+  onAction: (space?:CanvasSpace, form?:CanvasForm, type:string, px:number, py:number, evt:Event) => void
+}
+
+export class PtsCanvas extends React.Component<PtsCanvasProps, any> {
   canvRef: React.RefObject;
   space: CanvasSapce;
   form: CanvasForm;
@@ -27,3 +34,4 @@ export default class PtsCanvas extends React.Component<PtsCanvasProps, any> {
   _update(): void;
 }
 
+export class QuickStartCanvas extends React.Component<QuickStartCanvasProps, any> {}
