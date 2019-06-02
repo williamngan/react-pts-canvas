@@ -1,5 +1,7 @@
 'use strict';
 
+Object.defineProperty(exports, '__esModule', { value: true });
+
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var React = _interopDefault(require('react'));
@@ -149,7 +151,6 @@ var PtsCanvas = function (_React$Component) {
   return PtsCanvas;
 }(React.Component);
 
-
 PtsCanvas.defaultProps = {
   name: "pts-react", // maps to className of the container div
   background: "#9ab",
@@ -161,5 +162,53 @@ PtsCanvas.defaultProps = {
   canvasStyle: {}
 };
 
-module.exports = PtsCanvas;
+var QuickStartCanvas = function (_PtsCanvas) {
+  inherits(QuickStartCanvas, _PtsCanvas);
+
+  function QuickStartCanvas() {
+    classCallCheck(this, QuickStartCanvas);
+    return possibleConstructorReturn(this, (QuickStartCanvas.__proto__ || Object.getPrototypeOf(QuickStartCanvas)).apply(this, arguments));
+  }
+
+  createClass(QuickStartCanvas, [{
+    key: 'animate',
+    value: function animate(time, ftime) {
+      if (this.props.onAnimate) this.props.onAnimate(this.space, this.form, time, ftime);
+    }
+  }, {
+    key: 'start',
+    value: function start(bound, space) {
+      if (this.props.onStart) this.props.onStart(bound, space);
+    }
+  }, {
+    key: 'resize',
+    value: function resize(size, evt) {
+      if (this.props.onResize) this.props.onResize(this.space, this.form, size, evt);
+    }
+  }, {
+    key: 'action',
+    value: function action(type, px, py, evt) {
+      if (this.props.onAction) this.props.onAction(this.space, this.form, type, px, py, evt);
+    }
+  }]);
+  return QuickStartCanvas;
+}(PtsCanvas);
+
+QuickStartCanvas.defaultProps = {
+  name: "pts-react", // maps to className of the container div
+  background: "#9ab",
+  resize: true,
+  retina: true,
+  play: true,
+  touch: true,
+  style: {},
+  canvasStyle: {},
+  onStart: undefined,
+  onAnimate: undefined,
+  onResize: undefined,
+  onAction: undefined
+};
+
+exports.PtsCanvas = PtsCanvas;
+exports.QuickStartCanvas = QuickStartCanvas;
 //# sourceMappingURL=index.js.map

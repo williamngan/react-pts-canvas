@@ -2,7 +2,7 @@ import React from 'react';
 import {CanvasSpace} from 'pts/dist/es5';
 
 
-export default class PtsCanvas extends React.Component {
+export class PtsCanvas extends React.Component {
   constructor(props) {
     super(props);
     this.canvRef = React.createRef();
@@ -83,4 +83,41 @@ PtsCanvas.defaultProps = {
   touch: true,
   style: {},
   canvasStyle: {}
+}
+
+
+export class QuickStartCanvas extends PtsCanvas {
+  
+  animate( time, ftime) {
+    if (this.props.onAnimate) this.props.onAnimate( this.space, this.form, time, ftime );
+  }
+
+  start( bound, space ) {
+    if (this.props.onStart) this.props.onStart( bound, space )
+  }
+
+  resize( size, evt ) {
+    if (this.props.onResize) this.props.onResize( this.space, this.form, size, evt );
+  }
+
+  action ( type, px, py, evt ) {
+    if (this.props.onAction) this.props.onAction( this.space, this.form, type, px, py, evt );
+  }
+
+}
+
+
+QuickStartCanvas.defaultProps = {
+  name: "pts-react", // maps to className of the container div
+  background: "#9ab",
+  resize: true,
+  retina: true,
+  play: true,
+  touch: true,
+  style: {},
+  canvasStyle: {},
+  onStart: undefined,
+  onAnimate: undefined,
+  onResize: undefined,
+  onAction: undefined
 }

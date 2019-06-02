@@ -4,7 +4,7 @@
 
 ![cover](./example/cover.png)
 
-This is a React Component for canvas drawing using [Pts](https://ptsjs.org). Pts is a javascript library for visualization and creative-coding. 
+This is a React Component for canvas drawing using [Pts](https://ptsjs.org). Pts is a javascript library for visualization and creative-coding. You may use Pts by itself, or with React and other frameworks.
 
 
 ## Install
@@ -17,33 +17,36 @@ npm install --save react-pts-canvas
 - The [example](./example) folder provides a quick example of using PtsCanvas in a React app
 - Take a look at more examples in [pts-react-example](https://github.com/williamngan/pts-react-example) repo.
 
-## Quick Start
+
+## QuickStartCanvas component
+
+If you are getting started with **Pts**, take a look at the [demos](https://ptsjs.org/demo) and read the [guides](https://ptsjs.org/guide).
+
+`<QuickStartCanvas>` helps you get started quickly. Here is a minimal example that draws a point the follows the cursor, by passing a callback function to `onAnimate` property:
 
 ```jsx
-import React, { Component } from 'react'
-import PtsCanvas from 'react-pts-canvas'
+import React from 'react'
+import {QuickCanvas} from 'react-pts-canvas'
 
-// Add your own Pts drawing functions
-class MyCanvas extends PtsCanvas {
-  animate( time, ftime ) {
-    // ...
-  }
-}
+// ...
+<QuickStartCanvas onAnimate={ (space, form, time) => form.point( space.pointer, 10) } />
+// ...
 
-// Use the component
-class Example extends React.Component {
-  render () {
-    return (
-      <MyCanvas background="#abc" play={true} />
-    )
-  }
-}
+```
+
+In addition to the props in `PtsCanvas` (see below), `QuickStartCanvas` provides 4 callback props that correspond to the [player functions](https://ptsjs.org/guide/space-0500) in Pts. The `space` and `form` instances are also passed as parameters.
+
+```jsx
+<QuickStartCanvas
+onStart={ (bound, space) => {...} }
+onAnimate={ (space, form, time, ftime) => {...} }
+onResize={ (space, form, size, evt) => {...} }
+onAction={ (space, form, type, px, py, evt) => {...} }
+/>
 ```
 
 
-## Usage
-
-If you are getting started with **Pts**, take a look at the [cool demos](https://ptsjs.org/demo) and read the [guides](https://ptsjs.org/guide).
+## PtsCanvas
 
 `PtsCanvas` is a component that you may extend to implement your own drawings and animations on canvas using Pts. Like this:
 
@@ -73,6 +76,9 @@ There are 4 functions in Pts that you can (optionally) overrides: `animate`, `st
 Once you have implemented your own canvas, you can use it as a component like this:
 
 ```jsx
+import React from 'react'
+import {PtsCanvas} from 'react-pts-canvas'
+
 class Example extends React.Component {
   render () {
     return (
