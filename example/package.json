@@ -6,7 +6,7 @@
   "private": true,
   "dependencies": {
     "prop-types": "^15.6.2",
-    "pts": "^0.8.3",
+    "pts": "^0.8.9",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-pts-canvas": "file:..",
