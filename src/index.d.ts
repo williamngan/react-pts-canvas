@@ -19,13 +19,13 @@ export interface QuickStartProps extends PtsCanvasProps {
   onAction: (space?:CanvasSpace, form?:CanvasForm, type:string, px:number, py:number, evt:Event) => void
 }
 
-export class PtsCanvas extends React.Component<PtsCanvasProps, any> {
+export class PtsCanvas<T = any> extends React.Component<PtsCanvasProps & T, any> {
   canvRef: React.RefObject;
   space: CanvasSpace;
   form: CanvasForm;
   _touch: boolean;
 
-  constructor( props: Readonly<PtsCanvasProps> );
+  constructor( props: Readonly<PtsCanvasProps> & Readonly<T> );
   animate( time:number, ftime:number ): void;
   start( bound:Bound, space:CanvasSpace ): void;
   resize( size:Group, evt:Event ): void;
@@ -34,4 +34,4 @@ export class PtsCanvas extends React.Component<PtsCanvasProps, any> {
   _update(): void;
 }
 
-export class QuickStartCanvas extends React.Component<QuickStartCanvasProps, any> {}
+export class QuickStartCanvas<T = any> extends React.Component<QuickStartCanvasProps & T, any> {}
