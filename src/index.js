@@ -21,12 +21,7 @@ export class PtsCanvas extends React.Component {
   }
 
   componentWillUnmount() {
-    // remove resize event listener (if any)
-    this.space.setup({ resize: false });
-    // stop animation loop
-    this.space.stop();
-    // remove player from space
-    this.space.removeAll();
+    this.space.dispose();
   }
 
   _update() {
