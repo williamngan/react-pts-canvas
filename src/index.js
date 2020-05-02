@@ -20,6 +20,10 @@ export class PtsCanvas extends React.Component {
     this._update();
   }
 
+  componentWillUnmount() {
+    this.space.dispose();
+  }
+
   _update() {
     if (this.props.play) {
       this.space.play();
