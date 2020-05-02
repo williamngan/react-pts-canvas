@@ -76,6 +76,11 @@ var PtsCanvas = function (_React$Component) {
       this._update();
     }
   }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      this.space.dispose();
+    }
+  }, {
     key: '_update',
     value: function _update() {
       if (this.props.play) {
