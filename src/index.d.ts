@@ -1,5 +1,5 @@
 import * as React from "react";
-import {CanvasSpace, Bound, Group, CanvasForm} from "pts";
+import {CanvasSpace, Bound, Group, CanvasForm, Tempo} from "pts";
 
 export interface PtsCanvasProps extends React.Props {
   name?:string,
@@ -9,7 +9,8 @@ export interface PtsCanvasProps extends React.Props {
   play?:boolean,
   touch?:boolean,
   style?:object,
-  canvasStyle?:object
+  canvasStyle?:object,
+  tempo?:Tempo
 }
 
 export interface QuickStartProps extends PtsCanvasProps {
