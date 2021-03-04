@@ -1,5 +1,5 @@
 import * as React from "react";
-import {CanvasSpace, Bound, Group, CanvasForm} from "pts";
+import {CanvasSpace, Bound, Group, CanvasForm, Tempo} from "pts";
 
 export interface PtsCanvasProps extends React.Props {
   name?:string,
@@ -35,3 +35,47 @@ export class PtsCanvas<T = any> extends React.Component<PtsCanvasProps & T, any>
 }
 
 export class QuickStartCanvas<T = any> extends React.Component<QuickStartCanvasProps & T, any> {}
+
+export type HandleStartFn = (bound?: Bound, space?: CanvasSpace, form?: CanvasForm) => void
+
+export type HandleAnimateFn = (
+  space?: CanvasSpace,
+  form?: CanvasForm,
+  time?: number,
+  ftime?: number
+) => void
+
+export type HandleResizeFn = (
+  space?: CanvasSpace,
+  form?: CanvasForm,
+  size?: Group,
+  evt?: Event // eslint-disable-line no-undef
+) => void
+
+export type HandleActionFn = (
+  space?: CanvasSpace,
+  form?: CanvasForm,
+  type?: string,
+  px?: number,
+  py?: number,
+  evt?: Event // eslint-disable-line no-undef
+) => void
+
+export interface PtsCanvasFCProps {
+  name?: string,
+  background?: string,
+  resize?: boolean,
+  retina?: boolean,
+  play?: boolean,
+  touch?: boolean,
+  style?: object, // eslint-disable-line no-undef
+  canvasStyle?: object, // eslint-disable-line no-undef
+  onStart?: HandleStartFn,
+  onAnimate: HandleAnimateFn,
+  onResize?: HandleResizeFn,
+  onAction?: HandleActionFn,
+  tempo?: Tempo,
+  canvRef?: React.MutableRefObject<null>, 
+  spaceRef?: React.MutableRefObject<null>,
+  formRef?: React.MutableRefObject<null>,
+}

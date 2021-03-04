@@ -108,7 +108,60 @@ class Example extends React.Component {
   - Optionally override css styles of the `<canvas>` itself. Avoid using this except for special use cases.
 
 
+## PtsCanvasFC
+
+`PtsCanvasFC` is a functional component refactor of PtsCanvas
+
+Instead of extending the PtsCanvas class or using the quickstart component, you can pass your handler functions as props.
+
+`PtsCanvasFC` makes use of the `useEffect` hook to handle lifecycle events, and the `useRef` hook to maintain reference to the space, form, and canvas elements.
+
+```jsx
+<PtsCanvasFC
+  onStart={ (bound, space, form) => {...} }
+  onAnimate={ (space, form, time, ftime) => {...} }
+  onResize={ (space, form, size, evt) => {...} }
+  onAction={ (space, form, type, px, py, evt) => {...} }
+/>
+```
+
+`PtsCanvasFC` component provides the following props:
+
+- `background`
+  - background fill color of the canvas. Default value is "#9ab".
+- `resize`
+  - A boolean value to indicate whether the canvas should auto resize. Default is `true`.
+- `retina`
+  - A boolean value to indicate whether the canvas should support retina resolution. Default is `true`.
+- `play`
+  - A boolean value to set whether the canvas should animate. Default is `true`.
+- `touch`
+  - A boolean value to set whether the canvas should track mouse and touch events. Default is `true`.
+- `name`
+  - The css class name of the container `<div>`. Default value is "pts-react". Use this class name to set custom styles in your .css file. 
+- `style`
+  - Optionally override css styles of the container `<div>`.
+- `canvasStyle`
+  - Optionally override css styles of the `<canvas>` itself. Avoid using this except for special use cases.
+- `onStart`
+  - onStart handler function
+- `onAnimate`
+  - onAnimate handler function
+- `onResize`
+  - onResize handler function
+- `onAction`
+  - onAction handler function
+- `tempo`
+  - a `Tempo` object. In a parent component, you can create a ref to a tempo object, add functions to it via `Tempo.every` in your onStart handler, then pass that `Tempo`'s ref.current as this prop. The `tempo` will be added to the space with the other handlers.
+- `canvRef`
+  - a ref returned from `useRef(null)` if you need reference to the canvas in your parent component
+- `spaceRef`
+  - a ref returned from `useRef(null)` if you need reference to the space in your parent component
+- `formRef`
+  - a ref returned from `useRef(null)` if you need reference to the form in your parent component
+
+
 ## License
 
 Apache License 2.0. See LICENSE file for details.
-Copyright © 2017-2018 by [William Ngan](https://williamngan.com) and contributors.
+Copyright © 2017-2021 by [William Ngan](https://williamngan.com) and contributors.
