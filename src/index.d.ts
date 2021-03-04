@@ -1,5 +1,5 @@
 import * as React from "react";
-import {CanvasSpace, Bound, Group, CanvasForm} from "pts";
+import {CanvasSpace, Bound, Group, CanvasForm, Tempo} from "pts";
 
 export interface PtsCanvasProps extends React.Props {
   name?:string,
@@ -74,5 +74,8 @@ export interface PtsCanvasFCProps {
   onAnimate: HandleAnimateFn,
   onResize?: HandleResizeFn,
   onAction?: HandleActionFn,
-  tempo?: Tempo
+  tempo?: Tempo,
+  canvRef?: React.MutableRefObject<null>, 
+  spaceRef?: React.MutableRefObject<null>,
+  formRef?: React.MutableRefObject<null>,
 }

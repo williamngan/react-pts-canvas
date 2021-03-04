@@ -124,10 +124,14 @@ QuickStartCanvas.defaultProps = {
   onAction: undefined
 }
 
+/**
+ * Functional implementation of the PtsCanvas component
+ * @param props
+ */
 export const PtsCanvasFC: React.FC<PtsCanvasFCProps> = (props) => {
-  const canvRef = useRef(null)
-  const spaceRef = useRef(null)
-  const formRef = useRef(null)
+  const canvRef = props.canvRef || useRef(null)
+  const spaceRef = props.spaceRef || useRef(null)
+  const formRef = props.formRef || useRef(null)
 
   /**
    * When canvRef Updates (ready for space)
@@ -232,5 +236,9 @@ PtsCanvasFC.defaultProps = {
   onStart: undefined,
   onAnimate: undefined,
   onResize: undefined,
-  onAction: undefined
+  onAction: undefined,
+  tempo: null,
+  canvRef: null,
+  spaceRef: null,
+  formRef: null
 }
