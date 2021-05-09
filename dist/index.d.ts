@@ -21,7 +21,7 @@ export interface QuickStartProps extends PtsCanvasProps {
 
 export class PtsCanvas extends React.Component<PtsCanvasProps, any> {
   canvRef: React.RefObject;
-  space: CanvasSapce;
+  space: CanvasSpace;
   form: CanvasForm;
   _touch: boolean;
 
