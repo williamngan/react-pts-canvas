@@ -1,4 +1,4 @@
-import babel from 'rollup-plugin-babel'
+// import babel from 'rollup-plugin-babel'
 import commonjs from 'rollup-plugin-commonjs'
 import external from 'rollup-plugin-peer-deps-external'
 import postcss from 'rollup-plugin-postcss'
@@ -24,17 +24,13 @@ export default {
     }
   ],
   plugins: [
-    typescript(),
+    typescript({ tsconfig: './tsconfig.json' }),
     external(),
     postcss({
       modules: true
     }),
     url(),
     svgr(),
-    babel({
-      exclude: 'node_modules/**',
-      plugins: ['external-helpers']
-    }),
     resolve(),
     commonjs({
       include: 'node_modules/**',
