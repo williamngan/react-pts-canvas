@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bound, CanvasSpace, CanvasForm, Group } from 'pts';
+import { Bound, CanvasSpace, CanvasForm, Group, Tempo } from 'pts';
 
 declare type PtsCanvasLegacyProps = {
     name?: string;
@@ -17,7 +17,7 @@ declare type QuickStartProps = PtsCanvasLegacyProps & {
     onResize?: (space?: CanvasSpace, form?: CanvasForm, size?: Group, evt?: Event) => void;
     onAction?: (space?: CanvasSpace, form?: CanvasForm, type?: string, px?: number, py?: number, evt?: Event) => void;
 };
-declare class PtsCanvas<T> extends React.Component<PtsCanvasLegacyProps & T> {
+declare class PtsCanvas$1<T> extends React.Component<PtsCanvasLegacyProps & T> {
     canvRef: React.RefObject<Element>;
     space: CanvasSpace | null;
     form: CanvasForm | null;
@@ -44,7 +44,7 @@ declare class PtsCanvas<T> extends React.Component<PtsCanvasLegacyProps & T> {
     init(): void;
     render(): JSX.Element;
 }
-declare class QuickStartCanvas extends PtsCanvas<QuickStartProps> {
+declare class QuickStartCanvas extends PtsCanvas$1<QuickStartProps> {
     static defaultProps: {
         name: string;
         background: string;
@@ -65,4 +65,28 @@ declare class QuickStartCanvas extends PtsCanvas<QuickStartProps> {
     action(type: string, px: number, py: number, evt: Event): void;
 }
 
-export { PtsCanvas as PtsCanvasLegacy, PtsCanvasLegacyProps, QuickStartCanvas as QuickStartCanvasLegacy, QuickStartProps };
+declare type HandleStartFn = (bound?: Bound, space?: CanvasSpace, form?: CanvasForm) => void;
+declare type HandleAnimateFn = (space?: CanvasSpace, form?: CanvasForm, time?: number, ftime?: number) => void;
+declare type HandleResizeFn = (space?: CanvasSpace, form?: CanvasForm, size?: Group, evt?: Event) => void;
+declare type HandleActionFn = (space?: CanvasSpace, form?: CanvasForm, type?: string, px?: number, py?: number, evt?: Event) => void;
+declare type PtsCanvasProps = {
+    name?: string;
+    background?: string;
+    resize?: boolean;
+    retina?: boolean;
+    play?: boolean;
+    touch?: boolean;
+    style?: object;
+    canvasStyle?: object;
+    onStart?: HandleStartFn;
+    onAnimate: HandleAnimateFn;
+    onResize?: HandleResizeFn;
+    onAction?: HandleActionFn;
+    tempo?: Tempo;
+    canvRef?: React.MutableRefObject<HTMLCanvasElement>;
+    spaceRef?: React.MutableRefObject<CanvasSpace>;
+    formRef?: React.MutableRefObject<CanvasForm>;
+};
+declare const PtsCanvas: React.FC<PtsCanvasProps>;
+
+export { HandleActionFn, HandleAnimateFn, HandleResizeFn, HandleStartFn, PtsCanvas, PtsCanvas$1 as PtsCanvasLegacy, PtsCanvasLegacyProps, PtsCanvasProps, QuickStartCanvas as QuickStartCanvasLegacy, QuickStartProps };
