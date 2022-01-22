@@ -5,16 +5,6 @@ import { CanvasSpace } from 'pts';
 class PtsCanvas extends React.Component {
     constructor(props) {
         super(props);
-        this.defaultProps = {
-            name: 'pts-react',
-            background: '#9ab',
-            resize: true,
-            retina: true,
-            play: true,
-            touch: true,
-            style: {},
-            canvasStyle: {}
-        };
         this.canvRef = React.createRef();
         this.space = null;
         this.form = null;
@@ -78,24 +68,17 @@ class PtsCanvas extends React.Component {
                 ref: this.canvRef, style: this.props.canvasStyle })));
     }
 }
+PtsCanvas.defaultProps = {
+    name: 'pts-react',
+    background: '#9ab',
+    resize: true,
+    retina: true,
+    play: true,
+    touch: true,
+    style: {},
+    canvasStyle: {}
+};
 class QuickStartCanvas extends PtsCanvas {
-    constructor() {
-        super(...arguments);
-        this.defaultProps = {
-            name: 'pts-react',
-            background: '#9ab',
-            resize: true,
-            retina: true,
-            play: true,
-            touch: true,
-            style: {},
-            canvasStyle: {},
-            onStart: undefined,
-            onAnimate: undefined,
-            onResize: undefined,
-            onAction: undefined
-        };
-    }
     animate(time, ftime) {
         if (!this.space || !this.form)
             return;
@@ -118,6 +101,20 @@ class QuickStartCanvas extends PtsCanvas {
         }
     }
 }
+QuickStartCanvas.defaultProps = {
+    name: 'pts-react',
+    background: '#9ab',
+    resize: true,
+    retina: true,
+    play: true,
+    touch: true,
+    style: {},
+    canvasStyle: {},
+    onStart: undefined,
+    onAnimate: undefined,
+    onResize: undefined,
+    onAction: undefined
+};
 
 export { PtsCanvas as PtsCanvasLegacy, QuickStartCanvas as QuickStartCanvasLegacy };
 //# sourceMappingURL=index.es.js.map

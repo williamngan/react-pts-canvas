@@ -1,15 +1,49 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
 import { CanvasSpace, CanvasForm, Bound, Group, IPlayer } from 'pts'
-import { PtsCanvasLegacy, PtsCanvasLegacyProps, QuickStartProps } from './types'
 
-export class PtsCanvas<T> extends React.Component<PtsCanvasLegacyProps & T> implements PtsCanvasLegacy<PtsCanvasLegacyProps & T> {
+export type PtsCanvasLegacyProps = {
+  name?: string
+  background?: string
+  resize?: boolean
+  retina?: boolean
+  play?: boolean
+  touch?: boolean
+  style?: object
+  canvasStyle?: object
+}
+
+export type QuickStartProps = PtsCanvasLegacyProps & {
+  onStart?: (bound?: Bound, space?: CanvasSpace) => void
+  onAnimate?: (
+    space?: CanvasSpace,
+    form?: CanvasForm,
+    time?: number,
+    ftime?: number
+  ) => void
+  onResize?: (
+    space?: CanvasSpace,
+    form?: CanvasForm,
+    size?: Group,
+    evt?: Event
+  ) => void
+  onAction?: (
+    space?: CanvasSpace,
+    form?: CanvasForm,
+    type?: string,
+    px?: number,
+    py?: number,
+    evt?: Event
+  ) => void
+}
+
+export class PtsCanvas<T> extends React.Component<PtsCanvasLegacyProps & T> {
   canvRef: React.RefObject<Element>
   space: CanvasSpace | null
   form: CanvasForm | null
   _touch: boolean
 
-  defaultProps = {
+  static defaultProps = {
     name: 'pts-react', // maps to className of the container div
     background: '#9ab',
     resize: true,
@@ -99,8 +133,8 @@ export class PtsCanvas<T> extends React.Component<PtsCanvasLegacyProps & T> impl
   }
 }
 
-export class QuickStartCanvas extends PtsCanvas<QuickStartProps> implements PtsCanvasLegacy<QuickStartProps> {
-  defaultProps = {
+export class QuickStartCanvas extends PtsCanvas<QuickStartProps> {
+  static defaultProps = {
     name: 'pts-react', // maps to className of the container div
     background: '#9ab',
     resize: true,

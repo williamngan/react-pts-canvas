@@ -9658,6 +9658,15 @@
     "resolve" "^1.10.0"
     "rollup-pluginutils" "^2.6.0"
 
+"rollup-plugin-dts@^4.1.0":
+  "integrity" "sha512-rriXIm3jdUiYeiAAd1Fv+x2AxK6Kq6IybB2Z/IdoAW95fb4uRUurYsEYKa8L1seedezDeJhy8cfo8FEL9aZzqg=="
+  "resolved" "https://registry.npmjs.org/rollup-plugin-dts/-/rollup-plugin-dts-4.1.0.tgz"
+  "version" "4.1.0"
+  dependencies:
+    "magic-string" "^0.25.7"
+  optionalDependencies:
+    "@babel/code-frame" "^7.16.0"
+
 "rollup-plugin-node-resolve@^3.3.0":
   "integrity" "sha512-PJcd85dxfSBWih84ozRtBkB731OjXk0KnzN0oGp7WOWcarAFkVa71cV5hTJg2qpVsV2U8EUwrzHP3tvy9vS3qg=="
   "resolved" "https://registry.npmjs.org/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-3.4.0.tgz"
@@ -9726,7 +9735,7 @@
   dependencies:
     "estree-walker" "^0.6.1"
 
-"rollup@*", "rollup@^1.20.0 || ^2.0.0", "rollup@^1.20.0||^2.0.0", "rollup@^2.0.0", "rollup@^2.14.0", "rollup@^2.43.1", "rollup@^2.66.0", "rollup@>=0.50.0", "rollup@>=0.56.0":
+"rollup@*", "rollup@^1.20.0 || ^2.0.0", "rollup@^1.20.0||^2.0.0", "rollup@^2.0.0", "rollup@^2.14.0", "rollup@^2.43.1", "rollup@^2.55", "rollup@^2.66.0", "rollup@>=0.50.0", "rollup@>=0.56.0":
   "integrity" "sha512-L6mKOkdyP8HK5kKJXaiWG7KZDumPJjuo1P+cfyHOJPNNTK3Moe7zCH5+fy7v8pVmHXtlxorzaBjvkBMB23s98g=="
   "resolved" "https://registry.npmjs.org/rollup/-/rollup-2.66.0.tgz"
   "version" "2.66.0"
@@ -10742,7 +10751,7 @@
   dependencies:
     "is-typedarray" "^1.0.0"
 
-"typescript@^3.2.1 || ^4", "typescript@^4.5.5", "typescript@>= 2.7", "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta", "typescript@>=3.7.0":
+"typescript@^3.2.1 || ^4", "typescript@^4.5.5", "typescript@>= 2.7", "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta", "typescript@>=3.7.0", "typescript@~4.1 || ~4.2 || ~4.3 || ~4.4 || ~4.5":
   "integrity" "sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA=="
   "resolved" "https://registry.npmjs.org/typescript/-/typescript-4.5.5.tgz"
   "version" "4.5.5"

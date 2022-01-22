@@ -1,6 +1,2 @@
-/**
- * Functional implementation of the PtsCanvas component
- * @param props
- */
-export { PtsCanvas as PtsCanvasLegacy } from './legacy';
-export { QuickStartCanvas as QuickStartCanvasLegacy } from './legacy';
+export { PtsCanvas as PtsCanvasLegacy, QuickStartCanvas as QuickStartCanvasLegacy, PtsCanvasLegacyProps, QuickStartProps } from './legacy';
+//# sourceMappingURL=index.d.ts.map

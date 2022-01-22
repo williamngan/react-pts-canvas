@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import React, { Component } from 'react'
 
 // import { PtsCanvas, QuickStartCanvas } from "react-pts-canvas";
 // import { Rectangle, Group, Geom, Create, Num, Shaping } from "pts/dist/es5";
-import "./App.css";
+import './App.css'
 
 // class ExampleComponent extends PtsCanvas {
 //   start() {
@@ -37,14 +37,14 @@ import "./App.css";
 //   }
 // }
 
-//var radius = 50;
+// var radius = 50;
 
 export default class App extends Component {
   render() {
     return (
       <div>
         <h1>Hello.</h1>
-        {/** 
+        {/**
         <div className="leftExample">
           <ExampleComponent background="#0c9" name="pts-tester" style={{opacity: 0.95}} />
           <div className="label">
@@ -53,7 +53,7 @@ export default class App extends Component {
           </div>
         </div>
         <div className="rightExample">
-          <QuickStartCanvas background="#62e" name="quickstart-tester" 
+          <QuickStartCanvas background="#62e" name="quickstart-tester"
             onAnimate={ (space, form, t, ft) => {
               form.point( space.pointer, radius, "circle" );
               if (radius > 20) radius -= 1;
@@ -70,6 +70,6 @@ export default class App extends Component {
         </div>
         */}
       </div>
-    );
+    )
   }
 }
