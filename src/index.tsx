@@ -1,5 +1,5 @@
-/* eslint-disable react/prop-types */
-import React, { useEffect, useRef } from 'react'
+/* eslint-disable  react/prop-types */
+import React, { useEffect, useRef, forwardRef, ForwardedRef } from 'react'
 import { CanvasSpace, Bound, CanvasForm, Group, Tempo } from 'pts'
 
 export type HandleStartFn = (
@@ -45,26 +45,49 @@ export type PtsCanvasProps = {
   onResize?: HandleResizeFn
   onAction?: HandleActionFn
   tempo?: Tempo
-  canvRef?: React.MutableRefObject<HTMLCanvasElement>
-  spaceRef?: React.MutableRefObject<CanvasSpace>
-  formRef?: React.MutableRefObject<CanvasForm>
+  canvRef?: React.MutableRefObject<HTMLCanvasElement | undefined>
+  spaceRef?: React.MutableRefObject<CanvasSpace | undefined>
+  formRef?: React.MutableRefObject<CanvasForm | undefined>
 }
 
-export function PtsCanvas(props: PtsCanvasProps) {
-  const canvRef = props.canvRef || useRef(null)
-  const spaceRef = props.spaceRef || useRef<CanvasSpace>()
-  const formRef = props.formRef || useRef<CanvasForm>()
+const PtsCanvasComponent = (
+  {
+    name = 'pts-react', // maps to className of the container div
+    background = '#9ab',
+    resize = true,
+    retina = true,
+    play = true,
+    touch = true,
+    style = {},
+    canvasStyle = {},
+    onStart = undefined,
+    onAnimate = () => {
+      console.log('animating')
+    },
+    onResize = undefined,
+    onAction = undefined,
+    tempo = undefined,
+    spaceRef: propsSpaceRef = undefined,
+    formRef: propsFormRef = undefined
+  }: PtsCanvasProps,
+  ref: ForwardedRef<HTMLCanvasElement>
+) => {
+  // Set canvRef to be either the forwarded ref if its a MutableRefObject, or our own local ref otherwise
+  const canvRef = ref && typeof ref !== 'function' ? ref : useRef(null)
+  const spaceRef = propsSpaceRef ?? useRef<CanvasSpace>()
+  const formRef = propsFormRef ?? useRef<CanvasForm>()
 
   /**
    * When canvRef Updates (ready for space)
    */
   useEffect(() => {
+    if (!canvRef || !canvRef.current) return
     // Create CanvasSpace with the canvRef and assign to spaceRef
     // Add animation, tempo, and play when ready (call back on CanvasSpace constructor)
-    spaceRef.current = new CanvasSpace(canvRef.current as Element).setup({
-      bgcolor: props.background,
-      resize: props.resize,
-      retina: props.retina
+    spaceRef.current = new CanvasSpace(canvRef.current).setup({
+      bgcolor: background,
+      resize,
+      retina
     })
 
     // Assign formRef
@@ -74,27 +97,25 @@ export function PtsCanvas(props: PtsCanvasProps) {
     // underlying functions, like our Form instance
     spaceRef.current.add({
       start: (bound: Bound) => {
-        props.onStart && props.onStart(bound, spaceRef.current, formRef.current)
+        onStart && onStart(bound, spaceRef.current, formRef.current)
       },
       animate: (time?: number, ftime?: number) => {
-        props.onAnimate &&
-          props.onAnimate(spaceRef.current, formRef.current, time, ftime)
+        onAnimate && onAnimate(spaceRef.current, formRef.current, time, ftime)
       },
       resize: (bound: Bound, event: Event) => {
         // eslint-disable-line no-undef
-        props.onResize &&
-          props.onResize(spaceRef.current, formRef.current, bound, event)
+        onResize && onResize(spaceRef.current, formRef.current, bound, event)
       },
       action: (type: string, px: number, py: number, evt: Event) => {
         // eslint-disable-line no-undef
-        props.onAction &&
-          props.onAction(spaceRef.current, formRef.current, type, px, py, evt)
+        onAction &&
+          onAction(spaceRef.current, formRef.current, type, px, py, evt)
       }
     })
 
     // Add tempo if provided
-    if (props.tempo) {
-      spaceRef.current.add(props.tempo)
+    if (tempo) {
+      spaceRef.current.add(tempo)
     }
 
     // Return the cleanup function (similar to ComponentWillUnmount)
@@ -107,9 +128,19 @@ export function PtsCanvas(props: PtsCanvasProps) {
    * When Touch updates
    */
   useEffect(() => {
-    spaceRef.current &&
-      spaceRef.current.bindMouse(props.touch).bindTouch(props.touch)
-  }, [props.touch])
+    spaceRef.current && spaceRef.current.bindMouse(touch).bindTouch(touch)
+  }, [touch])
+
+  /**
+   * Play or stop based on play prop
+   * */
+  const maybePlay = () => {
+    if (play) {
+      spaceRef.current && spaceRef.current.play()
+    } else {
+      spaceRef.current && spaceRef.current.playOnce(0)
+    }
+  }
 
   /**
    * When anything updates
@@ -118,46 +149,20 @@ export function PtsCanvas(props: PtsCanvasProps) {
     maybePlay()
   })
 
-  /**
-   * Play or stop based on play prop
-   * */
-  const maybePlay = () => {
-    if (props.play) {
-      spaceRef.current && spaceRef.current.play()
-    } else {
-      spaceRef.current && spaceRef.current.playOnce(0)
-    }
-  }
-
   return (
-    <div className={props.name || ''} style={props.style}>
+    <div className={name || ''} style={style}>
       <canvas
-        className={props.name ? props.name + '-canvas' : ''}
+        className={name ? name + '-canvas' : ''}
         ref={canvRef}
-        style={props.canvasStyle}
+        style={canvasStyle}
       />
     </div>
   )
 }
 
-PtsCanvas.defaultProps = {
-  name: 'pts-react', // maps to className of the container div
-  background: '#9ab',
-  resize: true,
-  retina: true,
-  play: true,
-  touch: true,
-  style: {},
-  canvasStyle: {},
-  onStart: undefined,
-  onAnimate: undefined,
-  onResize: undefined,
-  onAction: undefined,
-  tempo: undefined,
-  canvRef: undefined,
-  spaceRef: undefined,
-  formRef: undefined
-}
+export const PtsCanvas = forwardRef<HTMLCanvasElement, PtsCanvasProps>(
+  PtsCanvasComponent
+)
 
 export {
   PtsCanvas as PtsCanvasLegacy,

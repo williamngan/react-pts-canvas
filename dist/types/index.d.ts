@@ -18,30 +18,10 @@ export declare type PtsCanvasProps = {
     onResize?: HandleResizeFn;
     onAction?: HandleActionFn;
     tempo?: Tempo;
-    canvRef?: React.MutableRefObject<HTMLCanvasElement>;
-    spaceRef?: React.MutableRefObject<CanvasSpace>;
-    formRef?: React.MutableRefObject<CanvasForm>;
+    canvRef?: React.MutableRefObject<HTMLCanvasElement | undefined>;
+    spaceRef?: React.MutableRefObject<CanvasSpace | undefined>;
+    formRef?: React.MutableRefObject<CanvasForm | undefined>;
 };
-export declare function PtsCanvas(props: PtsCanvasProps): JSX.Element;
-export declare namespace PtsCanvas {
-    var defaultProps: {
-        name: string;
-        background: string;
-        resize: boolean;
-        retina: boolean;
-        play: boolean;
-        touch: boolean;
-        style: {};
-        canvasStyle: {};
-        onStart: undefined;
-        onAnimate: undefined;
-        onResize: undefined;
-        onAction: undefined;
-        tempo: undefined;
-        canvRef: undefined;
-        spaceRef: undefined;
-        formRef: undefined;
-    };
-}
+export declare const PtsCanvas: React.ForwardRefExoticComponent<PtsCanvasProps & React.RefAttributes<HTMLCanvasElement>>;
 export { PtsCanvas as PtsCanvasLegacy, QuickStartCanvas as QuickStartCanvasLegacy, PtsCanvasLegacyProps, QuickStartProps } from './legacy';
 //# sourceMappingURL=index.d.ts.map

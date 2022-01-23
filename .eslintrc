@@ -18,6 +18,8 @@
 
     // allow specifying true explicitly for boolean props
     "react/jsx-boolean-value": 0,
-    "jsx-quotes": "off"
+    "jsx-quotes": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"]
   }
 }
