@@ -87,6 +87,26 @@ declare type PtsCanvasProps = {
     spaceRef?: React.MutableRefObject<CanvasSpace>;
     formRef?: React.MutableRefObject<CanvasForm>;
 };
-declare const PtsCanvas: React.FC<PtsCanvasProps>;
+declare function PtsCanvas(props: PtsCanvasProps): JSX.Element;
+declare namespace PtsCanvas {
+    var defaultProps: {
+        name: string;
+        background: string;
+        resize: boolean;
+        retina: boolean;
+        play: boolean;
+        touch: boolean;
+        style: {};
+        canvasStyle: {};
+        onStart: undefined;
+        onAnimate: undefined;
+        onResize: undefined;
+        onAction: undefined;
+        tempo: undefined;
+        canvRef: undefined;
+        spaceRef: undefined;
+        formRef: undefined;
+    };
+}
 
 export { HandleActionFn, HandleAnimateFn, HandleResizeFn, HandleStartFn, PtsCanvas, PtsCanvas$1 as PtsCanvasLegacy, PtsCanvasLegacyProps, PtsCanvasProps, QuickStartCanvas as QuickStartCanvasLegacy, QuickStartProps };

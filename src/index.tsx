@@ -50,8 +50,8 @@ export type PtsCanvasProps = {
   formRef?: React.MutableRefObject<CanvasForm>
 }
 
-export const PtsCanvas: React.FC<PtsCanvasProps> = props => {
-  const canvRef = props.canvRef || useRef<HTMLCanvasElement | null>(null)
+export function PtsCanvas(props: PtsCanvasProps) {
+  const canvRef = props.canvRef || useRef(null)
   const spaceRef = props.spaceRef || useRef<CanvasSpace>()
   const formRef = props.formRef || useRef<CanvasForm>()
 

@@ -1,75 +1,110 @@
-import React, { Component } from 'react'
+import React, { useState, useRef } from 'react'
 
-// import { PtsCanvas, QuickStartCanvas } from "react-pts-canvas";
-// import { Rectangle, Group, Geom, Create, Num, Shaping } from "pts/dist/es5";
+import {
+  PtsCanvas,
+  HandleStartFn,
+  HandleAnimateFn,
+  HandleActionFn
+} from 'react-pts-canvas'
+import { Pt, Rectangle, Group, Geom, Create, Num, Shaping } from 'pts'
 import './App.css'
 
-// class ExampleComponent extends PtsCanvas {
-//   start() {
-//     this.grid = Create.gridCells(
-//       this.space.innerBound,
-//       Math.floor(this.space.width / 50),
-//       Math.floor(this.space.height / 50)
-//     );
-//   }
-
-//   _innerRect(rectPts, t, d) {
-//     let lines = rectPts.map((r, i) =>
-//       i >= 3 ? new Group(r, rectPts[0]) : new Group(r, rectPts[i + 1])
-//     );
-//     return lines.map(ln =>
-//       Geom.interpolate(ln[d > 0 ? 0 : 1], ln[d > 0 ? 1 : 0], t)
-//     );
-//   }
-
-//   animate(time, ftime) {
-//     let t = Shaping.cubicInOut((time % 3000) / 3000, 1);
-//     let colors = ["#fff", "#62f", "#f03"];
-//     let d = this.space.pointer.x > this.space.center.x ? 1 : -1;
-//     this.grid.forEach((g, i) => {
-//       let r = this._innerRect(
-//         Rectangle.corners(g),
-//         Num.boundValue(t + i * d * 0.004, 0, 1),
-//         d
-//       );
-//       this.form.fillOnly(colors[i % colors.length]).polygon(r);
-//     });
-//   }
-// }
-
-// var radius = 50;
-
-export default class App extends Component {
-  render() {
-    return (
-      <div>
-        <h1>Hello.</h1>
-        {/**
-        <div className="leftExample">
-          <ExampleComponent background="#0c9" name="pts-tester" style={{opacity: 0.95}} />
-          <div className="label">
-            <strong>PtsCanvas example</strong>
-            <br />Cursor position determines rotate direction
-          </div>
-        </div>
-        <div className="rightExample">
-          <QuickStartCanvas background="#62e" name="quickstart-tester"
-            onAnimate={ (space, form, t, ft) => {
-              form.point( space.pointer, radius, "circle" );
-              if (radius > 20) radius -= 1;
-            }}
-            onAction={ (space, form, type, px, py, evt) => {
-              if (type === 'up') radius += 20;
-
-            }}
-          />
-          <div className="label">
-            <strong>QuickStartCanvas example</strong>
-            <br />Click to change radius
-          </div>
-        </div>
-        */}
-      </div>
+const ExampleComponent: React.FC = () => {
+  const gridRef = useRef<Group[] | null>(null)
+  const handleStart: HandleStartFn = (_bound, space) => {
+    if (!space) return
+    gridRef.current = Create.gridCells(
+      space.innerBound,
+      Math.floor(space.width / 50),
+      Math.floor(space.height / 50)
     )
   }
+
+  const innerRect = (rectPts: Pt[], t: number, d: number) => {
+    const lines = rectPts.map((r, i) =>
+      i >= 3 ? new Group(r, rectPts[0]) : new Group(r, rectPts[i + 1])
+    )
+    return lines.map(ln =>
+      Geom.interpolate(ln[d > 0 ? 0 : 1], ln[d > 0 ? 1 : 0], t)
+    )
+  }
+
+  const handleAnimate: HandleAnimateFn = (space, form, time) => {
+    if (!form || !space || !gridRef.current || time === undefined) return
+    const t = Shaping.cubicInOut((time % 3000) / 3000, 1)
+    const colors = ['#fff', '#62f', '#f03']
+    const d = space.pointer.x > space.center.x ? 1 : -1
+    gridRef.current.forEach((g, i) => {
+      const r = innerRect(
+        Rectangle.corners(g),
+        Num.boundValue(t + i * d * 0.004, 0, 1),
+        d
+      )
+      form.fillOnly(colors[i % colors.length]).polygon(r)
+    })
+  }
+
+  return (
+    <PtsCanvas
+      background="#0c9"
+      name="pts-tester"
+      style={{ opacity: 0.95 }}
+      onStart={handleStart}
+      onAnimate={handleAnimate}
+    />
+  )
 }
+
+const ExampleComponent2: React.FC = () => {
+  const [radius, setRadius] = useState(50)
+
+  const handleAnimate: HandleAnimateFn = (space, form) => {
+    if (!space || !form) return
+    form.point(space.pointer, radius, 'circle')
+    if (radius > 20) setRadius(radius - 1)
+  }
+
+  const handleAction: HandleActionFn = (_space, _form, type) => {
+    if (type === 'up') setRadius(radius + 20)
+  }
+
+  return (
+    <PtsCanvas
+      background="#62e"
+      name="quickstart-tester"
+      onAnimate={handleAnimate}
+      onAction={handleAction}
+    />
+  )
+}
+
+// const App: React.FC = () => (
+//   <div>
+//     <div className="leftExample">
+//       <ExampleComponent />
+//       <div className="label">
+//         <strong>PtsCanvas example</strong>
+//         <br />
+//         Cursor position determines rotate direction
+//       </div>
+//     </div>
+//     <div className="rightExample">
+//       <ExampleComponent2 />
+//       <div className="label">
+//         <strong>QuickStartCanvas example</strong>
+//         <br />
+//         Click to change radius
+//       </div>
+//     </div>
+//   </div>
+// )
+
+const App: React.FC = () => (
+  <PtsCanvas
+    onAnimate={() => {
+      console.log('animating')
+    }}
+  />
+)
+
+export default App

@@ -125,7 +125,7 @@ QuickStartCanvas.defaultProps = {
 };
 
 /* eslint-disable react/prop-types */
-const PtsCanvas = props => {
+function PtsCanvas(props) {
     const canvRef = props.canvRef || React.useRef(null);
     const spaceRef = props.spaceRef || React.useRef();
     const formRef = props.formRef || React.useRef();
@@ -198,7 +198,7 @@ const PtsCanvas = props => {
     };
     return (React__default["default"].createElement("div", { className: props.name || '', style: props.style },
         React__default["default"].createElement("canvas", { className: props.name ? props.name + '-canvas' : '', ref: canvRef, style: props.canvasStyle })));
-};
+}
 PtsCanvas.defaultProps = {
     name: 'pts-react',
     background: '#9ab',
