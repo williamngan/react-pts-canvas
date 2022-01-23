@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useRef } from 'react'
 
 import {
   PtsCanvas,
@@ -56,55 +56,51 @@ const ExampleComponent: React.FC = () => {
 }
 
 const ExampleComponent2: React.FC = () => {
-  const [radius, setRadius] = useState(50)
+  // Use a useRef instead of useState hook here as the canvas
+  // Doesn't re-render based on the radius, it only affects the handleAnimate
+  const radiusRef = useRef(50)
 
   const handleAnimate: HandleAnimateFn = (space, form) => {
     if (!space || !form) return
-    form.point(space.pointer, radius, 'circle')
-    if (radius > 20) setRadius(radius - 1)
+    form.point(space.pointer, radiusRef.current, 'circle')
+    if (radiusRef.current > 20) radiusRef.current--
   }
 
   const handleAction: HandleActionFn = (_space, _form, type) => {
-    if (type === 'up') setRadius(radius + 20)
+    if (type === 'up') {
+      radiusRef.current += 20
+    }
   }
 
   return (
     <PtsCanvas
       background="#62e"
       name="quickstart-tester"
-      onAnimate={handleAnimate}
-      onAction={handleAction}
+      onAnimate={(space, form) => handleAnimate(space, form)}
+      onAction={(space, form, type) => handleAction(space, form, type)}
     />
   )
 }
 
-// const App: React.FC = () => (
-//   <div>
-//     <div className="leftExample">
-//       <ExampleComponent />
-//       <div className="label">
-//         <strong>PtsCanvas example</strong>
-//         <br />
-//         Cursor position determines rotate direction
-//       </div>
-//     </div>
-//     <div className="rightExample">
-//       <ExampleComponent2 />
-//       <div className="label">
-//         <strong>QuickStartCanvas example</strong>
-//         <br />
-//         Click to change radius
-//       </div>
-//     </div>
-//   </div>
-// )
-
 const App: React.FC = () => (
-  <PtsCanvas
-    onAnimate={() => {
-      console.log('animating')
-    }}
-  />
+  <div>
+    <div className="leftExample">
+      <ExampleComponent />
+      <div className="label">
+        <strong>PtsCanvas example</strong>
+        <br />
+        Cursor position determines rotate direction
+      </div>
+    </div>
+    <div className="rightExample">
+      <ExampleComponent2 />
+      <div className="label">
+        <strong>QuickStartCanvas example</strong>
+        <br />
+        Click to change radius
+      </div>
+    </div>
+  </div>
 )
 
 export default App
