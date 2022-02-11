@@ -7,9 +7,7 @@ import './App.css'
  * Brief example of passing refs down to pointsCanvas for access in parent component
  */
 const App: React.FC = () => {
-  // Use a useRef instead of useState hook here as the canvas
-  // Doesn't re-render based on the radius, it only affects the handleAnimate
-  const radiusRef = useRef(50)
+  let radius = 50
   const canvRef = createRef<HTMLCanvasElement>()
   const spaceRef = useRef<CanvasSpace>()
   const formRef = useRef<CanvasForm>()
@@ -17,13 +15,13 @@ const App: React.FC = () => {
 
   const handleAnimate: HandleAnimateFn = (space, form) => {
     if (!space || !form) return
-    form.point(space.pointer, radiusRef.current, 'circle')
-    if (radiusRef.current > 20) radiusRef.current--
+    form.point(space.pointer, radius, 'circle')
+    if (radius > 20) radius--
   }
 
   const handleAction: HandleActionFn = (_space, _form, type) => {
     if (type === 'up') {
-      radiusRef.current += 20
+      radius += 20
     }
   }
 

@@ -56,19 +56,17 @@ const ExampleComponent: React.FC = () => {
 }
 
 const ExampleComponent2: React.FC = () => {
-  // Use a useRef instead of useState hook here as the canvas
-  // Doesn't re-render based on the radius, it only affects the handleAnimate
-  const radiusRef = useRef(50)
+  let radius = 50
 
   const handleAnimate: HandleAnimateFn = (space, form) => {
     if (!space || !form) return
-    form.point(space.pointer, radiusRef.current, 'circle')
-    if (radiusRef.current > 20) radiusRef.current--
+    form.point(space.pointer, radius, 'circle')
+    if (radius > 20) radius--
   }
 
   const handleAction: HandleActionFn = (_space, _form, type) => {
     if (type === 'up') {
-      radiusRef.current += 20
+      radius += 20
     }
   }
 
