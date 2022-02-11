@@ -45,7 +45,6 @@ export type PtsCanvasProps = {
   onResize?: HandleResizeFn
   onAction?: HandleActionFn
   tempo?: Tempo
-  canvRef?: React.MutableRefObject<HTMLCanvasElement | undefined>
   spaceRef?: React.MutableRefObject<CanvasSpace | undefined>
   formRef?: React.MutableRefObject<CanvasForm | undefined>
 }
