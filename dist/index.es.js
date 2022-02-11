@@ -120,11 +120,11 @@ QuickStartCanvas.defaultProps = {
 const PtsCanvasComponent = ({ name = 'pts-react', // maps to className of the container div
 background = '#9ab', resize = true, retina = true, play = true, touch = true, style = {}, canvasStyle = {}, onStart = undefined, onAnimate = () => {
     console.log('animating');
-}, onResize = undefined, onAction = undefined, tempo = undefined, spaceRef: propsSpaceRef = undefined, formRef: propsFormRef = undefined }, ref) => {
+}, onResize = undefined, onAction = undefined, tempo = undefined }, ref) => {
     // Set canvRef to be either the forwarded ref if its a MutableRefObject, or our own local ref otherwise
     const canvRef = ref && typeof ref !== 'function' ? ref : useRef(null);
-    const spaceRef = propsSpaceRef !== null && propsSpaceRef !== void 0 ? propsSpaceRef : useRef();
-    const formRef = propsFormRef !== null && propsFormRef !== void 0 ? propsFormRef : useRef();
+    const spaceRef = useRef();
+    const formRef = useRef();
     /**
      * When canvRef Updates (ready for space)
      */
@@ -144,19 +144,24 @@ background = '#9ab', resize = true, retina = true, play = true, touch = true, st
         // underlying functions, like our Form instance
         spaceRef.current.add({
             start: (bound) => {
-                onStart && onStart(bound, spaceRef.current, formRef.current);
+                if (onStart && spaceRef.current && formRef.current) {
+                    onStart(bound, spaceRef.current, formRef.current);
+                }
             },
             animate: (time, ftime) => {
-                onAnimate && onAnimate(spaceRef.current, formRef.current, time, ftime);
+                if (time && ftime && spaceRef.current && formRef.current) {
+                    onAnimate(spaceRef.current, formRef.current, time, ftime);
+                }
             },
             resize: (bound, event) => {
-                // eslint-disable-line no-undef
-                onResize && onResize(spaceRef.current, formRef.current, bound, event);
+                if (onResize && spaceRef.current && formRef.current) {
+                    onResize(spaceRef.current, formRef.current, bound, event);
+                }
             },
             action: (type, px, py, evt) => {
-                // eslint-disable-line no-undef
-                onAction &&
+                if (onAction && spaceRef.current && formRef.current) {
                     onAction(spaceRef.current, formRef.current, type, px, py, evt);
+                }
             }
         });
         // Add tempo if provided

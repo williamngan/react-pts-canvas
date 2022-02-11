@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 
 import {
   PtsCanvas,
@@ -10,10 +10,10 @@ import { Pt, Rectangle, Group, Geom, Create, Num, Shaping } from 'pts'
 import './App.css'
 
 const ExampleComponent: React.FC = () => {
-  const gridRef = useRef<Group[] | null>(null)
+  let grid: Group[]
+
   const handleStart: HandleStartFn = (_bound, space) => {
-    if (!space) return
-    gridRef.current = Create.gridCells(
+    grid = Create.gridCells(
       space.innerBound,
       Math.floor(space.width / 50),
       Math.floor(space.height / 50)
@@ -30,11 +30,11 @@ const ExampleComponent: React.FC = () => {
   }
 
   const handleAnimate: HandleAnimateFn = (space, form, time) => {
-    if (!form || !space || !gridRef.current || time === undefined) return
+    if (!grid) return
     const t = Shaping.cubicInOut((time % 3000) / 3000, 1)
     const colors = ['#fff', '#62f', '#f03']
     const d = space.pointer.x > space.center.x ? 1 : -1
-    gridRef.current.forEach((g, i) => {
+    grid.forEach((g, i) => {
       const r = innerRect(
         Rectangle.corners(g),
         Num.boundValue(t + i * d * 0.004, 0, 1),
@@ -59,7 +59,6 @@ const ExampleComponent2: React.FC = () => {
   let radius = 50
 
   const handleAnimate: HandleAnimateFn = (space, form) => {
-    if (!space || !form) return
     form.point(space.pointer, radius, 'circle')
     if (radius > 20) radius--
   }
@@ -74,8 +73,8 @@ const ExampleComponent2: React.FC = () => {
     <PtsCanvas
       background="#62e"
       name="quickstart-tester"
-      onAnimate={(space, form) => handleAnimate(space, form)}
-      onAction={(space, form, type) => handleAction(space, form, type)}
+      onAnimate={handleAnimate}
+      onAction={handleAction}
     />
   )
 }

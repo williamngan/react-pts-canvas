@@ -3,32 +3,32 @@ import React, { useEffect, useRef, forwardRef, ForwardedRef } from 'react'
 import { CanvasSpace, Bound, CanvasForm, Group, Tempo } from 'pts'
 
 export type HandleStartFn = (
-  bound?: Bound,
-  space?: CanvasSpace,
-  form?: CanvasForm
+  bound: Bound,
+  space: CanvasSpace,
+  form: CanvasForm
 ) => void
 
 export type HandleAnimateFn = (
-  space?: CanvasSpace,
-  form?: CanvasForm,
-  time?: number,
-  ftime?: number
+  space: CanvasSpace,
+  form: CanvasForm,
+  time: number,
+  ftime: number
 ) => void
 
 export type HandleResizeFn = (
-  space?: CanvasSpace,
-  form?: CanvasForm,
-  size?: Group,
-  evt?: Event // eslint-disable-line no-undef
+  space: CanvasSpace,
+  form: CanvasForm,
+  size: Group,
+  evt: Event // eslint-disable-line no-undef
 ) => void
 
 export type HandleActionFn = (
-  space?: CanvasSpace,
-  form?: CanvasForm,
-  type?: string,
-  px?: number,
-  py?: number,
-  evt?: Event // eslint-disable-line no-undef
+  space: CanvasSpace,
+  form: CanvasForm,
+  type: string,
+  px: number,
+  py: number,
+  evt: Event // eslint-disable-line no-undef
 ) => void
 
 export type PtsCanvasProps = {
@@ -45,8 +45,6 @@ export type PtsCanvasProps = {
   onResize?: HandleResizeFn
   onAction?: HandleActionFn
   tempo?: Tempo
-  spaceRef?: React.MutableRefObject<CanvasSpace | undefined>
-  formRef?: React.MutableRefObject<CanvasForm | undefined>
 }
 
 const PtsCanvasComponent = (
@@ -65,16 +63,14 @@ const PtsCanvasComponent = (
     },
     onResize = undefined,
     onAction = undefined,
-    tempo = undefined,
-    spaceRef: propsSpaceRef = undefined,
-    formRef: propsFormRef = undefined
+    tempo = undefined
   }: PtsCanvasProps,
   ref: ForwardedRef<HTMLCanvasElement>
 ) => {
   // Set canvRef to be either the forwarded ref if its a MutableRefObject, or our own local ref otherwise
   const canvRef = ref && typeof ref !== 'function' ? ref : useRef(null)
-  const spaceRef = propsSpaceRef ?? useRef<CanvasSpace>()
-  const formRef = propsFormRef ?? useRef<CanvasForm>()
+  const spaceRef = useRef<CanvasSpace>()
+  const formRef = useRef<CanvasForm>()
 
   /**
    * When canvRef Updates (ready for space)
@@ -96,19 +92,24 @@ const PtsCanvasComponent = (
     // underlying functions, like our Form instance
     spaceRef.current.add({
       start: (bound: Bound) => {
-        onStart && onStart(bound, spaceRef.current, formRef.current)
+        if (onStart && spaceRef.current && formRef.current) {
+          onStart(bound, spaceRef.current, formRef.current)
+        }
       },
       animate: (time?: number, ftime?: number) => {
-        onAnimate && onAnimate(spaceRef.current, formRef.current, time, ftime)
+        if (time && ftime && spaceRef.current && formRef.current) {
+          onAnimate(spaceRef.current, formRef.current, time, ftime)
+        }
       },
       resize: (bound: Bound, event: Event) => {
-        // eslint-disable-line no-undef
-        onResize && onResize(spaceRef.current, formRef.current, bound, event)
+        if (onResize && spaceRef.current && formRef.current) {
+          onResize(spaceRef.current, formRef.current, bound, event)
+        }
       },
       action: (type: string, px: number, py: number, evt: Event) => {
-        // eslint-disable-line no-undef
-        onAction &&
+        if (onAction && spaceRef.current && formRef.current) {
           onAction(spaceRef.current, formRef.current, type, px, py, evt)
+        }
       }
     })
 

@@ -65,10 +65,10 @@ declare class QuickStartCanvas extends PtsCanvas$1<QuickStartProps> {
     action(type: string, px: number, py: number, evt: Event): void;
 }
 
-declare type HandleStartFn = (bound?: Bound, space?: CanvasSpace, form?: CanvasForm) => void;
-declare type HandleAnimateFn = (space?: CanvasSpace, form?: CanvasForm, time?: number, ftime?: number) => void;
-declare type HandleResizeFn = (space?: CanvasSpace, form?: CanvasForm, size?: Group, evt?: Event) => void;
-declare type HandleActionFn = (space?: CanvasSpace, form?: CanvasForm, type?: string, px?: number, py?: number, evt?: Event) => void;
+declare type HandleStartFn = (bound: Bound, space: CanvasSpace, form: CanvasForm) => void;
+declare type HandleAnimateFn = (space: CanvasSpace, form: CanvasForm, time: number, ftime: number) => void;
+declare type HandleResizeFn = (space: CanvasSpace, form: CanvasForm, size: Group, evt: Event) => void;
+declare type HandleActionFn = (space: CanvasSpace, form: CanvasForm, type: string, px: number, py: number, evt: Event) => void;
 declare type PtsCanvasProps = {
     name?: string;
     background?: string;
@@ -83,9 +83,6 @@ declare type PtsCanvasProps = {
     onResize?: HandleResizeFn;
     onAction?: HandleActionFn;
     tempo?: Tempo;
-    canvRef?: React.MutableRefObject<HTMLCanvasElement | undefined>;
-    spaceRef?: React.MutableRefObject<CanvasSpace | undefined>;
-    formRef?: React.MutableRefObject<CanvasForm | undefined>;
 };
 declare const PtsCanvas: React.ForwardRefExoticComponent<PtsCanvasProps & React.RefAttributes<HTMLCanvasElement>>;
 

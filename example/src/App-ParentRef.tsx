@@ -1,6 +1,11 @@
 import { CanvasForm, CanvasSpace } from 'pts'
 import React, { useRef, createRef } from 'react'
-import { PtsCanvas, HandleAnimateFn, HandleActionFn } from 'react-pts-canvas'
+import {
+  PtsCanvas,
+  HandleAnimateFn,
+  HandleActionFn,
+  HandleStartFn
+} from 'react-pts-canvas'
 import './App.css'
 
 /**
@@ -9,12 +14,16 @@ import './App.css'
 const App: React.FC = () => {
   let radius = 50
   const canvRef = createRef<HTMLCanvasElement>()
-  const spaceRef = useRef<CanvasSpace>()
-  const formRef = useRef<CanvasForm>()
+  let spaceRef: CanvasSpace
+  let formRef: CanvasForm
   const canvasSize = useRef(100)
 
+  const handleStart: HandleStartFn = (_bound, space, form) => {
+    spaceRef = space
+    formRef = form
+  }
+
   const handleAnimate: HandleAnimateFn = (space, form) => {
-    if (!space || !form) return
     form.point(space.pointer, radius, 'circle')
     if (radius > 20) radius--
   }
@@ -35,11 +44,10 @@ const App: React.FC = () => {
       <PtsCanvas
         background="#62e"
         name="quickstart-tester"
+        onStart={handleStart}
         onAnimate={handleAnimate}
         onAction={handleAction}
         ref={canvRef}
-        spaceRef={spaceRef}
-        formRef={formRef}
       />
       <div
         style={{
@@ -81,14 +89,14 @@ const App: React.FC = () => {
         </button>
         <button
           onClick={() => {
-            console.log('space', spaceRef.current)
+            console.log('space', spaceRef)
           }}
         >
           Log Space
         </button>
         <button
           onClick={() => {
-            console.log('form', formRef.current)
+            console.log('form', formRef)
           }}
         >
           Log Form
