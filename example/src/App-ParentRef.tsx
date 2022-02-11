@@ -1,5 +1,5 @@
 import { CanvasForm, CanvasSpace } from 'pts'
-import React, { useRef, createRef, useEffect } from 'react'
+import React, { createRef, useEffect } from 'react'
 import {
   PtsCanvas,
   HandleAnimateFn,
@@ -12,11 +12,23 @@ import './App.css'
  * Brief example of passing refs down to pointsCanvas for access in parent component
  */
 const App: React.FC = () => {
-  let radius = 50
   const canvRef = createRef<HTMLCanvasElement>()
+  let radius = 50
   let spaceRef: CanvasSpace
   let formRef: CanvasForm
-  const canvasSize = useRef(100)
+  let canvasSize = 100
+  let listenerAdded = false
+
+  function handleCanvasClick(e: MouseEvent) {
+    console.log(`X: ${e.clientX} Y: ${e.clientY}`)
+  }
+
+  useEffect(() => {
+    if (!listenerAdded && canvRef.current) {
+      canvRef.current.addEventListener('click', handleCanvasClick)
+      listenerAdded = true
+    }
+  })
 
   useEffect(() => {
     document.addEventListener('keydown', e => {
@@ -69,15 +81,14 @@ const App: React.FC = () => {
       >
         <button
           onClick={() => {
-            const canvas = canvRef.current
-            const ctx = canvas?.getContext('2d')
-            if (canvas) {
-              canvasSize.current -= 10
-              canvas.setAttribute(
+            const ctx = canvRef.current?.getContext('2d')
+            if (canvRef.current) {
+              canvasSize -= 10
+              canvRef.current.setAttribute(
                 'style',
                 `
-                width:${canvasSize.current}%;
-                height:${canvasSize.current}%;
+                width:${canvasSize}%;
+                height:${canvasSize}%;
                 margin: 0 auto;
                 position: absolute;
                 left: 50%;
