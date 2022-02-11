@@ -1,5 +1,5 @@
 import { CanvasForm, CanvasSpace } from 'pts'
-import React, { useRef, createRef } from 'react'
+import React, { useRef, createRef, useEffect } from 'react'
 import {
   PtsCanvas,
   HandleAnimateFn,
@@ -17,6 +17,14 @@ const App: React.FC = () => {
   let spaceRef: CanvasSpace
   let formRef: CanvasForm
   const canvasSize = useRef(100)
+
+  useEffect(() => {
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && canvRef.current) {
+        canvRef.current.click()
+      }
+    })
+  }, [])
 
   const handleStart: HandleStartFn = (_bound, space, form) => {
     spaceRef = space
