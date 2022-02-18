@@ -5,17 +5,37 @@
   "license": "Apache-2.0",
   "private": true,
   "dependencies": {
+    "@types/jest": "^27.4.0",
+    "@types/node": "^17.0.10",
+    "@types/react": "^17.0.38",
+    "@types/react-dom": "^17.0.11",
     "prop-types": "^15.6.2",
-    "pts": "^0.9.3",
-    "react": "^16.4.1",
-    "react-dom": "^16.4.1",
+    "pts": "^0.10.9",
     "react-pts-canvas": "file:..",
-    "react-scripts": "^1.1.4"
+    "react-scripts": "^5.0.0",
+    "typescript": "^4.5.5",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "start": "DISABLE_ESLINT_PLUGIN=true react-app-rewired start",
+    "build": "DISABLE_ESLINT_PLUGIN=true react-app-rewired build",
+    "test": "react-app-rewired test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "react-app-rewired": "^2.1.11"
   }
 }

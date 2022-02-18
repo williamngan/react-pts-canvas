@@ -1,7 +1,6 @@
 import React from 'react';
-import { Bound, CanvasSpace, CanvasForm, Group, Tempo } from 'pts';
-
-declare type PtsCanvasLegacyProps = {
+import { CanvasSpace, CanvasForm, Bound, Group } from 'pts';
+export declare type PtsCanvasLegacyProps = {
     name?: string;
     background?: string;
     resize?: boolean;
@@ -11,13 +10,13 @@ declare type PtsCanvasLegacyProps = {
     style?: object;
     canvasStyle?: object;
 };
-declare type QuickStartProps = PtsCanvasLegacyProps & {
+export declare type QuickStartProps = PtsCanvasLegacyProps & {
     onStart?: (bound?: Bound, space?: CanvasSpace) => void;
     onAnimate?: (space?: CanvasSpace, form?: CanvasForm, time?: number, ftime?: number) => void;
     onResize?: (space?: CanvasSpace, form?: CanvasForm, size?: Group, evt?: Event) => void;
     onAction?: (space?: CanvasSpace, form?: CanvasForm, type?: string, px?: number, py?: number, evt?: Event) => void;
 };
-declare class PtsCanvas$1<T> extends React.Component<PtsCanvasLegacyProps & T> {
+export declare class PtsCanvas<T> extends React.Component<PtsCanvasLegacyProps & T> {
     canvRef: React.RefObject<Element>;
     space: CanvasSpace | null;
     form: CanvasForm | null;
@@ -44,7 +43,7 @@ declare class PtsCanvas$1<T> extends React.Component<PtsCanvasLegacyProps & T> {
     init(): void;
     render(): JSX.Element;
 }
-declare class QuickStartCanvas extends PtsCanvas$1<QuickStartProps> {
+export declare class QuickStartCanvas extends PtsCanvas<QuickStartProps> {
     static defaultProps: {
         name: string;
         background: string;
@@ -64,26 +63,4 @@ declare class QuickStartCanvas extends PtsCanvas$1<QuickStartProps> {
     resize(size: Group, evt: Event): void;
     action(type: string, px: number, py: number, evt: Event): void;
 }
-
-declare type HandleStartFn = (bound: Bound, space: CanvasSpace, form: CanvasForm) => void;
-declare type HandleAnimateFn = (space: CanvasSpace, form: CanvasForm, time: number, ftime: number) => void;
-declare type HandleResizeFn = (space: CanvasSpace, form: CanvasForm, size: Group, evt: Event) => void;
-declare type HandleActionFn = (space: CanvasSpace, form: CanvasForm, type: string, px: number, py: number, evt: Event) => void;
-declare type PtsCanvasProps = {
-    name?: string;
-    background?: string;
-    resize?: boolean;
-    retina?: boolean;
-    play?: boolean;
-    touch?: boolean;
-    style?: object;
-    canvasStyle?: object;
-    onStart?: HandleStartFn;
-    onAnimate: HandleAnimateFn;
-    onResize?: HandleResizeFn;
-    onAction?: HandleActionFn;
-    tempo?: Tempo;
-};
-declare const PtsCanvas: React.ForwardRefExoticComponent<PtsCanvasProps & React.RefAttributes<HTMLCanvasElement>>;
-
-export { HandleActionFn, HandleAnimateFn, HandleResizeFn, HandleStartFn, PtsCanvas, PtsCanvas$1 as PtsCanvasLegacy, PtsCanvasLegacyProps, PtsCanvasProps, QuickStartCanvas as QuickStartCanvasLegacy, QuickStartProps };
+//# sourceMappingURL=legacy.d.ts.map

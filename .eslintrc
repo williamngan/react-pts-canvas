@@ -1,15 +1,14 @@
 {
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
   "extends": [
     "standard",
-    "standard-react"
+    "standard-react",
+    "plugin:@typescript-eslint/recommended"
   ],
   "env": {
     "es6": true
   },
-  "plugins": [
-    "react"
-  ],
+  "plugins": ["react", "@typescript-eslint"],
   "parserOptions": {
     "sourceType": "module"
   },
@@ -18,6 +17,9 @@
     "space-before-function-paren": 0,
 
     // allow specifying true explicitly for boolean props
-    "react/jsx-boolean-value": 0
+    "react/jsx-boolean-value": 0,
+    "jsx-quotes": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"]
   }
 }
