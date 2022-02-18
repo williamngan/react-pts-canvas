@@ -1,3 +1,8 @@
+/*!
+ * react-pts-canvas - Copyright © 2019-current William Ngan and contributors.
+ * Licensed under Apache 2.0 License.
+ * See https://github.com/williamngan/react-pts-canvas for details.
+ */
 import React from 'react';
 import { CanvasSpace, CanvasForm, Bound, Group } from 'pts';
 export declare type PtsCanvasLegacyProps = {

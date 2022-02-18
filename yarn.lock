@@ -8882,9 +8882,9 @@ psl@^1.1.33:
   resolved "https://registry.npmjs.org/psl/-/psl-1.8.0.tgz"
   integrity sha512-RIdOzyoavK+hA18OGGWDqUTsCLhtA7IcZ/6NCs4fFJaHBDab+pDDmDIByWFRQJq2Cd7r1OoQxBGKOaztq+hjIQ==
 
-pts@^0.10.2:
+pts@^0.10.9:
   version "0.10.9"
-  resolved "https://registry.npmjs.org/pts/-/pts-0.10.9.tgz"
+  resolved "https://registry.yarnpkg.com/pts/-/pts-0.10.9.tgz#e7dede241040564a2f5cb3ad8fddda03c6bece5c"
   integrity sha512-jHtggvGvABnAlRxhAKrcT3Jbiq8RDvOUW++hm7caukyIuvH6jhPffXJohuIMhrGUUXa0/IB2c7w8Q44uyoJSHQ==
 
 punycode@^2.1.0, punycode@^2.1.1:

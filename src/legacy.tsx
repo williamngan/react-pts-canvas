@@ -1,3 +1,9 @@
+/*!
+ * react-pts-canvas - Copyright © 2019-current William Ngan and contributors.
+ * Licensed under Apache 2.0 License.
+ * See https://github.com/williamngan/react-pts-canvas for details.
+ */
+
 /* eslint-disable react/prop-types */
 import React from 'react'
 import { CanvasSpace, CanvasForm, Bound, Group, IPlayer } from 'pts'

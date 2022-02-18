@@ -9,7 +9,11 @@ function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'defau
 
 var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
 
-/* eslint-disable react/prop-types */
+/*!
+ * react-pts-canvas - Copyright © 2019-current William Ngan and contributors.
+ * Licensed under Apache 2.0 License.
+ * See https://github.com/williamngan/react-pts-canvas for details.
+ */
 class PtsCanvas$1 extends React__default["default"].Component {
     constructor(props) {
         super(props);
@@ -124,7 +128,11 @@ QuickStartCanvas.defaultProps = {
     onAction: undefined
 };
 
-/* eslint-disable  react/prop-types */
+/*!
+ * react-pts-canvas - Copyright © 2019-current William Ngan and contributors.
+ * Licensed under Apache 2.0 License.
+ * See https://github.com/williamngan/react-pts-canvas for details.
+ */
 const PtsCanvasComponent = ({ name = 'pts-react', // maps to className of the container div
 background = '#9ab', resize = true, retina = true, play = true, touch = true, style = {}, canvasStyle = {}, onStart = undefined, onAnimate = () => {
     console.log('animating');
