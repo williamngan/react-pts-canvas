@@ -4,7 +4,12 @@
 
 ![cover](./example/cover.png)
 
-This is a React Component for canvas drawing using [Pts](https://ptsjs.org). Pts is a javascript library for visualization and creative-coding. You may use Pts by itself, or with React and other frameworks.
+`react-pts-canvas` includes React components for canvas drawing using [Pts](https://ptsjs.org). In this repo, you'll find implementations for both functional component and legacy class component. Read more below.
+
+[Pts](https://ptsjs.org) is a javascript library for visualization and creative-coding. You may use Pts by itself, or with React and other frameworks. 
+
+If you are getting started with Pts, take a look at the [demos](https://ptsjs.org/demo) and read the [guides](https://ptsjs.org/guide).
+
 
 ## Install
 
@@ -17,16 +22,15 @@ npm install --save react-pts-canvas
 - The [example](./example) folder provides a quick example of using PtsCanvas in a React app
 - Take a look at more examples in [pts-react-example](https://github.com/williamngan/pts-react-example) repo.
 
-## PtsCanvas
+## PtsCanvas function component
 
-`PtsCanvas` is a function component replacement for both `QuickStartCanvas` and the previous class based implementation
+`PtsCanvas` is a functional component that helps you get started on Pts in React. A quick example as follows (please refer to [this guide](https://ptsjs.org/guide/space-0500) to learn more about these functions).
 
-Instead of extending the PtsCanvas class or using the quickstart component, you can pass your handler functions as props.
-
-`PtsCanvas` makes use of the `useEffect` hook to handle lifecycle events, and the `useRef` hook to maintain reference to the space, form, and canvas elements.
-
+`PtsCanvas` 
 ```jsx
+/* App.js */
 <PtsCanvas
+  name='myClassName'
   onStart={ (bound, space, form) => {...} }
   onAnimate={ (space, form, time, ftime) => {...} }
   onResize={ (space, form, size, evt) => {...} }
@@ -34,24 +38,20 @@ Instead of extending the PtsCanvas class or using the quickstart component, you 
 />
 ```
 
-`PtsCanvas` component provides the following props:
+```css
+/* App.css */
+.myClassName {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+}
+```
 
-- `background`
-  - background fill color of the canvas. Default value is "#9ab".
-- `resize`
-  - A boolean value to indicate whether the canvas should auto resize. Default is `true`.
-- `retina`
-  - A boolean value to indicate whether the canvas should support retina resolution. Default is `true`.
-- `play`
-  - A boolean value to set whether the canvas should animate. Default is `true`.
-- `touch`
-  - A boolean value to set whether the canvas should track mouse and touch events. Default is `true`.
+`PtsCanvas` component makes use of the `useEffect` hook to handle lifecycle events, and the `useRef` hook to maintain reference to the space, form, and canvas elements. It provides the following props:
+
 - `name`
   - The css class name of the container `<div>`. Default value is "pts-react". Use this class name to set custom styles in your .css file.
-- `style`
-  - Optionally override css styles of the container `<div>`.
-- `canvasStyle`
-  - Optionally override css styles of the `<canvas>` itself. Avoid using this except for special use cases.
+- `background`
+  - background fill color of the canvas. Default value is "#9ab".
 - `onStart`
   - onStart handler function
 - `onAnimate`
@@ -60,12 +60,26 @@ Instead of extending the PtsCanvas class or using the quickstart component, you 
   - onResize handler function
 - `onAction`
   - onAction handler function
+- `play`
+  - A boolean value to set whether the canvas should animate. Default is `true`.
+- `resize`
+  - A boolean value to indicate whether the canvas should auto resize. Default is `true`.
+- `retina`
+  - A boolean value to indicate whether the canvas should support retina resolution. Default is `true`.
+- `touch`
+  - A boolean value to set whether the canvas should track mouse and touch events. Default is `true`.
+- `style`
+  - Optionally override css styles of the container `<div>`.
+- `canvasStyle`
+  - Optionally override css styles of the `<canvas>` itself. Avoid using this except for special use cases.
 - `tempo`
   - a `Tempo` object. In a parent component, you can create a ref to a tempo object, add functions to it via `Tempo.every` in your onStart handler, then pass that `Tempo`'s ref.current as this prop. The `tempo` will be added to the space with the other handlers.
 - `spaceRef`
   - a ref returned from `useRef(null)` if you need reference to the space in your parent component
 - `formRef`
   - a ref returned from `useRef(null)` if you need reference to the form in your parent component
+
+### Canvas ref access
 
 `PtsCanvas` is wrapped with `forwardRef`, so you can pass a ref to the component itself if you need
 access to the canvas ref within your parent component:
@@ -85,21 +99,15 @@ const ParentComponent = () => {
 }
 ```
 
-See `example/src/App-ParentRef.tsx`
+See [`example/src/App-ParentRef.tsx`](./example/src/App-ParentRef.tsx)
 
-#
-
----
-
-#
+# 
 
 ## Legacy Components
 
 ## QuickStartCanvasLegacy component
 
-If you are getting started with **Pts**, take a look at the [demos](https://ptsjs.org/demo) and read the [guides](https://ptsjs.org/guide).
-
-`<QuickStartCanvas>` helps you get started quickly. Here is a minimal example that draws a point the follows the cursor, by passing a callback function to `onAnimate` property:
+`<QuickStartCanvasLegacy>` helps you get started quickly. Here is a minimal example that draws a point the follows the cursor, by passing a callback function to `onAnimate` property:
 
 ```jsx
 import React from 'react'
@@ -125,7 +133,7 @@ onAction={ (space, form, type, px, py, evt) => {...} }
 
 ## PtsCanvasLegacy
 
-`PtsCanvasLegacy` is a component that you may extend to implement your own drawings and animations on canvas using Pts. Like this:
+`PtsCanvasLegacy` is a class component that you may extend to implement your own drawings and animations on canvas using Pts. Like this:
 
 ```jsx
 class MyCanvas extends PtsCanvasLegacy {
@@ -165,6 +173,8 @@ class Example extends React.Component {
 
 `PtsCanvasLegacy` component provides the following props:
 
+- `name`
+  - The css class name of the container `<div>`. Default value is "pts-react". Use this class name to set custom styles in your .css file.
 - `background`
   - background fill color of the canvas. Default value is "#9ab".
 - `resize`
@@ -175,8 +185,6 @@ class Example extends React.Component {
   - A boolean value to set whether the canvas should animate. Default is `true`.
 - `touch`
   - A boolean value to set whether the canvas should track mouse and touch events. Default is `true`.
-- `name`
-  - The css class name of the container `<div>`. Default value is "pts-react". Use this class name to set custom styles in your .css file.
 - `style`
   - Optionally override css styles of the container `<div>`.
 - `canvasStyle`
