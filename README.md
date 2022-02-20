@@ -101,11 +101,14 @@ const ParentComponent = () => {
 
 See [`example/src/App-ParentRef.tsx`](./example/src/App-ParentRef.tsx)
 
+### Common issues
+- If you are getting sourcemap warnings, create a file called '.env' in your project folder and add `GENERATE_SOURCEMAP=false` into it.
+
 # 
 
 ## Legacy Components
 
-## QuickStartCanvasLegacy component
+### QuickStartCanvasLegacy class component
 
 `<QuickStartCanvasLegacy>` helps you get started quickly. Here is a minimal example that draws a point the follows the cursor, by passing a callback function to `onAnimate` property:
 
@@ -131,7 +134,7 @@ onAction={ (space, form, type, px, py, evt) => {...} }
 />
 ```
 
-## PtsCanvasLegacy
+### PtsCanvasLegacy class component
 
 `PtsCanvasLegacy` is a class component that you may extend to implement your own drawings and animations on canvas using Pts. Like this:
 
