@@ -141,10 +141,16 @@ const PtsCanvasComponent = (
    * Play or stop based on play prop
    * */
   const maybePlay = () => {
+    const space = spaceRef.current
+    if (!space) return
     if (play) {
-      spaceRef.current && spaceRef.current.play()
+      if (space.isPlaying) {
+        space.resume()
+      } else {
+        space.replay() // if space has stopped, replay
+      }
     } else {
-      spaceRef.current && spaceRef.current.playOnce(0)
+      space.pause(true)
     }
   }
 

@@ -8,8 +8,9 @@ import {
 } from 'react-pts-canvas'
 import { Pt, Rectangle, Group, Geom, Create, Num, Shaping } from 'pts'
 import './App.css'
+import { useState } from 'react';
 
-const ExampleComponent: React.FC = () => {
+const ExampleComponent: React.FC<{play: boolean}> = ({play}) => {
   let grid: Group[]
 
   const handleStart: HandleStartFn = (_bound, space) => {
@@ -48,6 +49,7 @@ const ExampleComponent: React.FC = () => {
     <PtsCanvas
       background="#0c9"
       name="pts-tester"
+      play={play}
       style={{ opacity: 0.95 }}
       onStart={handleStart}
       onAnimate={handleAnimate}
@@ -79,14 +81,16 @@ const ExampleComponent2: React.FC = () => {
   )
 }
 
-const App: React.FC = () => (
-  <div>
+const App: React.FC = () => {
+  const [pause, setPause] = useState(false)
+
+  return (<div>
     <div className="leftExample">
-      <ExampleComponent />
+      <ExampleComponent play={!pause} />
       <div className="label">
         <strong>PtsCanvas example</strong>
         <br />
-        Cursor position determines rotate direction
+        <button onClick={() => setPause(!pause)}>{pause ? 'Play animation' : 'Stop animation'}</button>
       </div>
     </div>
     <div className="rightExample">
@@ -97,7 +101,7 @@ const App: React.FC = () => (
         Click to change radius
       </div>
     </div>
-  </div>
-)
+  </div>)
+}
 
 export default App
