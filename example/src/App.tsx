@@ -1,5 +1,4 @@
-import React from 'react'
-
+import React, { useState } from 'react'
 import {
   PtsCanvas,
   HandleStartFn,
@@ -8,9 +7,8 @@ import {
 } from 'react-pts-canvas'
 import { Pt, Rectangle, Group, Geom, Create, Num, Shaping } from 'pts'
 import './App.css'
-import { useState } from 'react';
 
-const ExampleComponent: React.FC<{play: boolean}> = ({play}) => {
+const ExampleComponent: React.FC<{ play: boolean }> = ({ play }) => {
   let grid: Group[]
 
   const handleStart: HandleStartFn = (_bound, space) => {
@@ -81,27 +79,40 @@ const ExampleComponent2: React.FC = () => {
   )
 }
 
-const App: React.FC = () => {
+const LeftExample = () => {
   const [pause, setPause] = useState(false)
-
-  return (<div>
+  return (
     <div className="leftExample">
       <ExampleComponent play={!pause} />
       <div className="label">
         <strong>PtsCanvas example</strong>
         <br />
-        <button onClick={() => setPause(!pause)}>{pause ? 'Play animation' : 'Stop animation'}</button>
+        <button onClick={() => setPause(!pause)}>
+          {pause ? 'Play animation' : 'Stop animation'}
+        </button>
       </div>
     </div>
-    <div className="rightExample">
-      <ExampleComponent2 />
-      <div className="label">
-        <strong>QuickStartCanvas example</strong>
-        <br />
-        Click to change radius
-      </div>
+  )
+}
+
+const RightExample = () => (
+  <div className="rightExample">
+    <ExampleComponent2 />
+    <div className="label">
+      <strong>QuickStartCanvas example</strong>
+      <br />
+      Click to change radius
     </div>
-  </div>)
+  </div>
+)
+
+const App: React.FC = () => {
+  return (
+    <div>
+      <LeftExample />
+      <RightExample />
+    </div>
+  )
 }
 
 export default App
