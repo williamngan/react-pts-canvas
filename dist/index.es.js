@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef, useEffect } from 'react';
+import React, { forwardRef, useRef, useLayoutEffect, useEffect } from 'react';
 import { CanvasSpace } from 'pts';
 
 /*!
@@ -133,10 +133,11 @@ background = '#9ab', resize = true, retina = true, play = true, touch = true, st
     const canvRef = ref && typeof ref !== 'function' ? ref : useRef(null);
     const spaceRef = useRef();
     const formRef = useRef();
+    const playerRef = useRef();
     /**
      * When canvRef Updates (ready for space)
      */
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!canvRef || !canvRef.current)
             return;
         // Create CanvasSpace with the canvRef and assign to spaceRef
@@ -148,9 +149,8 @@ background = '#9ab', resize = true, retina = true, play = true, touch = true, st
         });
         // Assign formRef
         formRef.current = spaceRef.current.getForm();
-        // By having individual handler props, we can expose what we need to the
-        // underlying functions, like our Form instance
-        spaceRef.current.add({
+        // Player object
+        playerRef.current = {
             start: (bound) => {
                 if (onStart && spaceRef.current && formRef.current) {
                     onStart(bound, spaceRef.current, formRef.current);
@@ -171,7 +171,10 @@ background = '#9ab', resize = true, retina = true, play = true, touch = true, st
                     onAction(spaceRef.current, formRef.current, type, px, py, evt);
                 }
             }
-        });
+        };
+        // By having individual handler props, we can expose what we need to the
+        // underlying functions, like our Form instance
+        spaceRef.current.add(playerRef.current);
         // Add tempo if provided
         if (tempo) {
             spaceRef.current.add(tempo);
@@ -181,6 +184,54 @@ background = '#9ab', resize = true, retina = true, play = true, touch = true, st
             spaceRef.current && spaceRef.current.dispose();
         };
     }, [canvRef]);
+    /**
+     * When onStart callback updates
+     */
+    useEffect(() => {
+        if (playerRef.current) {
+            playerRef.current.start = (bound) => {
+                if (onStart && spaceRef.current && formRef.current) {
+                    onStart(bound, spaceRef.current, formRef.current);
+                }
+            };
+        }
+    }, [onStart]);
+    /**
+     * When onAnimate callback updates
+     */
+    useEffect(() => {
+        if (playerRef.current) {
+            playerRef.current.animate = (time, ftime) => {
+                if (time && ftime && spaceRef.current && formRef.current) {
+                    onAnimate(spaceRef.current, formRef.current, time, ftime);
+                }
+            };
+        }
+    }, [onAnimate]);
+    /**
+     * When onResize callback updates
+     */
+    useEffect(() => {
+        if (playerRef.current) {
+            playerRef.current.resize = (bound, event) => {
+                if (onResize && spaceRef.current && formRef.current) {
+                    onResize(spaceRef.current, formRef.current, bound, event);
+                }
+            };
+        }
+    }, [onResize]);
+    /**
+     * When onAction callback updates
+     */
+    useEffect(() => {
+        if (playerRef.current) {
+            playerRef.current.action = (type, px, py, evt) => {
+                if (onAction && spaceRef.current && formRef.current) {
+                    onAction(spaceRef.current, formRef.current, type, px, py, evt);
+                }
+            };
+        }
+    }, [onAction]);
     /**
      * When Touch updates
      */
