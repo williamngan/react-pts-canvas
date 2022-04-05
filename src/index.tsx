@@ -132,7 +132,7 @@ const PtsCanvasComponent = (
     return () => {
       spaceRef.current && spaceRef.current.dispose()
     }
-  }, [canvRef, spaceRef, formRef])
+  }, [canvRef])
 
   /**
    * When onStart callback updates
