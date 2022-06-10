@@ -24,10 +24,10 @@
     "deploy": "gh-pages -d example/build"
   },
   "peerDependencies": {
-    "prop-types": "^15.5.4",
-    "pts": "^0.10.2",
-    "react": "^17.0.0",
-    "react-dom": "^17.0.0"
+    "prop-types": ">=15.5.4",
+    "pts": ">=0.10.2",
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.3.0",
