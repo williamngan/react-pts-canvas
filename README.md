@@ -19,8 +19,9 @@ npm install --save react-pts-canvas
 
 ## Examples
 
-- The [example](./example) folder provides a quick example of using PtsCanvas in a React app
-- Take a look at more examples in [pts-react-example](https://github.com/williamngan/pts-react-example) repo.
+- See examples in [react-pts-canvas-examples](https://github.com/williamngan/react-pts-canvas-examples) repo
+- The [example](./example) folder in this repo also provides a quick example of using PtsCanvas in a React app
+
 
 ## PtsCanvas function component
 
