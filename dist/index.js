@@ -9,6 +9,8 @@ function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'defau
 
 var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
 
+const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? React.useLayoutEffect : React.useEffect;
+
 /*!
  * react-pts-canvas - Copyright © 2019-current William Ngan and contributors.
  * Licensed under Apache 2.0 License.
@@ -145,7 +147,7 @@ background = '#9ab', resize = true, retina = true, play = true, touch = true, st
     /**
      * When canvRef Updates (ready for space)
      */
-    React.useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         if (!canvRef || !canvRef.current)
             return;
         // Create CanvasSpace with the canvRef and assign to spaceRef
