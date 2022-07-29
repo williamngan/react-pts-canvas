@@ -5,8 +5,9 @@
  */
 
 /* eslint-disable  react/prop-types */
-import React, { useEffect, useLayoutEffect, useRef, forwardRef, ForwardedRef } from 'react'
+import React, { useEffect, useRef, forwardRef, ForwardedRef } from 'react'
 import { CanvasSpace, Bound, CanvasForm, Group, Tempo, IPlayer } from 'pts'
+import { useIsomorphicLayoutEffect } from './hooks'
 
 export type HandleStartFn = (
   bound: Bound,
@@ -82,7 +83,7 @@ const PtsCanvasComponent = (
   /**
    * When canvRef Updates (ready for space)
    */
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!canvRef || !canvRef.current) return
     // Create CanvasSpace with the canvRef and assign to spaceRef
     // Add animation, tempo, and play when ready (call back on CanvasSpace constructor)

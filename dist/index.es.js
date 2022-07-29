@@ -1,5 +1,7 @@
-import React, { forwardRef, useRef, useLayoutEffect, useEffect } from 'react';
+import React, { useLayoutEffect, useEffect, forwardRef, useRef } from 'react';
 import { CanvasSpace } from 'pts';
+
+const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
 
 /*!
  * react-pts-canvas - Copyright © 2019-current William Ngan and contributors.
@@ -137,7 +139,7 @@ background = '#9ab', resize = true, retina = true, play = true, touch = true, st
     /**
      * When canvRef Updates (ready for space)
      */
-    useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         if (!canvRef || !canvRef.current)
             return;
         // Create CanvasSpace with the canvRef and assign to spaceRef
