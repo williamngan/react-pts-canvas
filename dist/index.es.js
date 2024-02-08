@@ -1,6 +1,33 @@
 import React, { useLayoutEffect, useEffect, forwardRef, useRef } from 'react';
 import { CanvasSpace } from 'pts';
 
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+
+function __rest(s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+}
+
 const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
 
 /*!
@@ -127,10 +154,11 @@ QuickStartCanvas.defaultProps = {
  * Licensed under Apache 2.0 License.
  * See https://github.com/williamngan/react-pts-canvas for details.
  */
-const PtsCanvasComponent = ({ name = 'pts-react', // maps to className of the container div
-background = '#9ab', resize = true, retina = true, play = true, touch = true, style = {}, canvasStyle = {}, onStart = undefined, onAnimate = () => {
-    console.log('animating');
-}, onResize = undefined, onAction = undefined, tempo = undefined }, ref) => {
+const PtsCanvasComponent = (_a, ref) => {
+    var { name = 'pts-react', // maps to className of the container div
+    background = '#9ab', resize = true, retina = true, play = true, touch = true, style = {}, canvasStyle = {}, onStart = undefined, onAnimate = () => {
+        console.log('animating');
+    }, onResize = undefined, onAction = undefined, tempo = undefined } = _a, otherProps = __rest(_a, ["name", "background", "resize", "retina", "play", "touch", "style", "canvasStyle", "onStart", "onAnimate", "onResize", "onAction", "tempo"]);
     // Set canvRef to be either the forwarded ref if its a MutableRefObject, or our own local ref otherwise
     const canvRef = ref && typeof ref !== 'function' ? ref : useRef(null);
     const spaceRef = useRef();
@@ -266,7 +294,7 @@ background = '#9ab', resize = true, retina = true, play = true, touch = true, st
         maybePlay();
     });
     return (React.createElement("div", { className: name || '', style: style },
-        React.createElement("canvas", { className: name ? name + '-canvas' : '', ref: canvRef, style: canvasStyle })));
+        React.createElement("canvas", Object.assign({}, otherProps, { className: name ? name + '-canvas' : '', ref: canvRef, style: canvasStyle }))));
 };
 const PtsCanvas = forwardRef(PtsCanvasComponent);
 
