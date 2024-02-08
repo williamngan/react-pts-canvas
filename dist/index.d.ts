@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ComponentProps } from 'react';
 import { Bound, CanvasSpace, CanvasForm, Group, Tempo } from 'pts';
 
 /*!
@@ -95,7 +95,7 @@ declare type PtsCanvasProps = {
     onResize?: HandleResizeFn;
     onAction?: HandleActionFn;
     tempo?: Tempo;
-};
-declare const PtsCanvas: React.ForwardRefExoticComponent<PtsCanvasProps & React.RefAttributes<HTMLCanvasElement>>;
+} & ComponentProps<'canvas'>;
+declare const PtsCanvas: React.ForwardRefExoticComponent<Pick<PtsCanvasProps, "name" | "background" | "resize" | "retina" | "play" | "touch" | "canvasStyle" | "onStart" | "onAnimate" | "onResize" | "onAction" | "tempo" | "key" | keyof React.CanvasHTMLAttributes<HTMLCanvasElement>> & React.RefAttributes<HTMLCanvasElement>>;
 
 export { HandleActionFn, HandleAnimateFn, HandleResizeFn, HandleStartFn, PtsCanvas, PtsCanvas$1 as PtsCanvasLegacy, PtsCanvasLegacyProps, PtsCanvasProps, QuickStartCanvas as QuickStartCanvasLegacy, QuickStartProps };

@@ -3,7 +3,7 @@
  * Licensed under Apache 2.0 License.
  * See https://github.com/williamngan/react-pts-canvas for details.
  */
-import React from 'react';
+import React, { ComponentProps } from 'react';
 import { CanvasSpace, Bound, CanvasForm, Group, Tempo } from 'pts';
 export declare type HandleStartFn = (bound: Bound, space: CanvasSpace, form: CanvasForm) => void;
 export declare type HandleAnimateFn = (space: CanvasSpace, form: CanvasForm, time: number, ftime: number) => void;
@@ -23,7 +23,7 @@ export declare type PtsCanvasProps = {
     onResize?: HandleResizeFn;
     onAction?: HandleActionFn;
     tempo?: Tempo;
-};
-export declare const PtsCanvas: React.ForwardRefExoticComponent<PtsCanvasProps & React.RefAttributes<HTMLCanvasElement>>;
+} & ComponentProps<'canvas'>;
+export declare const PtsCanvas: React.ForwardRefExoticComponent<Pick<PtsCanvasProps, "name" | "background" | "resize" | "retina" | "play" | "touch" | "canvasStyle" | "onStart" | "onAnimate" | "onResize" | "onAction" | "tempo" | "key" | keyof React.CanvasHTMLAttributes<HTMLCanvasElement>> & React.RefAttributes<HTMLCanvasElement>>;
 export { PtsCanvas as PtsCanvasLegacy, QuickStartCanvas as QuickStartCanvasLegacy, PtsCanvasLegacyProps, QuickStartProps } from './legacy';
 //# sourceMappingURL=index.d.ts.map

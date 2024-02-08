@@ -5,7 +5,13 @@
  */
 
 /* eslint-disable  react/prop-types */
-import React, { useEffect, useRef, forwardRef, ForwardedRef } from 'react'
+import React, {
+  useEffect,
+  useRef,
+  forwardRef,
+  ForwardedRef,
+  ComponentProps
+} from 'react'
 import { CanvasSpace, Bound, CanvasForm, Group, Tempo, IPlayer } from 'pts'
 import { useIsomorphicLayoutEffect } from './hooks'
 
@@ -52,7 +58,7 @@ export type PtsCanvasProps = {
   onResize?: HandleResizeFn
   onAction?: HandleActionFn
   tempo?: Tempo
-}
+} & ComponentProps<'canvas'>
 
 const PtsCanvasComponent = (
   {
@@ -70,7 +76,8 @@ const PtsCanvasComponent = (
     },
     onResize = undefined,
     onAction = undefined,
-    tempo = undefined
+    tempo = undefined,
+    ...otherProps
   }: PtsCanvasProps,
   ref: ForwardedRef<HTMLCanvasElement>
 ) => {
@@ -179,7 +186,12 @@ const PtsCanvasComponent = (
    */
   useEffect(() => {
     if (playerRef.current) {
-      playerRef.current.action = (type: string, px: number, py: number, evt: Event) => {
+      playerRef.current.action = (
+        type: string,
+        px: number,
+        py: number,
+        evt: Event
+      ) => {
         if (onAction && spaceRef.current && formRef.current) {
           onAction(spaceRef.current, formRef.current, type, px, py, evt)
         }
@@ -221,6 +233,7 @@ const PtsCanvasComponent = (
   return (
     <div className={name || ''} style={style}>
       <canvas
+        {...otherProps}
         className={name ? name + '-canvas' : ''}
         ref={canvRef}
         style={canvasStyle}
