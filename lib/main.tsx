@@ -4,30 +4,29 @@
  * See https://github.com/williamngan/react-pts-canvas for details.
  */
 
-/* eslint-disable  react/prop-types */
-import React, { useEffect, useRef, forwardRef, ForwardedRef } from 'react'
-import { CanvasSpace, Bound, CanvasForm, Group, Tempo, IPlayer } from 'pts'
-import { useIsomorphicLayoutEffect } from './hooks'
+import { useEffect, useRef, forwardRef, ForwardedRef } from 'react';
+import { CanvasSpace, Bound, CanvasForm, Group, Tempo, IPlayer } from 'pts';
+import { useIsomorphicLayoutEffect } from './hooks';
 
-export type HandleStartFn = (
-  bound: Bound,
+export type HandleReadyFn = (
   space: CanvasSpace,
-  form: CanvasForm
-) => void
+  form: CanvasForm,
+  bound: Bound
+) => void;
 
 export type HandleAnimateFn = (
   space: CanvasSpace,
   form: CanvasForm,
   time: number,
   ftime: number
-) => void
+) => void;
 
 export type HandleResizeFn = (
   space: CanvasSpace,
   form: CanvasForm,
   size: Group,
   evt: Event // eslint-disable-line no-undef
-) => void
+) => void;
 
 export type HandleActionFn = (
   space: CanvasSpace,
@@ -36,27 +35,29 @@ export type HandleActionFn = (
   px: number,
   py: number,
   evt: Event // eslint-disable-line no-undef
-) => void
+) => void;
 
 export type PtsCanvasProps = {
-  name?: string
-  background?: string
-  resize?: boolean
-  retina?: boolean
-  play?: boolean
-  touch?: boolean
-  style?: object // eslint-disable-line no-undef
-  canvasStyle?: object // eslint-disable-line no-undef
-  onStart?: HandleStartFn
-  onAnimate: HandleAnimateFn
-  onResize?: HandleResizeFn
-  onAction?: HandleActionFn
-  tempo?: Tempo
-}
+  name?: string;
+  className?: string;
+  background?: string;
+  resize?: boolean;
+  retina?: boolean;
+  play?: boolean;
+  touch?: boolean;
+  style?: object; // eslint-disable-line no-undef
+  canvasStyle?: object; // eslint-disable-line no-undef
+  onReady?: HandleReadyFn;
+  onAnimate: HandleAnimateFn;
+  onResize?: HandleResizeFn;
+  onAction?: HandleActionFn;
+  tempo?: Tempo;
+};
 
 const PtsCanvasComponent = (
   {
     name = 'pts-react', // maps to className of the container div
+    className = '',
     background = '#9ab',
     resize = true,
     retina = true,
@@ -64,9 +65,9 @@ const PtsCanvasComponent = (
     touch = true,
     style = {},
     canvasStyle = {},
-    onStart = undefined,
+    onReady = undefined,
     onAnimate = () => {
-      console.log('animating')
+      console.log('animating');
     },
     onResize = undefined,
     onAction = undefined,
@@ -75,78 +76,79 @@ const PtsCanvasComponent = (
   ref: ForwardedRef<HTMLCanvasElement>
 ) => {
   // Set canvRef to be either the forwarded ref if its a MutableRefObject, or our own local ref otherwise
-  const canvRef = ref && typeof ref !== 'function' ? ref : useRef(null)
-  const spaceRef = useRef<CanvasSpace>()
-  const formRef = useRef<CanvasForm>()
-  const playerRef = useRef<IPlayer>()
+  const defaultRef = useRef(null);
+  const canvRef = ref && typeof ref !== 'function' ? ref : defaultRef;
+  const spaceRef = useRef<CanvasSpace>();
+  const formRef = useRef<CanvasForm>();
+  const playerRef = useRef<IPlayer>();
 
   /**
    * When canvRef Updates (ready for space)
    */
   useIsomorphicLayoutEffect(() => {
-    if (!canvRef || !canvRef.current) return
+    if (!canvRef || !canvRef.current) return;
     // Create CanvasSpace with the canvRef and assign to spaceRef
     // Add animation, tempo, and play when ready (call back on CanvasSpace constructor)
     spaceRef.current = new CanvasSpace(canvRef.current).setup({
       bgcolor: background,
       resize,
       retina
-    })
+    });
 
     // Assign formRef
-    formRef.current = spaceRef.current.getForm()
+    formRef.current = spaceRef.current.getForm();
 
     // Player object
     playerRef.current = {
       start: (bound: Bound) => {
-        if (onStart && spaceRef.current && formRef.current) {
-          onStart(bound, spaceRef.current, formRef.current)
+        if (onReady && spaceRef.current && formRef.current) {
+          onReady(spaceRef.current, formRef.current, bound);
         }
       },
       animate: (time?: number, ftime?: number) => {
         if (time && ftime && spaceRef.current && formRef.current) {
-          onAnimate(spaceRef.current, formRef.current, time, ftime)
+          onAnimate(spaceRef.current, formRef.current, time, ftime);
         }
       },
       resize: (bound: Bound, event: Event) => {
         if (onResize && spaceRef.current && formRef.current) {
-          onResize(spaceRef.current, formRef.current, bound, event)
+          onResize(spaceRef.current, formRef.current, bound, event);
         }
       },
       action: (type: string, px: number, py: number, evt: Event) => {
         if (onAction && spaceRef.current && formRef.current) {
-          onAction(spaceRef.current, formRef.current, type, px, py, evt)
+          onAction(spaceRef.current, formRef.current, type, px, py, evt);
         }
       }
-    }
+    };
 
     // By having individual handler props, we can expose what we need to the
     // underlying functions, like our Form instance
-    spaceRef.current.add(playerRef.current)
+    spaceRef.current.add(playerRef.current);
 
     // Add tempo if provided
     if (tempo) {
-      spaceRef.current.add(tempo)
+      spaceRef.current.add(tempo);
     }
 
     // Return the cleanup function (similar to ComponentWillUnmount)
     return () => {
-      spaceRef.current && spaceRef.current.dispose()
-    }
-  }, [canvRef])
+      spaceRef.current && spaceRef.current.dispose();
+    };
+  }, [canvRef]);
 
   /**
-   * When onStart callback updates
+   * When onReady callback updates
    */
   useEffect(() => {
     if (playerRef.current) {
       playerRef.current.start = (bound: Bound) => {
-        if (onStart && spaceRef.current && formRef.current) {
-          onStart(bound, spaceRef.current, formRef.current)
+        if (onReady && spaceRef.current && formRef.current) {
+          onReady(spaceRef.current, formRef.current, bound);
         }
-      }
+      };
     }
-  }, [onStart])
+  }, [onReady]);
 
   /**
    * When onAnimate callback updates
@@ -155,11 +157,11 @@ const PtsCanvasComponent = (
     if (playerRef.current) {
       playerRef.current.animate = (time?: number, ftime?: number) => {
         if (time && ftime && spaceRef.current && formRef.current) {
-          onAnimate(spaceRef.current, formRef.current, time, ftime)
+          onAnimate(spaceRef.current, formRef.current, time, ftime);
         }
-      }
+      };
     }
-  }, [onAnimate])
+  }, [onAnimate]);
 
   /**
    * When onResize callback updates
@@ -168,74 +170,72 @@ const PtsCanvasComponent = (
     if (playerRef.current) {
       playerRef.current.resize = (bound: Bound, event: Event) => {
         if (onResize && spaceRef.current && formRef.current) {
-          onResize(spaceRef.current, formRef.current, bound, event)
+          onResize(spaceRef.current, formRef.current, bound, event);
         }
-      }
+      };
     }
-  }, [onResize])
+  }, [onResize]);
 
   /**
    * When onAction callback updates
    */
   useEffect(() => {
     if (playerRef.current) {
-      playerRef.current.action = (type: string, px: number, py: number, evt: Event) => {
+      playerRef.current.action = (
+        type: string,
+        px: number,
+        py: number,
+        evt: Event
+      ) => {
         if (onAction && spaceRef.current && formRef.current) {
-          onAction(spaceRef.current, formRef.current, type, px, py, evt)
+          onAction(spaceRef.current, formRef.current, type, px, py, evt);
         }
-      }
+      };
     }
-  }, [onAction])
+  }, [onAction]);
 
   /**
    * When Touch updates
    */
   useEffect(() => {
-    spaceRef.current && spaceRef.current.bindMouse(touch).bindTouch(touch)
-  }, [touch])
+    spaceRef.current && spaceRef.current.bindMouse(touch).bindTouch(touch);
+  }, [touch]);
 
   /**
    * Play or stop based on play prop
    * */
   const maybePlay = () => {
-    const space = spaceRef.current
-    if (!space) return
+    const space = spaceRef.current;
+    if (!space) return;
     if (play) {
       if (space.isPlaying) {
-        space.resume()
+        space.resume();
       } else {
-        space.replay() // if space has stopped, replay
+        space.replay(); // if space has stopped, replay
       }
     } else {
-      space.pause(true)
+      space.pause(true);
     }
-  }
+  };
 
   /**
    * When anything updates
    */
   useEffect(() => {
-    maybePlay()
-  })
+    maybePlay();
+  });
 
   return (
-    <div className={name || ''} style={style}>
+    <div className={`${name} ${className || ''}`} style={style}>
       <canvas
         className={name ? name + '-canvas' : ''}
         ref={canvRef}
         style={canvasStyle}
       />
     </div>
-  )
-}
+  );
+};
 
 export const PtsCanvas = forwardRef<HTMLCanvasElement, PtsCanvasProps>(
   PtsCanvasComponent
-)
-
-export {
-  PtsCanvas as PtsCanvasLegacy,
-  QuickStartCanvas as QuickStartCanvasLegacy,
-  PtsCanvasLegacyProps,
-  QuickStartProps
-} from './legacy'
+);
