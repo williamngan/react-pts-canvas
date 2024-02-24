@@ -120,7 +120,7 @@ See [`example/src/App-ParentRef.tsx`](./example/src/App-ParentRef.tsx)
 
 In v0.4+, we use a Vite template to create this library. Here are the steps to start the dev environment
 
-```
+```bash
 # Install pnpm global if you don't have it already
 npm install -g pnpm
 
