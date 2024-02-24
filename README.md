@@ -226,4 +226,4 @@ class Example extends React.Component {
 ## License
 
 Apache License 2.0. See LICENSE file for details.
-Copyright © 2017-2021 by [William Ngan](https://williamngan.com) and contributors.
+Copyright © 2017-current by [William Ngan](https://williamngan.com) and contributors.
