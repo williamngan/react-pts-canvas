@@ -1,58 +1,58 @@
-import { CanvasForm, CanvasSpace } from 'pts'
-import React, { createRef, useEffect } from 'react'
+import { CanvasForm, CanvasSpace } from 'pts';
+import React, { createRef, useEffect } from 'react';
 import {
   PtsCanvas,
   HandleAnimateFn,
   HandleActionFn,
-  HandleStartFn
-} from 'react-pts-canvas'
-import './App.css'
+  HandleReadyFn
+} from '../lib/main';
+import './App-ParentRef.css';
 
 /**
  * Brief example of passing refs down to pointsCanvas for access in parent component
  */
 const App: React.FC = () => {
-  const canvRef = createRef<HTMLCanvasElement>()
-  let radius = 50
-  let spaceRef: CanvasSpace
-  let formRef: CanvasForm
-  let canvasSize = 100
-  let listenerAdded = false
+  const canvRef = createRef<HTMLCanvasElement>();
+  let radius = 50;
+  let spaceRef: CanvasSpace;
+  let formRef: CanvasForm;
+  let canvasSize = 100;
+  let listenerAdded = false;
 
   function handleCanvasClick(e: MouseEvent) {
-    console.log(`X: ${e.clientX} Y: ${e.clientY}`)
+    console.log(`X: ${e.clientX} Y: ${e.clientY}`);
   }
 
   useEffect(() => {
     if (!listenerAdded && canvRef.current) {
-      canvRef.current.addEventListener('click', handleCanvasClick)
-      listenerAdded = true
+      canvRef.current.addEventListener('click', handleCanvasClick);
+      listenerAdded = true;
     }
-  })
+  });
 
   useEffect(() => {
-    document.addEventListener('keydown', e => {
+    document.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && canvRef.current) {
-        canvRef.current.click()
+        canvRef.current.click();
       }
-    })
-  }, [])
+    });
+  }, []);
 
-  const handleStart: HandleStartFn = (_bound, space, form) => {
-    spaceRef = space
-    formRef = form
-  }
+  const handleStart: HandleReadyFn = (space, form) => {
+    spaceRef = space;
+    formRef = form;
+  };
 
   const handleAnimate: HandleAnimateFn = (space, form) => {
-    form.point(space.pointer, radius, 'circle')
-    if (radius > 20) radius--
-  }
+    form.point(space.pointer, radius, 'circle');
+    if (radius > 20) radius--;
+  };
 
   const handleAction: HandleActionFn = (_space, _form, type) => {
     if (type === 'up') {
-      radius += 20
+      radius += 20;
     }
-  }
+  };
 
   return (
     <div
@@ -64,7 +64,7 @@ const App: React.FC = () => {
       <PtsCanvas
         background="#62e"
         name="quickstart-tester"
-        onStart={handleStart}
+        onReady={handleStart}
         onAnimate={handleAnimate}
         onAction={handleAction}
         ref={canvRef}
@@ -81,9 +81,9 @@ const App: React.FC = () => {
       >
         <button
           onClick={() => {
-            const ctx = canvRef.current?.getContext('2d')
+            const ctx = canvRef.current?.getContext('2d');
             if (canvRef.current) {
-              canvasSize -= 10
+              canvasSize -= 10;
               canvRef.current.setAttribute(
                 'style',
                 `
@@ -95,34 +95,34 @@ const App: React.FC = () => {
                 top: 50%;
                 transform: translate(-50%, -50%);
                 `
-              )
+              );
             }
             if (ctx) {
-              console.log('ctx', ctx)
+              console.log('ctx', ctx);
             }
 
-            console.log('canvas', canvRef.current)
+            console.log('canvas', canvRef.current);
           }}
         >
           Log / Shrink Canvas
         </button>
         <button
           onClick={() => {
-            console.log('space', spaceRef)
+            console.log('space', spaceRef);
           }}
         >
           Log Space
         </button>
         <button
           onClick={() => {
-            console.log('form', formRef)
+            console.log('form', formRef);
           }}
         >
           Log Form
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

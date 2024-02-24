@@ -1,0 +1,40 @@
+.row {
+  font: 16px/1.25 sans-serif;
+  color: #234;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  flex-direction: row;
+  height: 400px;
+  box-sizing: content-box;
+  padding: 20px;
+  margin-bottom: 40px;
+}
+
+.row.reverse {
+  flex-direction: row-reverse;
+}
+
+.info {
+  padding-right: 40px;
+  width: 400px;
+}
+
+.row.reverse .info {
+  padding-right: 0;
+  padding-left: 40px;
+}
+
+.example {
+  width: 400px;
+  height: 400px;
+}
+
+code {
+  font-size: 0.8em;
+  display: inline-block;
+  background-color: #f1f4fc;
+  padding: 2px 4px;
+  border-radius: 5px;
+  color: #567;
+}

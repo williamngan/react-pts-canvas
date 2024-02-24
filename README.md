@@ -2,14 +2,19 @@
 
 [![NPM](https://img.shields.io/npm/v/react-pts-canvas.svg)](https://www.npmjs.com/package/react-pts-canvas)
 
-![cover](./example/cover.png)
+![cover](./cover.png)
 
-`react-pts-canvas` includes React components for canvas drawing using [Pts](https://ptsjs.org). In this repo, you'll find implementations for both functional component and legacy class component. Read more below.
+`react-pts-canvas` includes React components for canvas drawing using [Pts](https://ptsjs.org). You can also check out some usage examples in the `src` folder here, and more in [`react-pts-canvas-examples`](https://williamngan.github.io/react-pts-canvas-examples/build/) repo.
 
-[Pts](https://ptsjs.org) is a javascript library for visualization and creative-coding. You may use Pts by itself, or with React and other frameworks. 
+> ### Breaking changes in v0.4
+>
+> 1. `onReady: (space, form, bound) => void` replaces the old handler `onStart: (bound, space, form) => void`
+>
+> 2. Legacy class based component are removed. Please use the 0.3.x version if you still need the class component
+
+[Pts](https://ptsjs.org) is a javascript library for visualization and creative-coding. You may use Pts by itself, or with React and other frameworks.
 
 If you are getting started with Pts, take a look at the [demos](https://ptsjs.org/demo) and read the [guides](https://ptsjs.org/guide).
-
 
 ## Install
 
@@ -20,19 +25,19 @@ npm install --save react-pts-canvas
 ## Examples
 
 - See examples in [react-pts-canvas-examples](https://github.com/williamngan/react-pts-canvas-examples) repo
-- The [example](./example) folder in this repo also provides a quick example of using PtsCanvas in a React app
+- The [src](./src) folder in this repo also provides some quick examples
 
-
-## PtsCanvas function component
+## PtsCanvas functional component
 
 `PtsCanvas` is a functional component that helps you get started on Pts in React. A quick example as follows (please refer to [this guide](https://ptsjs.org/guide/space-0500) to learn more about these functions).
 
-`PtsCanvas` 
+`PtsCanvas`
+
 ```jsx
 /* App.js */
 <PtsCanvas
   name='myClassName'
-  onStart={ (bound, space, form) => {...} }
+  onReady={ (space, form, bound) => {...} }
   onAnimate={ (space, form, time, ftime) => {...} }
   onResize={ (space, form, size, evt) => {...} }
   onAction={ (space, form, type, px, py, evt) => {...} }
@@ -43,7 +48,10 @@ npm install --save react-pts-canvas
 /* App.css */
 .myClassName {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 ```
 
@@ -51,10 +59,12 @@ npm install --save react-pts-canvas
 
 - `name`
   - The css class name of the container `<div>`. Default value is "pts-react". Use this class name to set custom styles in your .css file.
+- `className`
+  - Additional class names to be appended
 - `background`
   - background fill color of the canvas. Default value is "#9ab".
-- `onStart`
-  - onStart handler function
+- `onReady`
+  - onReady handler function
 - `onAnimate`
   - onAnimate handler function
 - `onResize`
@@ -74,7 +84,7 @@ npm install --save react-pts-canvas
 - `canvasStyle`
   - Optionally override css styles of the `<canvas>` itself. Avoid using this except for special use cases.
 - `tempo`
-  - a `Tempo` object. In a parent component, you can create a ref to a tempo object, add functions to it via `Tempo.every` in your onStart handler, then pass that `Tempo`'s ref.current as this prop. The `tempo` will be added to the space with the other handlers.
+  - a `Tempo` object. In a parent component, you can create a ref to a tempo object, add functions to it via `Tempo.every` in your onReady handler, then pass that `Tempo`'s ref.current as this prop. The `tempo` will be added to the space with the other handlers.
 - `spaceRef`
   - a ref returned from `useRef(null)` if you need reference to the space in your parent component
 - `formRef`
@@ -103,24 +113,43 @@ const ParentComponent = () => {
 See [`example/src/App-ParentRef.tsx`](./example/src/App-ParentRef.tsx)
 
 ### Common issues
+
 - If you are getting sourcemap warnings, create a file called '.env' in your project folder and add `GENERATE_SOURCEMAP=false` into it.
 
-# 
+## Develop
+
+In v0.4+, we use a Vite template to create this library. Here are the steps to start the dev environment
+
+```
+# Install pnpm global if you don't have it already
+npm install -g pnpm
+
+# Install dependencies
+pnpm i
+
+# Develop
+pnpm run dev
+
+```
+
+#
 
 ## Legacy Components
+
+Note that these old class components are removed in v0.4. If you still need it, please use v0.3.x packages.
 
 ### QuickStartCanvasLegacy class component
 
 `<QuickStartCanvasLegacy>` helps you get started quickly. Here is a minimal example that draws a point the follows the cursor, by passing a callback function to `onAnimate` property:
 
 ```jsx
-import React from 'react'
-import { QuickStartCanvasLegacy } from 'react-pts-canvas'
+import React from 'react';
+import { QuickStartCanvasLegacy } from 'react-pts-canvas';
 
 // ...
-;<QuickStartCanvasLegacy
+<QuickStartCanvasLegacy
   onAnimate={(space, form, time) => form.point(space.pointer, 10)}
-/>
+/>;
 // ...
 ```
 
@@ -165,12 +194,12 @@ There are 4 functions in Pts that you can (optionally) overrides: `animate`, `st
 Once you have implemented your own canvas, you can use it as a component like this:
 
 ```jsx
-import React from 'react'
-import { PtsCanvas } from 'react-pts-canvas'
+import React from 'react';
+import { PtsCanvas } from 'react-pts-canvas';
 
 class Example extends React.Component {
   render() {
-    return <MyCanvas background="#abc" play={true} />
+    return <MyCanvas background="#abc" play={true} />;
   }
 }
 ```
