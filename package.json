@@ -10,16 +10,12 @@
     "preview": "vite preview",
     "prepublishOnly": "pnpm run build"
   },
-  "dependencies": {},
   "peerDependencies": {
-    "pts": "^0.12.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "pts": "^0.12.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "pts": "^0.12.2"
+  },
+  "devDependencies": {
     "@types/node": "^20.11.19",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
@@ -29,6 +25,9 @@
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "pts": "^0.12.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "typescript": "^5.2.2",
     "vite": "^5.1.0",
     "vite-plugin-dts": "^3.7.2"

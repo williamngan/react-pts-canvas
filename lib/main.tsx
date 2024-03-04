@@ -28,10 +28,30 @@ export type HandleResizeFn = (
   evt: Event // eslint-disable-line no-undef
 ) => void;
 
+export type ActionType =
+  | 'up'
+  | 'down'
+  | 'move'
+  | 'drag'
+  | 'uidrag'
+  | 'drop'
+  | 'uidrop'
+  | 'over'
+  | 'out'
+  | 'enter'
+  | 'leave'
+  | 'click'
+  | 'keydown'
+  | 'keyup'
+  | 'pointerdown'
+  | 'pointerup'
+  | 'contextmenu'
+  | 'all';
+
 export type HandleActionFn = (
   space: CanvasSpace,
   form: CanvasForm,
-  type: string,
+  type: ActionType,
   px: number,
   py: number,
   evt: Event // eslint-disable-line no-undef
@@ -115,7 +135,7 @@ const PtsCanvasComponent = (
           onResize(spaceRef.current, formRef.current, bound, event);
         }
       },
-      action: (type: string, px: number, py: number, evt: Event) => {
+      action: (type: ActionType, px: number, py: number, evt: Event) => {
         if (onAction && spaceRef.current && formRef.current) {
           onAction(spaceRef.current, formRef.current, type, px, py, evt);
         }
@@ -182,7 +202,7 @@ const PtsCanvasComponent = (
   useEffect(() => {
     if (playerRef.current) {
       playerRef.current.action = (
-        type: string,
+        type: ActionType,
         px: number,
         py: number,
         evt: Event

@@ -22,6 +22,9 @@ function App() {
           onAnimate={(space, form) => {
             form.point(space.pointer);
           }}
+          onAction={(_space, _form, type) => {
+            console.log(type);
+          }}
         />
       </div>
 
@@ -42,7 +45,7 @@ function App() {
           className="example"
           background="#123"
           play={false}
-          onReady={(space, form) => {
+          onReady={(space) => {
             setSpace(space);
           }}
           onAnimate={(space, form) => {

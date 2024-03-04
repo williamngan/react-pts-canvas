@@ -33,8 +33,8 @@ devDependencies:
     specifier: ^0.4.5
     version: 0.4.5(eslint@8.56.0)
   pts:
-    specifier: ^0.12.0
-    version: 0.12.0
+    specifier: ^0.12.2
+    version: 0.12.2
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -668,7 +668,7 @@ packages:
       rxjs: 6.6.7
       rxjs-for-await: 0.0.2(rxjs@6.6.7)
       semver: 7.3.4
-      tmp: 0.2.1
+      tmp: 0.2.3
       tslib: 2.6.2
       yargs-parser: 20.0.0
     dev: true
@@ -2056,8 +2056,8 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /pts@0.12.0:
-    resolution: {integrity: sha512-t+OeZrgwZ12UTtWCxlS5Np/Q5t7XBbnItJ4wmpoNNqzFEJq/Or15hx/bRb3fbfZXqY4eJBqlOJHOpkhZKjkaYQ==}
+  /pts@0.12.2:
+    resolution: {integrity: sha512-UPIyEW6jWzppDcpo88sY/1oKDS/EDxpFOtc8q5C3bcKtxXfgHMcfgvSlhdWw6Wdcl+7G+XPF0bLwiiQwlcWXoQ==}
     optionalDependencies:
       '@nrwl/cli': 13.7.1
     dev: true
@@ -2282,12 +2282,10 @@ packages:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
     dev: true
 
-  /tmp@0.2.1:
-    resolution: {integrity: sha512-76SUhtfqR2Ijn+xllcI5P1oyannHNHByD80W1q447gU3mp9G9PSpGdWmjUOHRDPiHYacIk66W7ubDTuPF3BEtQ==}
-    engines: {node: '>=8.17.0'}
+  /tmp@0.2.3:
+    resolution: {integrity: sha512-nZD7m9iCPC5g0pYmcaxogYKggSfLsdxl8of3Q/oIbqCqLLIO9IAF0GWjX1z9NZRHPiXv8Wex4yDCaZsgEw0Y8w==}
+    engines: {node: '>=14.14'}
     requiresBuild: true
-    dependencies:
-      rimraf: 3.0.2
     dev: true
     optional: true
 
