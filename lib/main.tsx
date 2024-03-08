@@ -63,6 +63,8 @@ export type PtsCanvasProps = {
   background?: string;
   resize?: boolean;
   retina?: boolean;
+  offscreen?: boolean;
+  pixelDensity?: number;
   play?: boolean;
   touch?: boolean;
   style?: object; // eslint-disable-line no-undef
@@ -81,6 +83,8 @@ const PtsCanvasComponent = (
     background = '#9ab',
     resize = true,
     retina = true,
+    offscreen = false,
+    pixelDensity = undefined,
     play = true,
     touch = true,
     style = {},
@@ -112,7 +116,9 @@ const PtsCanvasComponent = (
     spaceRef.current = new CanvasSpace(canvRef.current).setup({
       bgcolor: background,
       resize,
-      retina
+      retina,
+      offscreen,
+      pixelDensity
     });
 
     // Assign formRef
