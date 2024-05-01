@@ -183,12 +183,14 @@ const PtsCanvasComponent = (
    * When onReady callback updates
    */
   useEffect(() => {
-    if (playerRef.current && onReady) {
-      playerRef.current.start = (bound: Bound) => {
-        if (onReady && spaceRef.current && formRef.current) {
-          onReady(spaceRef.current, formRef.current, bound);
-        }
-      };
+    if (playerRef.current) {
+      playerRef.current.start = !onReady
+        ? undefined
+        : (bound: Bound) => {
+            if (onReady && spaceRef.current && formRef.current) {
+              onReady(spaceRef.current, formRef.current, bound);
+            }
+          };
     }
   }, [onReady]);
 
@@ -196,12 +198,14 @@ const PtsCanvasComponent = (
    * When onAnimate callback updates
    */
   useEffect(() => {
-    if (playerRef.current && onAnimate) {
-      playerRef.current.animate = (time?: number, ftime?: number) => {
-        if (time && ftime && spaceRef.current && formRef.current?.ctx) {
-          onAnimate(spaceRef.current, formRef.current, time, ftime);
-        }
-      };
+    if (playerRef.current) {
+      playerRef.current.animate = !onAnimate
+        ? undefined
+        : (time?: number, ftime?: number) => {
+            if (time && ftime && spaceRef.current && formRef.current?.ctx) {
+              onAnimate(spaceRef.current, formRef.current, time, ftime);
+            }
+          };
     }
   }, [onAnimate]);
 
@@ -209,12 +213,14 @@ const PtsCanvasComponent = (
    * When onResize callback updates
    */
   useEffect(() => {
-    if (playerRef.current && onResize) {
-      playerRef.current.resize = (bound: Bound, event: Event) => {
-        if (onResize && spaceRef.current && formRef.current?.ctx) {
-          onResize(spaceRef.current, formRef.current, bound, event);
-        }
-      };
+    if (playerRef.current) {
+      playerRef.current.resize = !onResize
+        ? undefined
+        : (bound: Bound, event: Event) => {
+            if (onResize && spaceRef.current && formRef.current?.ctx) {
+              onResize(spaceRef.current, formRef.current, bound, event);
+            }
+          };
     }
   }, [onResize]);
 
@@ -222,17 +228,14 @@ const PtsCanvasComponent = (
    * When onAction callback updates
    */
   useEffect(() => {
-    if (playerRef.current && onAction) {
-      playerRef.current.action = (
-        type: ActionType,
-        px: number,
-        py: number,
-        evt: Event
-      ) => {
-        if (onAction && spaceRef.current && formRef.current?.ctx) {
-          onAction(spaceRef.current, formRef.current, type, px, py, evt);
-        }
-      };
+    if (playerRef.current) {
+      playerRef.current.action = !onAction
+        ? undefined
+        : (type: ActionType, px: number, py: number, evt: Event) => {
+            if (onAction && spaceRef.current && formRef.current?.ctx) {
+              onAction(spaceRef.current, formRef.current, type, px, py, evt);
+            }
+          };
     }
   }, [onAction]);
 
