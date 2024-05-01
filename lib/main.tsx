@@ -67,10 +67,11 @@ export type PtsCanvasProps = {
   pixelDensity?: number;
   play?: boolean;
   touch?: boolean;
+  refresh?: boolean;
   style?: object; // eslint-disable-line no-undef
   canvasStyle?: object; // eslint-disable-line no-undef
   onReady?: HandleReadyFn;
-  onAnimate: HandleAnimateFn;
+  onAnimate?: HandleAnimateFn;
   onResize?: HandleResizeFn;
   onAction?: HandleActionFn;
   tempo?: Tempo;
@@ -87,12 +88,11 @@ const PtsCanvasComponent = (
     pixelDensity = undefined,
     play = true,
     touch = true,
+    refresh = true,
     style = {},
     canvasStyle = {},
     onReady = undefined,
-    onAnimate = () => {
-      console.log('animating');
-    },
+    onAnimate = undefined,
     onResize = undefined,
     onAction = undefined,
     tempo = undefined
@@ -121,31 +121,41 @@ const PtsCanvasComponent = (
       pixelDensity
     });
 
+    spaceRef.current.refresh(refresh);
+
     // Assign formRef
     formRef.current = spaceRef.current.getForm();
 
     // Player object
     playerRef.current = {
-      start: (bound: Bound) => {
-        if (onReady && spaceRef.current && formRef.current) {
-          onReady(spaceRef.current, formRef.current, bound);
-        }
-      },
-      animate: (time?: number, ftime?: number) => {
-        if (time && ftime && spaceRef.current && formRef.current) {
-          onAnimate(spaceRef.current, formRef.current, time, ftime);
-        }
-      },
-      resize: (bound: Bound, event: Event) => {
-        if (onResize && spaceRef.current && formRef.current) {
-          onResize(spaceRef.current, formRef.current, bound, event);
-        }
-      },
-      action: (type: ActionType, px: number, py: number, evt: Event) => {
-        if (onAction && spaceRef.current && formRef.current) {
-          onAction(spaceRef.current, formRef.current, type, px, py, evt);
-        }
-      }
+      start: !onReady
+        ? undefined
+        : (bound: Bound) => {
+            if (spaceRef.current && formRef.current) {
+              onReady(spaceRef.current, formRef.current, bound);
+            }
+          },
+      animate: !onAnimate
+        ? undefined
+        : (time?: number, ftime?: number) => {
+            if (time && ftime && spaceRef.current && formRef.current) {
+              onAnimate(spaceRef.current, formRef.current, time, ftime);
+            }
+          },
+      resize: !onResize
+        ? undefined
+        : (bound: Bound, event: Event) => {
+            if (spaceRef.current && formRef.current) {
+              onResize(spaceRef.current, formRef.current, bound, event);
+            }
+          },
+      action: !onAction
+        ? undefined
+        : (type: ActionType, px: number, py: number, evt: Event) => {
+            if (spaceRef.current && formRef.current) {
+              onAction(spaceRef.current, formRef.current, type, px, py, evt);
+            }
+          }
     };
 
     // By having individual handler props, we can expose what we need to the
@@ -163,11 +173,17 @@ const PtsCanvasComponent = (
     };
   }, [canvRef]);
 
+  useEffect(() => {
+    if (spaceRef.current) {
+      spaceRef.current.refresh(refresh);
+    }
+  }, [refresh, spaceRef]);
+
   /**
    * When onReady callback updates
    */
   useEffect(() => {
-    if (playerRef.current) {
+    if (playerRef.current && onReady) {
       playerRef.current.start = (bound: Bound) => {
         if (onReady && spaceRef.current && formRef.current) {
           onReady(spaceRef.current, formRef.current, bound);
@@ -180,9 +196,9 @@ const PtsCanvasComponent = (
    * When onAnimate callback updates
    */
   useEffect(() => {
-    if (playerRef.current) {
+    if (playerRef.current && onAnimate) {
       playerRef.current.animate = (time?: number, ftime?: number) => {
-        if (time && ftime && spaceRef.current && formRef.current) {
+        if (time && ftime && spaceRef.current && formRef.current?.ctx) {
           onAnimate(spaceRef.current, formRef.current, time, ftime);
         }
       };
@@ -193,9 +209,9 @@ const PtsCanvasComponent = (
    * When onResize callback updates
    */
   useEffect(() => {
-    if (playerRef.current) {
+    if (playerRef.current && onResize) {
       playerRef.current.resize = (bound: Bound, event: Event) => {
-        if (onResize && spaceRef.current && formRef.current) {
+        if (onResize && spaceRef.current && formRef.current?.ctx) {
           onResize(spaceRef.current, formRef.current, bound, event);
         }
       };
@@ -206,14 +222,14 @@ const PtsCanvasComponent = (
    * When onAction callback updates
    */
   useEffect(() => {
-    if (playerRef.current) {
+    if (playerRef.current && onAction) {
       playerRef.current.action = (
         type: ActionType,
         px: number,
         py: number,
         evt: Event
       ) => {
-        if (onAction && spaceRef.current && formRef.current) {
+        if (onAction && spaceRef.current && formRef.current?.ctx) {
           onAction(spaceRef.current, formRef.current, type, px, py, evt);
         }
       };
@@ -240,7 +256,7 @@ const PtsCanvasComponent = (
         space.replay(); // if space has stopped, replay
       }
     } else {
-      space.pause(true);
+      space.stop();
     }
   };
 

@@ -33,8 +33,8 @@ devDependencies:
     specifier: ^0.4.5
     version: 0.4.5(eslint@8.56.0)
   pts:
-    specifier: ^0.12.2
-    version: 0.12.2
+    specifier: ^0.12.4
+    version: 0.12.4
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -2056,8 +2056,8 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /pts@0.12.2:
-    resolution: {integrity: sha512-UPIyEW6jWzppDcpo88sY/1oKDS/EDxpFOtc8q5C3bcKtxXfgHMcfgvSlhdWw6Wdcl+7G+XPF0bLwiiQwlcWXoQ==}
+  /pts@0.12.4:
+    resolution: {integrity: sha512-er3SyHTMyG5xfVryROwvgn4O5L5Rtw+GHbowR6UFFYXdaOB3I5lrUDNptl4WyG4+stjK/Uj62uqp15N9PRzB3g==}
     optionalDependencies:
       '@nrwl/cli': 13.7.1
     dev: true
