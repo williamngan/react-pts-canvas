@@ -4,9 +4,22 @@
  * See https://github.com/williamngan/react-pts-canvas for details.
  */
 
-import { useEffect, useRef, forwardRef, ForwardedRef } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  forwardRef,
+  ForwardedRef,
+  useImperativeHandle
+} from 'react';
 import { CanvasSpace, Bound, CanvasForm, Group, Tempo, IPlayer } from 'pts';
 import { useIsomorphicLayoutEffect } from './hooks';
+
+export type PtsCanvasImperative = {
+  getSpace: () => CanvasSpace | undefined;
+  getForm: () => CanvasForm | undefined;
+  getPlayer: () => IPlayer | undefined;
+  getCanvas: () => HTMLCanvasElement | null;
+};
 
 export type HandleReadyFn = (
   space: CanvasSpace,
@@ -68,14 +81,13 @@ export type PtsCanvasProps = {
   play?: boolean;
   touch?: boolean;
   refresh?: boolean;
-  style?: object; // eslint-disable-line no-undef
-  canvasStyle?: object; // eslint-disable-line no-undef
+  style?: React.CSSProperties;
   onReady?: HandleReadyFn;
   onAnimate?: HandleAnimateFn;
-  onResize?: HandleResizeFn;
+  onPtsResize?: HandleResizeFn;
   onAction?: HandleActionFn;
   tempo?: Tempo;
-};
+} & React.CanvasHTMLAttributes<HTMLCanvasElement>;
 
 const PtsCanvasComponent = (
   {
@@ -90,30 +102,40 @@ const PtsCanvasComponent = (
     touch = true,
     refresh = true,
     style = {},
-    canvasStyle = {},
     onReady = undefined,
     onAnimate = undefined,
-    onResize = undefined,
+    onPtsResize = undefined,
     onAction = undefined,
-    tempo = undefined
+    tempo = undefined,
+    ...canvasElementProps
   }: PtsCanvasProps,
-  ref: ForwardedRef<HTMLCanvasElement>
+  ref: ForwardedRef<PtsCanvasImperative>
 ) => {
   // Set canvRef to be either the forwarded ref if its a MutableRefObject, or our own local ref otherwise
-  const defaultRef = useRef(null);
-  const canvRef = ref && typeof ref !== 'function' ? ref : defaultRef;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const spaceRef = useRef<CanvasSpace>();
   const formRef = useRef<CanvasForm>();
   const playerRef = useRef<IPlayer>();
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      getSpace: () => spaceRef.current,
+      getForm: () => formRef.current,
+      getPlayer: () => playerRef.current,
+      getCanvas: () => canvasRef.current
+    }),
+    []
+  );
 
   /**
    * When canvRef Updates (ready for space)
    */
   useIsomorphicLayoutEffect(() => {
-    if (!canvRef || !canvRef.current) return;
+    if (!canvasRef || !canvasRef.current) return;
     // Create CanvasSpace with the canvRef and assign to spaceRef
     // Add animation, tempo, and play when ready (call back on CanvasSpace constructor)
-    spaceRef.current = new CanvasSpace(canvRef.current).setup({
+    spaceRef.current = new CanvasSpace(canvasRef.current).setup({
       bgcolor: background,
       resize,
       retina,
@@ -142,11 +164,11 @@ const PtsCanvasComponent = (
               onAnimate(spaceRef.current, formRef.current, time, ftime);
             }
           },
-      resize: !onResize
+      resize: !onPtsResize
         ? undefined
         : (bound: Bound, event: Event) => {
             if (spaceRef.current && formRef.current) {
-              onResize(spaceRef.current, formRef.current, bound, event);
+              onPtsResize(spaceRef.current, formRef.current, bound, event);
             }
           },
       action: !onAction
@@ -171,7 +193,7 @@ const PtsCanvasComponent = (
     return () => {
       spaceRef.current && spaceRef.current.dispose();
     };
-  }, [canvRef]);
+  }, [canvasRef]);
 
   useEffect(() => {
     if (spaceRef.current) {
@@ -214,15 +236,15 @@ const PtsCanvasComponent = (
    */
   useEffect(() => {
     if (playerRef.current) {
-      playerRef.current.resize = !onResize
+      playerRef.current.resize = !onPtsResize
         ? undefined
         : (bound: Bound, event: Event) => {
-            if (onResize && spaceRef.current && formRef.current?.ctx) {
-              onResize(spaceRef.current, formRef.current, bound, event);
+            if (onPtsResize && spaceRef.current && formRef.current?.ctx) {
+              onPtsResize(spaceRef.current, formRef.current, bound, event);
             }
           };
     }
-  }, [onResize]);
+  }, [onPtsResize]);
 
   /**
    * When onAction callback updates
@@ -274,13 +296,13 @@ const PtsCanvasComponent = (
     <div className={`${name} ${className || ''}`} style={style}>
       <canvas
         className={name ? name + '-canvas' : ''}
-        ref={canvRef}
-        style={canvasStyle}
+        ref={canvasRef}
+        {...canvasElementProps}
       />
     </div>
   );
 };
 
-export const PtsCanvas = forwardRef<HTMLCanvasElement, PtsCanvasProps>(
+export const PtsCanvas = forwardRef<PtsCanvasImperative, PtsCanvasProps>(
   PtsCanvasComponent
 );
