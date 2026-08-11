@@ -1,40 +1,84 @@
 {
   "name": "react-pts-canvas",
-  "private": false,
   "version": "0.5.2",
+  "description": "A React canvas component for the Pts creative-coding library.",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc --p ./tsconfig-build.json && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "prepublishOnly": "pnpm run build"
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
   },
-  "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "pts": "^0.12.8"
-  },
-  "devDependencies": {
-    "@types/node": "^20.11.19",
-    "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.19",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "eslint": "^8.56.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
-    "pts": "^0.12.8",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.1.0",
-    "vite-plugin-dts": "^3.7.2"
-  },
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
   "files": [
     "dist"
-  ]
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --project tsconfig.lib.json && node scripts/create-cjs-declaration.mjs",
+    "typecheck": "tsc --project tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "oxlint --react-plugin --vitest-plugin --deny-warnings .",
+    "format": "prettier --write . --ignore-unknown",
+    "format:check": "prettier --check . --ignore-unknown",
+    "preview": "vite preview",
+    "check:package": "publint && attw --pack .",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:package",
+    "prepublishOnly": "pnpm check",
+    "prepack": "pnpm build"
+  },
+  "peerDependencies": {
+    "pts": "^0.12.9",
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "@types/node": "26.2.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.0.5",
+    "@vitest/browser-playwright": "4.1.10",
+    "oxlint": "1.78.0",
+    "playwright": "1.62.1",
+    "prettier": "3.9.6",
+    "pts": "0.12.9",
+    "publint": "0.3.23",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "typescript": "7.0.2",
+    "vite": "8.2.1",
+    "vitest": "4.1.10"
+  },
+  "keywords": [
+    "canvas",
+    "creative-coding",
+    "pts",
+    "react",
+    "visualization"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/williamngan/react-pts-canvas.git"
+  },
+  "bugs": {
+    "url": "https://github.com/williamngan/react-pts-canvas/issues"
+  },
+  "homepage": "https://github.com/williamngan/react-pts-canvas#readme",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@11.21.0"
 }
