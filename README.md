@@ -16,6 +16,8 @@ pnpm add react-pts-canvas pts
 
 React 18.2 and React 19 are supported. The package ships ESM, CommonJS, and
 TypeScript declarations; React, React DOM, and Pts remain peer dependencies.
+The published entries include React's `"use client"` boundary and can be
+imported by React Server Component frameworks.
 
 ## Quick start
 
@@ -25,12 +27,16 @@ import { PtsCanvas } from "react-pts-canvas";
 export function Drawing() {
   return (
     <PtsCanvas
-      className="drawing"
       background="#182034"
+      containerProps={{ className: "drawing" }}
+      canvasProps={{ "aria-label": "Interactive point drawing" }}
+      input={{ pointer: true, touch: true }}
       onAnimate={(space, form) => {
         form.fillOnly("#f6c").point(space.pointer, 12);
       }}
-    />
+    >
+      This drawing requires canvas support.
+    </PtsCanvas>
   );
 }
 ```
@@ -50,6 +56,9 @@ The wrapper needs an explicit size:
 <PtsCanvas
   onReady={(space, form, bound) => {
     // CanvasSpace is initialized and sized.
+    return () => {
+      // Optional cleanup for resources created here.
+    };
   }}
   onAnimate={(space, form, time, frameTime) => {
     // Called by Pts for every active animation frame.
@@ -58,41 +67,111 @@ The wrapper needs an explicit size:
     // Called when Pts resizes the CanvasSpace.
   }}
   onAction={(space, form, type, x, y, event) => {
-    // Receives Pts pointer, touch, and keyboard actions.
+    // Receives enabled pointer, touch, and keyboard actions.
+  }}
+  onDispose={(space, form) => {
+    // Called immediately before the owned CanvasSpace is disposed.
+  }}
+  onError={(error, { phase, space, form }) => {
+    // Handles errors from async Pts callbacks and consumer cleanup.
   }}
 />
 ```
 
-Callback props can change without replacing the `CanvasSpace`. Changes to the
-immutable setup props (`background`, `resize`, `retina`, `offscreen`,
-`pixelDensity`, or `touch`) intentionally rebuild it.
+When `onError` is provided, callback errors are reported and swallowed so the
+application can decide how to recover. Without it, errors retain their normal
+throwing behavior. This is important because React error boundaries do not
+catch errors from animation frames or native event handlers.
 
-## Props
+Callback props can change without replacing the `CanvasSpace`. `background`,
+`resize`, input bindings, `play`, `refresh`, `minFrameTime`, `players`, and
+`tempo` also update in place. Rendering-context options (`retina`, `offscreen`,
+and the effective pixel density) recreate the space and run `onReady` cleanup
+followed by `onDispose`.
 
-| Prop              | Default       | Purpose                                    |
-| ----------------- | ------------- | ------------------------------------------ |
-| `name`            | `"pts-react"` | Base wrapper class and canvas class prefix |
-| `className`       | —             | Additional wrapper classes                 |
-| `canvasClassName` | —             | Additional canvas classes                  |
-| `style`           | —             | Wrapper inline styles                      |
-| `canvasStyle`     | —             | Canvas inline styles                       |
-| `background`      | `"#9ab"`      | CanvasSpace background                     |
-| `resize`          | `true`        | Resize with the wrapper                    |
-| `retina`          | `true`        | Use device pixel density                   |
-| `offscreen`       | `false`       | Enable Pts offscreen rendering             |
-| `pixelDensity`    | —             | Override device pixel density              |
-| `play`            | `true`        | Run or stop the animation loop             |
-| `touch`           | `true`        | Bind Pts pointer and touch handling        |
-| `refresh`         | `true`        | Clear before each frame                    |
-| `tempo`           | —             | Add a Pts `Tempo` player                   |
+## Input
 
-Other canvas attributes such as `id`, `aria-label`, `data-*`, and React event
-handlers are forwarded to the `<canvas>` element.
+Pointer and touch input remain enabled by default for compatibility. Prefer the
+explicit input API in new code:
+
+```tsx
+<PtsCanvas
+  input={{
+    pointer: true,
+    touch: true,
+    touchPassive: false,
+    keyboard: true,
+    keyboardTarget: "canvas",
+  }}
+/>
+```
+
+Canvas keyboard input is focus-scoped and automatically gives the canvas
+`tabIndex={0}` unless `canvasProps.tabIndex` overrides it. Set
+`keyboardTarget: "document"` only when global shortcuts are intentional.
+
+## DOM elements and refs
+
+`containerProps` targets the wrapper and `canvasProps` targets the canvas.
+Native canvas props supplied at the top level remain supported; matching values
+inside `canvasProps` take precedence. Children are rendered as accessible
+canvas fallback content.
+
+```tsx
+const canvasRef = useRef<HTMLCanvasElement>(null);
+const containerRef = useRef<HTMLDivElement>(null);
+
+<PtsCanvas
+  classPrefix="sketch"
+  containerProps={{ className: "frame", "aria-label": "Drawing region" }}
+  canvasProps={{ className: "surface", "aria-label": "Generative drawing" }}
+  canvasRef={canvasRef}
+  containerRef={containerRef}
+/>;
+```
+
+The older `name`, `className`, `style`, `canvasClassName`, `canvasStyle`, and
+`touch` props remain functional but are deprecated in favor of `classPrefix`,
+the element prop objects, and `input`.
+
+## Players and playback
+
+Additional Pts players can be managed declaratively:
+
+```tsx
+<PtsCanvas players={[player, tempo]} play={running} refresh={false} />
+```
+
+The component adds and removes players by identity without reconstructing the
+space. `tempo` remains as a convenience prop. A player object should be owned by
+one mounted canvas at a time.
+
+`play={false}` stops the animation loop; returning it to `true` replays the
+space. Use `minFrameTime` to limit frame frequency.
+
+## Performance controls
+
+```tsx
+<PtsCanvas
+  maxPixelDensity={2}
+  minFrameTime={1000 / 30}
+  pauseWhenHidden
+  pauseWhenOffscreen
+/>
+```
+
+- `maxPixelDensity` caps either the device pixel ratio or an explicit
+  `pixelDensity` to control canvas memory and fill cost.
+- `minFrameTime` delegates to Pts frame throttling.
+- `pauseWhenHidden` stops while the document is hidden.
+- `pauseWhenOffscreen` uses `IntersectionObserver` to stop outside the viewport.
+
+These controls are opt-in except for the existing retina default.
 
 ## Imperative access
 
-The forwarded ref exposes the owned Pts objects without exposing lifecycle
-control:
+The forwarded ref exposes the owned objects without transferring lifecycle
+ownership:
 
 ```tsx
 import { useRef } from "react";
@@ -106,14 +185,15 @@ export function ControlledDrawing() {
       <button onClick={() => ref.current?.getSpace()?.playOnce(500)}>
         Draw one burst
       </button>
-      <PtsCanvas ref={ref} play={false} className="drawing" />
+      <PtsCanvas ref={ref} play={false} />
     </>
   );
 }
 ```
 
-The getters are `getSpace`, `getForm`, `getPlayer`, and `getCanvas`. They return
-`undefined` (or `null` for the canvas) before mount and after cleanup.
+The getters are `getSpace`, `getForm`, `getPlayer`, `getCanvas`, and
+`getContainer`. They return `undefined` or `null` before mount and after
+cleanup.
 
 More complete examples live in
 [`react-pts-canvas-examples`](https://github.com/williamngan/react-pts-canvas-examples).
@@ -128,8 +208,9 @@ pnpm check
 pnpm dev
 ```
 
-`pnpm check` runs formatting, Oxlint, TypeScript, Playwright-backed browser
-tests, library builds, and packed-package validation.
+`pnpm check` runs formatting, Oxlint, strict TypeScript, Playwright-backed
+browser tests, library builds, packed ESM/CommonJS/TypeScript consumer tests,
+and package validation. CI exercises both React 18.2 and React 19.
 
 ## License
 

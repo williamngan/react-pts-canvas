@@ -6,6 +6,9 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [react()],
+  optimizeDeps: {
+    include: ["react-dom/test-utils"],
+  },
   build: {
     copyPublicDir: false,
     sourcemap: true,

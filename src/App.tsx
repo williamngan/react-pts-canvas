@@ -50,7 +50,7 @@ export default function App() {
               )
             }
           >
-            Change setup
+            Change background
           </button>
           <button
             type="button"
@@ -63,10 +63,13 @@ export default function App() {
 
       <PtsCanvas
         ref={canvas}
-        aria-label="Interactive Pts canvas"
         background={background}
-        className="demo-canvas"
+        canvasProps={{ "aria-label": "Interactive Pts canvas" }}
+        containerProps={{ className: "demo-canvas" }}
+        input={{ pointer: true, touch: true }}
+        maxPixelDensity={2}
         onAnimate={animate}
+        pauseWhenHidden
         play={playing}
       />
     </main>

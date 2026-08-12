@@ -1,3 +1,5 @@
+"use client";
+
 /*!
  * react-pts-canvas - Copyright © 2019-current William Ngan and contributors.
  * Licensed under Apache 2.0 License.
@@ -6,12 +8,15 @@
 
 import {
   forwardRef,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
   type CanvasHTMLAttributes,
   type CSSProperties,
   type ForwardedRef,
+  type HTMLAttributes,
+  type Ref,
 } from "react";
 import {
   CanvasSpace,
@@ -28,13 +33,16 @@ export type PtsCanvasImperative = {
   getForm: () => CanvasForm | undefined;
   getPlayer: () => IPlayer | undefined;
   getCanvas: () => HTMLCanvasElement | null;
+  getContainer: () => HTMLDivElement | null;
 };
+
+export type PtsCanvasCleanup = () => void;
 
 export type HandleReadyFn = (
   space: CanvasSpace,
   form: CanvasForm,
   bound: Bound,
-) => void;
+) => unknown;
 
 export type HandleAnimateFn = (
   space: CanvasSpace,
@@ -68,7 +76,8 @@ export type ActionType =
   | "pointerdown"
   | "pointerup"
   | "contextmenu"
-  | "all";
+  | "all"
+  | (string & {});
 
 export type HandleActionFn = (
   space: CanvasSpace,
@@ -79,45 +88,142 @@ export type HandleActionFn = (
   event: Event,
 ) => void;
 
+export type PtsCanvasErrorPhase =
+  | "initialize"
+  | "ready"
+  | "animate"
+  | "resize"
+  | "action"
+  | "cleanup"
+  | "dispose";
+
+export type PtsCanvasErrorContext = {
+  phase: PtsCanvasErrorPhase;
+  space?: CanvasSpace;
+  form?: CanvasForm;
+};
+
+export type HandleErrorFn = (
+  error: unknown,
+  context: PtsCanvasErrorContext,
+) => void;
+
+export type HandleDisposeFn = (space: CanvasSpace, form: CanvasForm) => void;
+
+export type PtsCanvasInputOptions = {
+  /** Bind Pts pointer events to the canvas. */
+  pointer?: boolean;
+  /** Bind Pts touch events to the canvas. */
+  touch?: boolean;
+  /** Use passive touchstart/touchmove listeners. */
+  touchPassive?: boolean;
+  /** Bind Pts keyboard events. The canvas receives `tabIndex={0}` when targeted. */
+  keyboard?: boolean;
+  /** Bind keyboard events to the focusable canvas or globally to `document`. */
+  keyboardTarget?: "canvas" | "document";
+};
+
 type NativeCanvasProps = Omit<
   CanvasHTMLAttributes<HTMLCanvasElement>,
-  "children" | "className" | "style"
+  "className" | "onError" | "style"
 >;
 
 export type PtsCanvasProps = NativeCanvasProps & {
-  /** Base class name for the wrapper and, with `-canvas`, the canvas. */
+  /** Class prefix for the wrapper and its canvas. Set to an empty string to disable. */
+  classPrefix?: string;
+  /** @deprecated Use `classPrefix`. */
   name?: string;
-  /** Additional class names for the wrapper element. */
+  /** @deprecated Use `containerProps.className`. */
   className?: string;
-  /** Additional class names for the canvas element. */
+  /** @deprecated Use `canvasProps.className`. */
   canvasClassName?: string;
-  /** Inline styles for the wrapper element. */
+  /** @deprecated Use `containerProps.style`. */
   style?: CSSProperties;
-  /** Inline styles for the canvas element. */
+  /** @deprecated Use `canvasProps.style`. */
   canvasStyle?: CSSProperties;
+  /** Props for the wrapper. Values here take precedence over legacy aliases. */
+  containerProps?: Omit<HTMLAttributes<HTMLDivElement>, "children">;
+  /** Canvas props. Values here take precedence over top-level native props. */
+  canvasProps?: CanvasHTMLAttributes<HTMLCanvasElement>;
+  /** Receive the underlying wrapper element. */
+  containerRef?: Ref<HTMLDivElement>;
+  /** Receive the underlying canvas element. */
+  canvasRef?: Ref<HTMLCanvasElement>;
   background?: string;
   resize?: boolean;
   retina?: boolean;
   offscreen?: boolean;
   pixelDensity?: number;
+  /** Cap the effective pixel density, including an explicit `pixelDensity`. */
+  maxPixelDensity?: number;
   play?: boolean;
+  /** @deprecated Use `input.pointer` and `input.touch`. */
   touch?: boolean;
+  input?: PtsCanvasInputOptions;
   refresh?: boolean;
+  /** Minimum elapsed milliseconds between rendered Pts frames. */
+  minFrameTime?: number;
+  /** Stop playback while the document is hidden. */
+  pauseWhenHidden?: boolean;
+  /** Stop playback while the component is outside the viewport. */
+  pauseWhenOffscreen?: boolean;
   onReady?: HandleReadyFn;
   onAnimate?: HandleAnimateFn;
   onPtsResize?: HandleResizeFn;
   onAction?: HandleActionFn;
+  onError?: HandleErrorFn;
+  onDispose?: HandleDisposeFn;
+  /** Additional Pts players owned by this component. */
+  players?: readonly IPlayer[];
+  /** Convenience player. Prefer `players` when managing multiple players. */
   tempo?: Tempo;
 };
 
 type CallbackProps = Pick<
   PtsCanvasProps,
-  "onReady" | "onAnimate" | "onPtsResize" | "onAction"
+  "onReady" | "onAnimate" | "onPtsResize" | "onAction" | "onError" | "onDispose"
 >;
+
+type LiveBehavior = {
+  background: string;
+  input: Required<PtsCanvasInputOptions>;
+  minFrameTime: number;
+  pauseWhenHidden: boolean;
+  pauseWhenOffscreen: boolean;
+  play: boolean;
+  players: readonly IPlayer[];
+  refresh: boolean;
+  resize: boolean;
+  tempo?: Tempo;
+};
+
+const EMPTY_PLAYERS: readonly IPlayer[] = [];
+
+function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
+  if (typeof ref === "function") ref(value);
+  else if (ref) (ref as { current: T | null }).current = value;
+}
+
+function checkedPositiveOption(name: string, value: number | undefined) {
+  if (value === undefined) return undefined;
+  if (!Number.isFinite(value) || value <= 0) {
+    throw new RangeError(`${name} must be a finite number greater than zero`);
+  }
+  return value;
+}
+
+function checkedFrameTime(value: number | undefined) {
+  if (value === undefined) return 0;
+  if (!Number.isFinite(value) || value < 0) {
+    throw new RangeError("minFrameTime must be a finite non-negative number");
+  }
+  return value;
+}
 
 function PtsCanvasComponent(
   {
-    name = "pts-react",
+    classPrefix,
+    name,
     className,
     canvasClassName,
     background = "#9ab",
@@ -125,36 +231,151 @@ function PtsCanvasComponent(
     retina = true,
     offscreen = false,
     pixelDensity,
+    maxPixelDensity,
     play = true,
     touch = true,
+    input,
     refresh = true,
+    minFrameTime,
+    pauseWhenHidden = false,
+    pauseWhenOffscreen = false,
     style,
     canvasStyle,
+    containerProps,
+    canvasProps,
+    containerRef,
+    canvasRef: forwardedCanvasRef,
+    children,
     onReady,
     onAnimate,
     onPtsResize,
     onAction,
+    onError,
+    onDispose,
+    players = EMPTY_PLAYERS,
     tempo,
     ...canvasElementProps
   }: PtsCanvasProps,
   ref: ForwardedRef<PtsCanvasImperative>,
 ) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const checkedPixelDensity = checkedPositiveOption(
+    "pixelDensity",
+    pixelDensity,
+  );
+  const checkedMaxPixelDensity = checkedPositiveOption(
+    "maxPixelDensity",
+    maxPixelDensity,
+  );
+  const resolvedPixelDensity = (() => {
+    if (checkedMaxPixelDensity === undefined) return checkedPixelDensity;
+    const requestedDensity =
+      checkedPixelDensity ??
+      (retina && typeof window !== "undefined"
+        ? Math.max(1, window.devicePixelRatio || 1)
+        : 1);
+    return Math.min(requestedDensity, checkedMaxPixelDensity);
+  })();
+  const resolvedMinFrameTime = checkedFrameTime(minFrameTime);
+  const resolvedInput: Required<PtsCanvasInputOptions> = {
+    pointer: input?.pointer ?? touch,
+    touch: input?.touch ?? touch,
+    touchPassive: input?.touchPassive ?? false,
+    keyboard: input?.keyboard ?? false,
+    keyboardTarget: input?.keyboardTarget ?? "canvas",
+  };
+
+  const internalCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const internalContainerRef = useRef<HTMLDivElement | null>(null);
   const spaceRef = useRef<CanvasSpace | undefined>(undefined);
   const formRef = useRef<CanvasForm | undefined>(undefined);
   const playerRef = useRef<IPlayer | undefined>(undefined);
-  const activeTempoRef = useRef<Tempo | undefined>(undefined);
-  const behaviorRef = useRef({ play, refresh, tempo });
+  const activePlayersRef = useRef(new Set<IPlayer>());
+  const appliedInputRef = useRef<
+    | {
+        input: Required<PtsCanvasInputOptions>;
+        space: CanvasSpace;
+      }
+    | undefined
+  >(undefined);
+  const canvasKeyboardBindingRef = useRef<
+    | {
+        canvas: HTMLCanvasElement;
+        keydown: (event: KeyboardEvent) => void;
+        keyup: (event: KeyboardEvent) => void;
+      }
+    | undefined
+  >(undefined);
+  const readyCleanupRef = useRef<PtsCanvasCleanup | undefined>(undefined);
+  const requestedPlaybackRef = useRef<boolean | undefined>(undefined);
+  const visibilityRef = useRef({
+    documentHidden: typeof document !== "undefined" ? document.hidden : false,
+    offscreen: false,
+  });
+  const behaviorRef = useRef<LiveBehavior>({
+    background,
+    input: resolvedInput,
+    minFrameTime: resolvedMinFrameTime,
+    pauseWhenHidden,
+    pauseWhenOffscreen,
+    play,
+    players,
+    refresh,
+    resize,
+    tempo,
+  });
   const callbacksRef = useRef<CallbackProps>({
     onReady,
     onAnimate,
     onPtsResize,
     onAction,
+    onError,
+    onDispose,
   });
 
+  const setCanvasRef = useCallback(
+    (canvas: HTMLCanvasElement | null) => {
+      internalCanvasRef.current = canvas;
+      assignRef(forwardedCanvasRef, canvas);
+    },
+    [forwardedCanvasRef],
+  );
+  const setContainerRef = useCallback(
+    (container: HTMLDivElement | null) => {
+      internalContainerRef.current = container;
+      assignRef(containerRef, container);
+    },
+    [containerRef],
+  );
+
   useIsomorphicLayoutEffect(() => {
-    behaviorRef.current = { play, refresh, tempo };
-  }, [play, refresh, tempo]);
+    behaviorRef.current = {
+      background,
+      input: resolvedInput,
+      minFrameTime: resolvedMinFrameTime,
+      pauseWhenHidden,
+      pauseWhenOffscreen,
+      play,
+      players,
+      refresh,
+      resize,
+      tempo,
+    };
+  }, [
+    background,
+    pauseWhenHidden,
+    pauseWhenOffscreen,
+    play,
+    players,
+    refresh,
+    resize,
+    resolvedInput.keyboard,
+    resolvedInput.keyboardTarget,
+    resolvedInput.pointer,
+    resolvedInput.touch,
+    resolvedInput.touchPassive,
+    resolvedMinFrameTime,
+    tempo,
+  ]);
 
   useIsomorphicLayoutEffect(() => {
     callbacksRef.current = {
@@ -162,8 +383,10 @@ function PtsCanvasComponent(
       onAnimate,
       onPtsResize,
       onAction,
+      onError,
+      onDispose,
     };
-  }, [onReady, onAnimate, onPtsResize, onAction]);
+  }, [onReady, onAnimate, onPtsResize, onAction, onError, onDispose]);
 
   useImperativeHandle(
     ref,
@@ -171,111 +394,454 @@ function PtsCanvasComponent(
       getSpace: () => spaceRef.current,
       getForm: () => formRef.current,
       getPlayer: () => playerRef.current,
-      getCanvas: () => canvasRef.current,
+      getCanvas: () => internalCanvasRef.current,
+      getContainer: () => internalContainerRef.current,
     }),
     [],
   );
 
-  useIsomorphicLayoutEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  const reportError = useCallback(
+    (
+      error: unknown,
+      phase: PtsCanvasErrorPhase,
+      space?: CanvasSpace,
+      form?: CanvasForm,
+    ) => {
+      const handler = callbacksRef.current.onError;
+      if (handler) handler(error, { phase, space, form });
+      else throw error;
+    },
+    [],
+  );
 
-    const space = new CanvasSpace(canvas).setup({
-      bgcolor: background,
-      resize,
-      retina,
-      offscreen,
-      pixelDensity,
-    });
-    const form = space.getForm();
-    const player: IPlayer = {
-      start: (bound) => {
-        callbacksRef.current.onReady?.(space, form, bound);
-      },
-      animate: (time, frameTime) => {
-        callbacksRef.current.onAnimate?.(space, form, time, frameTime);
-      },
-      resize: (bound, event) => {
-        callbacksRef.current.onPtsResize?.(space, form, bound, event);
-      },
-      action: (type, x, y, event) => {
-        callbacksRef.current.onAction?.(
-          space,
-          form,
-          type as ActionType,
-          x,
-          y,
+  const syncPlayers = useCallback(
+    (
+      space: CanvasSpace,
+      nextPlayers: readonly IPlayer[],
+      nextTempo?: Tempo,
+    ) => {
+      const desired = new Set(nextPlayers);
+      if (nextTempo) desired.add(nextTempo);
+
+      for (const player of activePlayersRef.current) {
+        if (!desired.has(player)) {
+          space.remove(player);
+          activePlayersRef.current.delete(player);
+        }
+      }
+      for (const player of desired) {
+        if (!activePlayersRef.current.has(player)) {
+          space.add(player);
+          activePlayersRef.current.add(player);
+        }
+      }
+    },
+    [],
+  );
+
+  const unbindCanvasKeyboard = useCallback(() => {
+    const binding = canvasKeyboardBindingRef.current;
+    if (!binding) return;
+    binding.canvas.removeEventListener("keydown", binding.keydown);
+    binding.canvas.removeEventListener("keyup", binding.keyup);
+    canvasKeyboardBindingRef.current = undefined;
+  }, []);
+
+  const syncInput = useCallback(
+    (
+      space: CanvasSpace,
+      canvas: HTMLCanvasElement,
+      nextInput: Required<PtsCanvasInputOptions>,
+    ) => {
+      const previous =
+        appliedInputRef.current?.space === space
+          ? appliedInputRef.current.input
+          : undefined;
+      if (previous?.pointer !== nextInput.pointer) {
+        space.bindMouse(nextInput.pointer);
+      }
+      if (
+        previous?.touch !== nextInput.touch ||
+        previous?.touchPassive !== nextInput.touchPassive
+      ) {
+        if (previous?.touch) space.bindTouch(false, previous.touchPassive);
+        if (nextInput.touch) space.bindTouch(true, nextInput.touchPassive);
+      }
+      if (
+        previous?.keyboard === nextInput.keyboard &&
+        previous?.keyboardTarget === nextInput.keyboardTarget
+      ) {
+        appliedInputRef.current = { input: nextInput, space };
+        return;
+      }
+
+      space.bindKeyboard(false);
+      unbindCanvasKeyboard();
+      appliedInputRef.current = { input: nextInput, space };
+
+      if (!nextInput.keyboard) return;
+      if (nextInput.keyboardTarget === "document") {
+        space.bindKeyboard();
+        return;
+      }
+
+      const dispatch = (type: "keydown" | "keyup", event: KeyboardEvent) => {
+        if (!space.isPlaying) return;
+        playerRef.current?.action?.(
+          type,
+          event.shiftKey ? 1 : 0,
+          event.altKey ? 1 : 0,
           event,
         );
-      },
-    };
+        for (const player of activePlayersRef.current) {
+          player.action?.(
+            type,
+            event.shiftKey ? 1 : 0,
+            event.altKey ? 1 : 0,
+            event,
+          );
+        }
+      };
+      const keydown = (event: KeyboardEvent) => dispatch("keydown", event);
+      const keyup = (event: KeyboardEvent) => dispatch("keyup", event);
+      canvas.addEventListener("keydown", keydown);
+      canvas.addEventListener("keyup", keyup);
+      canvasKeyboardBindingRef.current = { canvas, keydown, keyup };
+    },
+    [unbindCanvasKeyboard],
+  );
 
-    spaceRef.current = space;
-    formRef.current = form;
-    playerRef.current = player;
+  const syncPlayback = useCallback(() => {
+    const space = spaceRef.current;
+    if (!space) return;
 
-    const initialBehavior = behaviorRef.current;
-    space.add(player).refresh(initialBehavior.refresh);
-    if (touch) space.bindMouse().bindTouch();
+    const behavior = behaviorRef.current;
+    const visibility = visibilityRef.current;
+    const shouldPlay =
+      behavior.play &&
+      (!behavior.pauseWhenHidden || !visibility.documentHidden) &&
+      (!behavior.pauseWhenOffscreen || !visibility.offscreen);
 
-    if (initialBehavior.tempo) {
-      space.add(initialBehavior.tempo);
-      activeTempoRef.current = initialBehavior.tempo;
+    if (shouldPlay && !space.ready) {
+      requestedPlaybackRef.current = undefined;
+      return;
     }
+    if (requestedPlaybackRef.current === shouldPlay) return;
 
-    if (initialBehavior.play) space.replay();
+    requestedPlaybackRef.current = shouldPlay;
+    if (shouldPlay) space.replay();
     else space.stop();
+  }, []);
 
-    return () => {
-      if (touch) space.bindMouse(false).bindTouch(false);
-      space.dispose();
+  useIsomorphicLayoutEffect(() => {
+    const canvas = internalCanvasRef.current;
+    if (!canvas) return;
 
+    let space: CanvasSpace | undefined;
+    let form: CanvasForm | undefined;
+    try {
+      const initialBehavior = behaviorRef.current;
+      space = new CanvasSpace(canvas).setup({
+        bgcolor: initialBehavior.background,
+        resize: initialBehavior.resize,
+        retina,
+        offscreen,
+        pixelDensity: resolvedPixelDensity,
+      });
+      form = space.getForm();
+      const ownedSpace = space;
+      const ownedForm = form;
+      const player: IPlayer = {
+        start: (bound) => {
+          try {
+            const cleanup = callbacksRef.current.onReady?.(
+              ownedSpace,
+              ownedForm,
+              bound,
+            );
+            if (typeof cleanup === "function") {
+              readyCleanupRef.current = cleanup as PtsCanvasCleanup;
+            }
+          } catch (error) {
+            reportError(error, "ready", ownedSpace, ownedForm);
+          }
+          syncPlayback();
+        },
+        animate: (time, frameTime) => {
+          try {
+            callbacksRef.current.onAnimate?.(
+              ownedSpace,
+              ownedForm,
+              time,
+              frameTime,
+            );
+          } catch (error) {
+            reportError(error, "animate", ownedSpace, ownedForm);
+          }
+        },
+        resize: (bound, event) => {
+          try {
+            callbacksRef.current.onPtsResize?.(
+              ownedSpace,
+              ownedForm,
+              bound,
+              event,
+            );
+          } catch (error) {
+            reportError(error, "resize", ownedSpace, ownedForm);
+          }
+        },
+        action: (type, x, y, event) => {
+          try {
+            callbacksRef.current.onAction?.(
+              ownedSpace,
+              ownedForm,
+              type,
+              x,
+              y,
+              event,
+            );
+          } catch (error) {
+            reportError(error, "action", ownedSpace, ownedForm);
+          }
+        },
+      };
+
+      spaceRef.current = space;
+      formRef.current = form;
+      playerRef.current = player;
+      requestedPlaybackRef.current = undefined;
+
+      space
+        .add(player)
+        .refresh(initialBehavior.refresh)
+        .minFrameTime(initialBehavior.minFrameTime);
+      syncInput(space, canvas, initialBehavior.input);
+      syncPlayers(space, initialBehavior.players, initialBehavior.tempo);
+      syncPlayback();
+    } catch (error) {
+      unbindCanvasKeyboard();
+      try {
+        space?.bindMouse(false).bindTouch(false).bindKeyboard(false);
+        space?.dispose();
+      } catch {
+        // Preserve the initialization error; teardown is best-effort here.
+      }
+      appliedInputRef.current = undefined;
+      activePlayersRef.current.clear();
+      requestedPlaybackRef.current = undefined;
       if (spaceRef.current === space) {
         spaceRef.current = undefined;
         formRef.current = undefined;
         playerRef.current = undefined;
-        activeTempoRef.current = undefined;
       }
-    };
-  }, [background, resize, retina, offscreen, pixelDensity, touch]);
+      reportError(error, "initialize", space, form);
+      return;
+    }
 
-  useEffect(() => {
+    const ownedSpace = space;
+    const ownedForm = form;
+    return () => {
+      let pendingError: unknown;
+      const cleanup = readyCleanupRef.current;
+      readyCleanupRef.current = undefined;
+
+      if (cleanup) {
+        try {
+          cleanup();
+        } catch (error) {
+          try {
+            reportError(error, "cleanup", ownedSpace, ownedForm);
+          } catch (reportedError) {
+            pendingError = reportedError;
+          }
+        }
+      }
+      try {
+        callbacksRef.current.onDispose?.(ownedSpace, ownedForm);
+      } catch (error) {
+        try {
+          reportError(error, "dispose", ownedSpace, ownedForm);
+        } catch (reportedError) {
+          pendingError ??= reportedError;
+        }
+      }
+
+      try {
+        unbindCanvasKeyboard();
+        try {
+          ownedSpace.bindMouse(false).bindTouch(false).bindKeyboard(false);
+        } finally {
+          ownedSpace.dispose();
+        }
+      } catch (error) {
+        try {
+          reportError(error, "dispose", ownedSpace, ownedForm);
+        } catch (reportedError) {
+          pendingError ??= reportedError;
+        }
+      } finally {
+        appliedInputRef.current = undefined;
+        activePlayersRef.current.clear();
+        requestedPlaybackRef.current = undefined;
+
+        if (spaceRef.current === ownedSpace) {
+          spaceRef.current = undefined;
+          formRef.current = undefined;
+          playerRef.current = undefined;
+        }
+      }
+      if (pendingError !== undefined) throw pendingError;
+    };
+  }, [
+    offscreen,
+    reportError,
+    resolvedPixelDensity,
+    retina,
+    syncInput,
+    syncPlayback,
+    syncPlayers,
+    unbindCanvasKeyboard,
+  ]);
+
+  useIsomorphicLayoutEffect(() => {
+    const space = spaceRef.current;
+    if (!space) return;
+    space.background = background;
+    if (space.ready) space.clear();
+  }, [background]);
+
+  useIsomorphicLayoutEffect(() => {
+    const space = spaceRef.current;
+    if (space && space.autoResize !== resize) space.autoResize = resize;
+  }, [resize]);
+
+  useIsomorphicLayoutEffect(() => {
     spaceRef.current?.refresh(refresh);
   }, [refresh]);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
+    spaceRef.current?.minFrameTime(resolvedMinFrameTime);
+  }, [resolvedMinFrameTime]);
+
+  useIsomorphicLayoutEffect(() => {
     const space = spaceRef.current;
-    if (!space || activeTempoRef.current === tempo) return;
+    const canvas = internalCanvasRef.current;
+    if (space && canvas) syncInput(space, canvas, resolvedInput);
+  }, [
+    resolvedInput.keyboard,
+    resolvedInput.keyboardTarget,
+    resolvedInput.pointer,
+    resolvedInput.touch,
+    resolvedInput.touchPassive,
+    syncInput,
+  ]);
 
-    if (activeTempoRef.current) space.remove(activeTempoRef.current);
-    if (tempo) space.add(tempo);
-    activeTempoRef.current = tempo;
-  }, [tempo]);
+  useIsomorphicLayoutEffect(() => {
+    const space = spaceRef.current;
+    if (space) syncPlayers(space, players, tempo);
+  }, [players, syncPlayers, tempo]);
+
+  useIsomorphicLayoutEffect(() => {
+    syncPlayback();
+  }, [play, pauseWhenHidden, pauseWhenOffscreen, syncPlayback]);
 
   useEffect(() => {
-    const space = spaceRef.current;
-    if (!space) return;
+    const visibility = visibilityRef.current;
+    visibility.documentHidden = document.hidden;
+    syncPlayback();
+    if (!pauseWhenHidden) return;
 
-    if (play) space.replay();
-    else space.stop();
-  }, [play]);
+    const handleVisibilityChange = () => {
+      visibility.documentHidden = document.hidden;
+      syncPlayback();
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      visibility.documentHidden = false;
+    };
+  }, [pauseWhenHidden, syncPlayback]);
 
-  const wrapperClassName = [name, className].filter(Boolean).join(" ");
-  const resolvedCanvasClassName = [
-    name ? `${name}-canvas` : undefined,
-    canvasClassName,
+  useEffect(() => {
+    const visibility = visibilityRef.current;
+    visibility.offscreen = false;
+    syncPlayback();
+    if (!pauseWhenOffscreen || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const target = internalContainerRef.current;
+    if (!target) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      visibility.offscreen = entry ? !entry.isIntersecting : false;
+      syncPlayback();
+    });
+    observer.observe(target);
+    return () => {
+      observer.disconnect();
+      visibility.offscreen = false;
+    };
+  }, [pauseWhenOffscreen, syncPlayback]);
+
+  const {
+    className: containerClassName,
+    style: containerStyle,
+    ...containerElementProps
+  } = containerProps ?? {};
+  const {
+    className: nestedCanvasClassName,
+    style: nestedCanvasStyle,
+    children: nestedCanvasChildren,
+    ...nestedCanvasProps
+  } = canvasProps ?? {};
+  const resolvedClassPrefix = classPrefix ?? name ?? "pts-react";
+  const wrapperClassName = [
+    resolvedClassPrefix || undefined,
+    className,
+    containerClassName,
   ]
     .filter(Boolean)
     .join(" ");
+  const resolvedCanvasClassName = [
+    resolvedClassPrefix ? `${resolvedClassPrefix}-canvas` : undefined,
+    canvasClassName,
+    nestedCanvasClassName,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const resolvedContainerStyle =
+    style || containerStyle ? { ...style, ...containerStyle } : undefined;
+  const resolvedCanvasStyle =
+    canvasStyle || nestedCanvasStyle
+      ? { ...canvasStyle, ...nestedCanvasStyle }
+      : undefined;
+  const canvasChildren =
+    canvasProps && Object.hasOwn(canvasProps, "children")
+      ? nestedCanvasChildren
+      : children;
+  const keyboardTabIndex =
+    resolvedInput.keyboard && resolvedInput.keyboardTarget === "canvas"
+      ? 0
+      : undefined;
 
   return (
-    <div className={wrapperClassName || undefined} style={style}>
+    <div
+      {...containerElementProps}
+      className={wrapperClassName || undefined}
+      ref={setContainerRef}
+      style={resolvedContainerStyle}
+    >
       <canvas
         {...canvasElementProps}
+        {...nestedCanvasProps}
         className={resolvedCanvasClassName || undefined}
-        ref={canvasRef}
-        style={canvasStyle}
-      />
+        ref={setCanvasRef}
+        style={resolvedCanvasStyle}
+        tabIndex={nestedCanvasProps.tabIndex ?? keyboardTabIndex}
+      >
+        {canvasChildren}
+      </canvas>
     </div>
   );
 }

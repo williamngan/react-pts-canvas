@@ -79,17 +79,24 @@ part of this change.
 ## Implementation result
 
 The component now owns a single tested CanvasSpace lifecycle, dispatches current
-callbacks without rebuilding, accepts zero-valued animation times, replaces
-tempo/play/refresh behavior in place, and reconstructs cleanly when immutable
-setup options change. Browser tests cover these contracts in Chromium and under
-React Strict Mode.
+callbacks without rebuilding, accepts zero-valued animation times, and updates
+background, resize, input, players, tempo, playback, refresh, and frame
+throttling in place. Only rendering-context options reconstruct the space.
+Browser tests cover these contracts in Chromium and under React Strict Mode.
 
-The package emits a 2.73 kB ESM entry and a 2.17 kB CommonJS entry, compared with
-the previous roughly 260 kB Pts-inclusive entry. Pts and React are external peer
+The follow-up lifecycle hardening added explicit `containerProps`, `canvasProps`,
+DOM refs, input controls, additional players, callback cleanup/error reporting,
+canvas fallback content, hidden/offscreen suspension, and a pixel-density cap.
+The legacy DOM and `touch` aliases remain available with deprecation markers.
+Pts itself now owns stable event callback identities, immediately cancels RAF
+and readiness work during disposal, and makes input binding idempotent.
+
+The package emits an approximately 9 kB ESM entry and 7 kB CommonJS entry,
+compared with the previous roughly 260 kB Pts-inclusive entry. Pts and React are external peer
 dependencies. Conditional exports provide `.d.ts` and `.d.cts` declarations,
 and the packed artifact passes both `publint` and `attw` with no findings.
 
-The final validation includes formatting, Oxlint, TypeScript 7, five Browser
-Mode tests, both library builds, package analysis, ESM/CommonJS server-rendered
-consumer checks using the sibling packed Pts build, and the sibling examples'
+The final validation includes formatting, Oxlint, TypeScript 7, ten Browser
+Mode tests, React 18.2/19 CI coverage, both library builds, package analysis,
+packed ESM/CommonJS/TypeScript consumer checks, and the sibling examples'
 four-canvas Chromium smoke test.
