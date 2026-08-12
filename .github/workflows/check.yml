@@ -1,4 +1,4 @@
-name: Check
+name: Check and deploy gallery
 
 on:
   push:
@@ -9,9 +9,13 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  check:
-    name: Check (${{ matrix.react }})
+  library:
+    name: Library (${{ matrix.react }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -33,8 +37,43 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Install React matrix version
         if: matrix.dependencies != ''
-        run: |
-          pnpm add --save-dev --lockfile=false ${{ matrix.dependencies }}
-          pnpm exec prettier --write pnpm-lock.yaml
+        run: pnpm --filter react-pts-canvas add --save-dev --lockfile=false ${{ matrix.dependencies }}
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm check
+      - run: pnpm check:library
+
+  gallery:
+    name: Gallery
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm check:examples
+      - uses: actions/configure-pages@v5
+        if: github.event_name != 'pull_request'
+      - uses: actions/upload-pages-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          path: examples/gallery/dist
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: gallery
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -12,5 +12,5 @@
       "version": "19.2.8"
     }
   },
-  "ignorePatterns": ["dist", "coverage"]
+  "ignorePatterns": ["dist", "coverage", "examples/gallery/dist"]
 }

@@ -8,9 +8,9 @@ published package must contain only the wrapper implementation and declarations;
 React and Pts must remain peer dependencies rather than being copied into the
 bundle.
 
-This work is coordinated with the sibling `react-pts-canvas-examples`
-repository. Release publishing and selecting the eventual npm version are not
-part of this change.
+The maintained example gallery is now a private workspace package under
+`examples/gallery`. Release publishing and selecting the eventual npm version
+are not part of this change.
 
 ## Audit findings
 
@@ -35,7 +35,7 @@ part of this change.
 - Use React and React DOM 19.2 for development while accepting React 18.2 and
   React 19 as peers. Keep `forwardRef` so the package remains compatible with
   both React majors.
-- Use Vite 8.2 and `@vitejs/plugin-react` 6 for the demo and library build.
+- Use Vite 8.2 and `@vitejs/plugin-react` 6 for the gallery and library build.
 - Use TypeScript 7.0. The current `typescript-eslint` release supports only
   TypeScript versions below 6.1, so use Oxlint's native TypeScript/React rules
   rather than installing an unsupported parser/compiler combination.
@@ -60,7 +60,7 @@ part of this change.
 5. Add browser tests for mount/ready/animate/action, prop updates, play and input
    controls, setup reconstruction, tempo replacement, imperative access, Strict
    Mode, and unmount cleanup.
-6. Refresh the local demo and README to demonstrate the supported API and remove
+6. Refresh the gallery and README to demonstrate the supported API and remove
    stale Vite scaffolding.
 7. Regenerate the pnpm lockfile with exact current tool versions.
 
@@ -71,9 +71,9 @@ part of this change.
 - The packed package passes `publint` and `attw` for both ESM and CommonJS.
 - Packed JavaScript does not contain the Pts implementation and declares React
   and Pts only as peers.
-- A consumer build using the sibling rebuilt Pts package succeeds and renders a
-  working CanvasSpace in Chromium.
-- The sibling examples application passes its own type, lint, build, and browser
+- A consumer build using the rebuilt Pts package succeeds and renders a working
+  CanvasSpace in Chromium.
+- The private workspace gallery passes its own type, lint, build, and browser
   smoke checks against this implementation.
 
 ## Implementation result
@@ -98,5 +98,5 @@ and the packed artifact passes both `publint` and `attw` with no findings.
 
 The final validation includes formatting, Oxlint, TypeScript 7, ten Browser
 Mode tests, React 18.2/19 CI coverage, both library builds, package analysis,
-packed ESM/CommonJS/TypeScript consumer checks, and the sibling examples'
+packed ESM/CommonJS/TypeScript consumer checks, and the workspace gallery's
 four-canvas Chromium smoke test.

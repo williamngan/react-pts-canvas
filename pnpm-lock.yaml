@@ -56,6 +56,49 @@ importers:
         specifier: 4.1.10
         version: 4.1.10(@types/node@26.2.0)(@vitest/browser-playwright@4.1.10)(vite@8.2.1(@types/node@26.2.0))
 
+  examples/gallery:
+    dependencies:
+      pts:
+        specifier: 0.12.9
+        version: 0.12.9
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      react-pts-canvas:
+        specifier: workspace:*
+        version: link:../..
+    devDependencies:
+      "@types/node":
+        specifier: 26.2.0
+        version: 26.2.0
+      "@types/react":
+        specifier: 19.2.18
+        version: 19.2.18
+      "@types/react-dom":
+        specifier: 19.2.4
+        version: 19.2.4(@types/react@19.2.18)
+      "@vitejs/plugin-react":
+        specifier: 6.0.5
+        version: 6.0.5(vite@8.2.1(@types/node@26.2.0))
+      oxlint:
+        specifier: 1.78.0
+        version: 1.78.0
+      playwright:
+        specifier: 1.62.1
+        version: 1.62.1
+      prettier:
+        specifier: 3.9.6
+        version: 3.9.6
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+      vite:
+        specifier: 8.2.1
+        version: 8.2.1(@types/node@26.2.0)
+
 packages:
   "@andrewbranch/untar.js@1.0.4":
     resolution:

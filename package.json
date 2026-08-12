@@ -27,19 +27,22 @@
     "node": ">=18"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "pnpm --filter @react-pts-canvas/gallery dev",
     "build": "vite build && tsc --project tsconfig.lib.json && node scripts/create-cjs-declaration.mjs",
+    "build:examples": "pnpm --filter @react-pts-canvas/gallery build",
     "typecheck": "tsc --project tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:package": "node scripts/check-packed-package.mjs",
-    "lint": "oxlint --react-plugin --vitest-plugin --deny-warnings .",
+    "lint": "oxlint --react-plugin --vitest-plugin --deny-warnings src test scripts vite.config.ts",
     "format": "prettier --write . --ignore-unknown",
     "format:check": "prettier --check . --ignore-unknown",
-    "preview": "vite preview",
+    "preview": "pnpm --filter @react-pts-canvas/gallery preview",
     "check:package": "publint && attw --pack .",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:package && pnpm check:package",
-    "prepublishOnly": "pnpm check",
+    "check:library": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:package && pnpm check:package",
+    "check:examples": "pnpm format:check && pnpm --filter @react-pts-canvas/gallery check",
+    "check": "pnpm check:library && pnpm check:examples",
+    "prepublishOnly": "pnpm check:library",
     "prepack": "pnpm build"
   },
   "peerDependencies": {

@@ -5,8 +5,7 @@
     "emitDeclarationOnly": true,
     "noEmit": false,
     "outDir": "./dist",
-    "rootDir": "./lib"
+    "rootDir": "./src"
   },
-  "include": ["lib/**/*.ts", "lib/**/*.tsx"],
-  "exclude": ["lib/**/*.spec.ts", "lib/**/*.spec.tsx"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

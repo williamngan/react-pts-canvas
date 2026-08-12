@@ -6,7 +6,7 @@
 [Pts](https://ptsjs.org). It owns a `CanvasSpace`, connects it to React's
 lifecycle, and passes the current space and form to typed callback props.
 
-![react-pts-canvas example](./cover.png)
+![react-pts-canvas example](https://github.com/williamngan/react-pts-canvas/raw/master/cover.png)
 
 ## Install
 
@@ -195,8 +195,14 @@ The getters are `getSpace`, `getForm`, `getPlayer`, `getCanvas`, and
 `getContainer`. They return `undefined` or `null` before mount and after
 cleanup.
 
-More complete examples live in
-[`react-pts-canvas-examples`](https://github.com/williamngan/react-pts-canvas-examples).
+## Example gallery
+
+The maintained React 19 and Vite gallery lives in
+[`examples/gallery`](https://github.com/williamngan/react-pts-canvas/tree/master/examples/gallery)
+and always imports this workspace's local component source. It covers pointer
+drawing, animation control, data visualization, and sound.
+
+[Open the live gallery](https://williamngan.github.io/react-pts-canvas/)
 
 ## Development
 
@@ -208,9 +214,15 @@ pnpm check
 pnpm dev
 ```
 
-`pnpm check` runs formatting, Oxlint, strict TypeScript, Playwright-backed
-browser tests, library builds, packed ESM/CommonJS/TypeScript consumer tests,
-and package validation. CI exercises both React 18.2 and React 19.
+`pnpm dev` starts the private app in `examples/gallery`. `pnpm check:library`
+validates only the publishable package, while `pnpm check:examples` validates
+and smoke-tests the gallery. `pnpm check` runs both compartments plus shared
+formatting.
+
+The library check includes Oxlint, strict TypeScript, ten Playwright-backed
+browser tests, ESM/CommonJS builds, packed JavaScript and TypeScript consumer
+tests, and package validation. CI exercises the library under React 18.2 and
+React 19, then deploys the React 19 gallery separately.
 
 ## License
 

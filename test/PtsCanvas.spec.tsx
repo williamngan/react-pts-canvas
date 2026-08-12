@@ -13,7 +13,7 @@ import {
   type HandleReadyFn,
   type PtsCanvasImperative,
   type PtsCanvasProps,
-} from "./index";
+} from "../src/index";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 

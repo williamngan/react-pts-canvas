@@ -13,7 +13,7 @@ export default defineConfig({
     copyPublicDir: false,
     sourcemap: true,
     lib: {
-      entry: resolve(import.meta.dirname, "lib/index.tsx"),
+      entry: resolve(import.meta.dirname, "src/index.tsx"),
       formats: ["es", "cjs"],
       fileName: (format) => (format === "es" ? "index.js" : "index.cjs"),
     },
@@ -22,7 +22,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["lib/**/*.spec.tsx"],
+    include: ["test/**/*.spec.tsx"],
     restoreMocks: true,
     browser: {
       enabled: true,
