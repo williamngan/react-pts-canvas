@@ -210,14 +210,28 @@ This repository requires Node 20.19 or newer for Vite 8 and uses pnpm:
 
 ```bash
 pnpm install
-pnpm check
 pnpm dev
 ```
 
-`pnpm dev` starts the private app in `examples/gallery`. `pnpm check:library`
-validates only the publishable package, while `pnpm check:examples` validates
-and smoke-tests the gallery. `pnpm check` runs both compartments plus shared
-formatting.
+`pnpm dev` starts the private gallery in `examples/gallery`. The gallery's Vite
+and TypeScript configurations resolve `react-pts-canvas` directly to
+`src/index.tsx`, rather than to the generated `dist` package. Changes in either
+`src/` or `examples/gallery/src/` therefore appear through Vite's hot reload;
+you do **not** need to rebuild the library during normal development.
+
+Use the commands below from the repository root:
+
+| Command               | Use it for                                                                                                 |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`            | Develop the component and gallery together with hot reload.                                                |
+| `pnpm test:watch`     | Rerun the library's browser tests while editing.                                                           |
+| `pnpm test`           | Run the library's browser tests once.                                                                      |
+| `pnpm build`          | Generate the publishable library files in root `dist/`. This is needed for packaging, not for `pnpm dev`.  |
+| `pnpm build:examples` | Generate the gallery site in `examples/gallery/dist/`.                                                     |
+| `pnpm preview`        | Preview the already-built gallery; run `pnpm build:examples` first.                                        |
+| `pnpm check:library`  | Validate only the publishable library: lint, types, tests, builds, packed consumers, and package metadata. |
+| `pnpm check:examples` | Check formatting, then validate and smoke-test the gallery.                                                |
+| `pnpm check`          | Run the complete library and gallery validation before committing.                                         |
 
 The library check includes Oxlint, strict TypeScript, ten Playwright-backed
 browser tests, ESM/CommonJS builds, packed JavaScript and TypeScript consumer

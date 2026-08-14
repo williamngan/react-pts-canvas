@@ -12,8 +12,11 @@ pnpm check:examples
 ```
 
 Vite and TypeScript resolve `react-pts-canvas` directly to `../../src`, so app
-development always exercises unpublished component changes. The root packed
-package checks independently verify the public `dist` exports.
+development always exercises unpublished component changes. Edits in the root
+`src/` directory are hot-reloaded by `pnpm dev`; rebuilding the library first
+is not necessary. Run root `pnpm build` only when you need to generate or check
+the publishable `dist` package. The root packed-package checks independently
+verify those public exports.
 
 To test an unpublished sibling Pts checkout, set `PTS_PATH` to its repository
 root:
