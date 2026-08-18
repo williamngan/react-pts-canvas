@@ -1,5 +1,10 @@
 # React Pts Canvas modernization plan
 
+> **Status: completed (August 2026).** This is a historical implementation
+> record, not an active work queue. Use [`../API.md`](../API.md) for the current
+> public contract and the [README development section](../README.md#development)
+> for current repository instructions.
+
 ## Objective
 
 Bring `react-pts-canvas` up to date with the rebuilt Pts package and the current

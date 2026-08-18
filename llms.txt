@@ -1,0 +1,46 @@
+# react-pts-canvas
+
+> A typed React 18.2/19 component that owns a Pts CanvasSpace and connects Pts
+> drawing, input, players, and disposal to React lifecycle.
+
+Canonical documentation:
+
+- [README](https://github.com/williamngan/react-pts-canvas/blob/master/README.md): installation, common workflows, React Server Component usage, repository setup, and validation commands
+- [API reference](https://github.com/williamngan/react-pts-canvas/blob/master/API.md): every public prop, default, callback, exported type, precedence rule, and lifecycle transition
+- [Migration guide](https://github.com/williamngan/react-pts-canvas/blob/master/MIGRATION.md): upgrading from npm 0.5.2 and deprecated-prop replacements
+- [Changelog](https://github.com/williamngan/react-pts-canvas/blob/master/CHANGELOG.md): released versus unreleased behavior
+- [Pts guide](https://ptsjs.org/guide/): the underlying Pts drawing and Space model
+
+Core package facts:
+
+- Runtime export: `PtsCanvas`.
+- Primary types: `PtsCanvasProps`, `PtsCanvasImperative`, callback types,
+  `PtsCanvasInputOptions`, `ActionType`, and error context/phase types.
+- Peer dependencies: Pts `^0.12.9`, React `^18.2.0` or React 19, and matching
+  React DOM.
+- Entries: ESM and CommonJS with TypeScript declarations and a preserved
+  `"use client"` directive.
+- DOM: one wrapper `div` containing one `canvas`; size the wrapper explicitly.
+- Defaults: background `#9ab`; resize, retina, play, refresh, pointer, and touch
+  enabled; offscreen buffer, keyboard, visibility pauses, and frame throttling
+  disabled.
+- Live updates: callbacks, background, resize, input, playback, refresh,
+  min-frame time, visibility controls, players, and tempo.
+- Space replacement: `retina`, Pts `offscreen`, or effective pixel-density
+  changes.
+- Cleanup order: function returned by `onReady`, then `onDispose`, then input
+  teardown and `CanvasSpace.dispose()`.
+- Input caveat: Pts does not update the pointer or dispatch actions while the
+  space is stopped; `play={false}` also suspends `onAction`.
+- RSC caveat: the package is a Client Component boundary, but drawing callbacks
+  must originate in a consumer module marked `"use client"`.
+- Ownership: consumers may inspect the imperative space/form/player but must not
+  dispose the space or mutate the internal callback player.
+
+Repository status:
+
+- npm 0.5.2 is the last published release before the current modernization.
+- Repository changes remain under `CHANGELOG.md`'s Unreleased heading until a
+  maintainer selects and publishes a version.
+- `src/index.tsx` and `API.md` are the runtime and prose sources of truth.
+- `dist/` is generated. Run `pnpm check` for complete validation.

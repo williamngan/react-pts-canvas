@@ -20,6 +20,10 @@
     "./package.json": "./package.json"
   },
   "files": [
+    "API.md",
+    "CHANGELOG.md",
+    "MIGRATION.md",
+    "llms.txt",
     "dist"
   ],
   "sideEffects": false,
@@ -34,12 +38,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:package": "node scripts/check-packed-package.mjs",
+    "check:docs": "node scripts/check-docs.mjs",
     "lint": "oxlint --react-plugin --vitest-plugin --deny-warnings src test scripts vite.config.ts",
     "format": "prettier --write . --ignore-unknown",
     "format:check": "prettier --check . --ignore-unknown",
     "preview": "pnpm --filter @react-pts-canvas/gallery preview",
     "check:package": "publint && attw --pack .",
-    "check:library": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:package && pnpm check:package",
+    "check:library": "pnpm lint && pnpm typecheck && pnpm test && pnpm check:docs && pnpm build && pnpm test:package && pnpm check:package",
     "check:examples": "pnpm format:check && pnpm --filter @react-pts-canvas/gallery check",
     "check": "pnpm check:library && pnpm check:examples",
     "prepublishOnly": "pnpm check:library",

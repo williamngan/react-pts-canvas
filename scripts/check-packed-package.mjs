@@ -56,6 +56,22 @@ try {
     await linkDependency(dependency);
   }
 
+  for (const documentation of [
+    "API.md",
+    "CHANGELOG.md",
+    "MIGRATION.md",
+    "README.md",
+    "llms.txt",
+  ]) {
+    const contents = await readFile(
+      join(packageDirectory, documentation),
+      "utf8",
+    );
+    if (contents.trim().length === 0) {
+      throw new Error(`Packed documentation is empty: ${documentation}`);
+    }
+  }
+
   await writeFile(
     join(temporaryDirectory, "package.json"),
     `${JSON.stringify({ private: true, type: "module" }, null, 2)}\n`,

@@ -1,0 +1,16 @@
+# react-pts-canvas example gallery
+
+> Interactive examples for the react-pts-canvas React wrapper around Pts.
+
+Canonical sources:
+
+- https://github.com/williamngan/react-pts-canvas/blob/master/README.md
+- https://github.com/williamngan/react-pts-canvas/blob/master/API.md
+- https://github.com/williamngan/react-pts-canvas/blob/master/MIGRATION.md
+- https://github.com/williamngan/react-pts-canvas/blob/master/llms.txt
+
+The gallery demonstrates pointer drawing, animation control, render-on-demand
+data visualization, and sound. Its displayed code is abbreviated; use API.md
+for exact defaults and lifecycle semantics. Audio and other external resources
+are acquired and released in React effects, while Pts callbacks draw and handle
+space input.

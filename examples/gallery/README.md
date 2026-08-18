@@ -4,6 +4,12 @@ This private Vite application demonstrates the local `react-pts-canvas`
 workspace package. Its source and tooling are intentionally separate from the
 publishable package at the repository root.
 
+The gallery is a teaching surface, not the canonical API reference. Use the
+root [`API.md`](../../API.md) for exact props, defaults, and lifecycle behavior.
+Displayed code blocks are condensed from the maintained components in `src/`;
+resource acquisition such as audio loading belongs in React effects with
+cleanup rather than in a Pts drawing callback.
+
 Run it from the repository root:
 
 ```bash

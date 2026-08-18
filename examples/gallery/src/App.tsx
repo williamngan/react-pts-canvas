@@ -56,9 +56,20 @@ const chartCode = `
 `;
 
 const soundCode = `
+useEffect(() => {
+  let active = true;
+  void Sound.load(file).then((loaded) => {
+    if (active) sound.current = loaded.analyze(256);
+  });
+  return () => {
+    active = false;
+    if (sound.current?.playing) sound.current.stop();
+    sound.current = null;
+  };
+}, [file]);
+
 <PtsCanvas
   background="#42c7f5"
-  onReady={loadSound}
   onAnimate={drawFrequencyDomain}
   onAction={toggleSound}
 />
@@ -105,8 +116,8 @@ export default function App() {
             <p className="index">01 / Pointer</p>
             <h2>Start with one callback</h2>
             <p>
-              `onAnimate` receives the live Pts space and form. Move across the
-              canvas to redraw a field of rectangles.
+              <code>onAnimate</code> receives the live Pts space and form. Move
+              across the canvas to redraw a field of rectangles.
             </p>
             <CodeBlock>{basicCode}</CodeBlock>
           </div>
@@ -149,8 +160,9 @@ export default function App() {
             <p className="index">03 / Data</p>
             <h2>Render only when data changes</h2>
             <p>
-              This chart keeps continuous playback off and calls `playOnce`
-              after React calculates a new Gaussian distribution.
+              This chart keeps continuous playback off and calls{" "}
+              <code>playOnce</code> after React calculates a new Gaussian
+              distribution.
             </p>
             <label>
               Variance <strong>{variance.toFixed(2)}</strong>
@@ -192,8 +204,8 @@ export default function App() {
       </section>
 
       <footer>
-        Built with React, Vite, Pts, and `react-pts-canvas`. Music in the sound
-        example by MrGreenH.
+        Built with React, Vite, Pts, and <code>react-pts-canvas</code>. Music in
+        the sound example by MrGreenH.
       </footer>
     </main>
   );

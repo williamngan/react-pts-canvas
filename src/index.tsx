@@ -28,22 +28,40 @@ import {
 
 import { useIsomorphicLayoutEffect } from "./hooks";
 
+/**
+ * Read-only access to objects owned by {@link PtsCanvas}.
+ *
+ * Do not dispose the returned space or mutate the internal callback player.
+ * Values are unavailable before initialization and during teardown.
+ */
 export type PtsCanvasImperative = {
+  /** Return the owned Pts space, or `undefined` while unavailable. */
   getSpace: () => CanvasSpace | undefined;
+  /** Return the form passed to lifecycle callbacks. */
   getForm: () => CanvasForm | undefined;
+  /** Return the internal callback bridge. Treat it as read-only. */
   getPlayer: () => IPlayer | undefined;
+  /** Return the rendered canvas element, or `null` while unavailable. */
   getCanvas: () => HTMLCanvasElement | null;
+  /** Return the rendered wrapper element, or `null` while unavailable. */
   getContainer: () => HTMLDivElement | null;
 };
 
+/** Cleanup recognized when returned from `onReady`. */
 export type PtsCanvasCleanup = () => void;
 
+/**
+ * Called once after a new CanvasSpace and form are initialized and sized.
+ * Returning a function registers cleanup for replacement or unmount; other
+ * return values are ignored.
+ */
 export type HandleReadyFn = (
   space: CanvasSpace,
   form: CanvasForm,
   bound: Bound,
 ) => unknown;
 
+/** Called for each Pts frame that advances while the space is playing. */
 export type HandleAnimateFn = (
   space: CanvasSpace,
   form: CanvasForm,
@@ -51,6 +69,10 @@ export type HandleAnimateFn = (
   frameTime: number,
 ) => void;
 
+/**
+ * Called for the initial Pts measurement and later resize operations. The
+ * initial call normally precedes `onReady` and can have no event.
+ */
 export type HandleResizeFn = (
   space: CanvasSpace,
   form: CanvasForm,
@@ -58,6 +80,7 @@ export type HandleResizeFn = (
   event?: Event,
 ) => void;
 
+/** Known Pts actions plus custom or future string action names. */
 export type ActionType =
   | "up"
   | "down"
@@ -79,6 +102,10 @@ export type ActionType =
   | "all"
   | (string & {});
 
+/**
+ * Called for enabled Pts input while the space is playing. Keyboard actions
+ * encode Shift as `x` and Alt as `y`, using `1` when held and `0` otherwise.
+ */
 export type HandleActionFn = (
   space: CanvasSpace,
   form: CanvasForm,
@@ -88,6 +115,7 @@ export type HandleActionFn = (
   event: Event,
 ) => void;
 
+/** Owned lifecycle phase that produced an `onError` report. */
 export type PtsCanvasErrorPhase =
   | "initialize"
   | "ready"
@@ -97,29 +125,42 @@ export type PtsCanvasErrorPhase =
   | "cleanup"
   | "dispose";
 
+/** Context passed to `onError`; initialization can provide partial objects. */
 export type PtsCanvasErrorContext = {
   phase: PtsCanvasErrorPhase;
   space?: CanvasSpace;
   form?: CanvasForm;
 };
 
+/**
+ * Handles owned lifecycle errors. Providing this callback prevents the
+ * original error from being rethrown unless this callback itself throws.
+ */
 export type HandleErrorFn = (
   error: unknown,
   context: PtsCanvasErrorContext,
 ) => void;
 
+/** Called after ready cleanup and immediately before owned space disposal. */
 export type HandleDisposeFn = (space: CanvasSpace, form: CanvasForm) => void;
 
+/** Declarative Pts input bindings. */
 export type PtsCanvasInputOptions = {
-  /** Bind Pts pointer events to the canvas. */
+  /** Bind Pts pointer events to the canvas. Defaults to legacy `touch` (`true`). */
   pointer?: boolean;
-  /** Bind Pts touch events to the canvas. */
+  /** Bind Pts touch events to the canvas. Defaults to legacy `touch` (`true`). */
   touch?: boolean;
-  /** Use passive touchstart/touchmove listeners. */
+  /** Use passive touchstart/touchmove listeners. Defaults to `false`. */
   touchPassive?: boolean;
-  /** Bind Pts keyboard events. The canvas receives `tabIndex={0}` when targeted. */
+  /**
+   * Bind Pts keyboard events. Defaults to `false`. The canvas receives
+   * `tabIndex={0}` when targeted unless `canvasProps.tabIndex` overrides it.
+   */
   keyboard?: boolean;
-  /** Bind keyboard events to the focusable canvas or globally to `document`. */
+  /**
+   * Bind keyboard events to the focusable canvas or globally to `document`.
+   * Defaults to `"canvas"`.
+   */
   keyboardTarget?: "canvas" | "document";
 };
 
@@ -128,54 +169,103 @@ type NativeCanvasProps = Omit<
   "className" | "onError" | "style"
 >;
 
+/** Props for {@link PtsCanvas}. See `API.md` for the complete lifecycle contract. */
 export type PtsCanvasProps = NativeCanvasProps & {
-  /** Class prefix for the wrapper and its canvas. Set to an empty string to disable. */
+  /**
+   * Class prefix for the wrapper and canvas. Defaults to `"pts-react"` and
+   * generates `prefix` / `prefix-canvas`. Empty string disables both.
+   */
   classPrefix?: string;
-  /** @deprecated Use `classPrefix`. */
+  /** @deprecated Use `classPrefix`. Acts as its fallback when absent. */
   name?: string;
-  /** @deprecated Use `containerProps.className`. */
+  /** @deprecated Use `containerProps.className`. Classes are concatenated. */
   className?: string;
-  /** @deprecated Use `canvasProps.className`. */
+  /** @deprecated Use `canvasProps.className`. Classes are concatenated. */
   canvasClassName?: string;
-  /** @deprecated Use `containerProps.style`. */
+  /** @deprecated Use `containerProps.style`, whose properties win when merged. */
   style?: CSSProperties;
-  /** @deprecated Use `canvasProps.style`. */
+  /** @deprecated Use `canvasProps.style`, whose properties win when merged. */
   canvasStyle?: CSSProperties;
-  /** Props for the wrapper. Values here take precedence over legacy aliases. */
+  /**
+   * Props for the wrapper. Generic attributes apply directly, class names are
+   * concatenated, and style properties override deprecated wrapper style.
+   */
   containerProps?: Omit<HTMLAttributes<HTMLDivElement>, "children">;
-  /** Canvas props. Values here take precedence over top-level native props. */
+  /**
+   * Canvas props. Generic attributes override duplicate top-level native
+   * props; class names concatenate and style properties override canvasStyle.
+   * Its children and tabIndex also override component-provided values.
+   */
   canvasProps?: CanvasHTMLAttributes<HTMLCanvasElement>;
-  /** Receive the underlying wrapper element. */
+  /** Receive the underlying wrapper element and `null` on unmount. */
   containerRef?: Ref<HTMLDivElement>;
-  /** Receive the underlying canvas element. */
+  /** Receive the underlying canvas element and `null` on unmount. */
   canvasRef?: Ref<HTMLCanvasElement>;
+  /** Canvas background. Defaults to `"#9ab"`; updates the current space. */
   background?: string;
+  /** Enable Pts automatic wrapper resizing. Defaults to `true`; updates live. */
   resize?: boolean;
+  /** Enable device-pixel-ratio scaling. Defaults to `true`; changes replace the space. */
   retina?: boolean;
+  /**
+   * Create a Pts offscreen drawing buffer. Defaults to `false`; changes replace
+   * the space. This is unrelated to viewport visibility.
+   */
   offscreen?: boolean;
+  /**
+   * Explicit positive finite pixel scale. Overrides retina-derived scale;
+   * effective changes replace the space.
+   */
   pixelDensity?: number;
-  /** Cap the effective pixel density, including an explicit `pixelDensity`. */
+  /**
+   * Positive finite cap for device or explicit pixel density. Effective
+   * changes replace the space.
+   */
   maxPixelDensity?: number;
+  /**
+   * Request continuous playback. Defaults to `true`; stopped spaces do not
+   * dispatch Pts actions or update the pointer.
+   */
   play?: boolean;
-  /** @deprecated Use `input.pointer` and `input.touch`. */
+  /**
+   * @deprecated Use `input.pointer` and `input.touch`. Defaults to `true` and
+   * remains the fallback for both fields.
+   */
   touch?: boolean;
+  /** Explicit pointer, touch, passive-touch, and keyboard bindings. */
   input?: PtsCanvasInputOptions;
+  /** Clear before each frame. Defaults to `true`; updates the current space. */
   refresh?: boolean;
-  /** Minimum elapsed milliseconds between rendered Pts frames. */
+  /**
+   * Minimum finite, non-negative milliseconds between advanced Pts frames.
+   * Defaults to `0` and updates live.
+   */
   minFrameTime?: number;
-  /** Stop playback while the document is hidden. */
+  /** Stop requested playback while the document is hidden. Defaults to `false`. */
   pauseWhenHidden?: boolean;
-  /** Stop playback while the component is outside the viewport. */
+  /**
+   * Stop requested playback while outside the viewport. Defaults to `false`
+   * and requires IntersectionObserver.
+   */
   pauseWhenOffscreen?: boolean;
+  /** Called once for each initialized space; may return owned cleanup. */
   onReady?: HandleReadyFn;
+  /** Called for each advanced frame while playing. */
   onAnimate?: HandleAnimateFn;
+  /** Called for initial measurement and later Pts resizes. */
   onPtsResize?: HandleResizeFn;
+  /** Called for enabled Pts input while playing. */
   onAction?: HandleActionFn;
+  /** Report and swallow owned lifecycle errors. */
   onError?: HandleErrorFn;
+  /** Called after ready cleanup and before owned space disposal. */
   onDispose?: HandleDisposeFn;
-  /** Additional Pts players owned by this component. */
+  /**
+   * Additional Pts players reconciled by identity. Defaults to empty. Replace
+   * the array rather than mutating it in place.
+   */
   players?: readonly IPlayer[];
-  /** Convenience player. Prefer `players` when managing multiple players. */
+  /** Convenience Tempo membership. Prefer `players` for multiple players. */
   tempo?: Tempo;
 };
 
@@ -846,6 +936,12 @@ function PtsCanvasComponent(
   );
 }
 
+/**
+ * React component that owns a Pts CanvasSpace for one rendered canvas.
+ *
+ * Size its wrapper explicitly and use the forwarded imperative ref only for
+ * inspection or scoped commands; the component retains lifecycle ownership.
+ */
 export const PtsCanvas = forwardRef<PtsCanvasImperative, PtsCanvasProps>(
   PtsCanvasComponent,
 );

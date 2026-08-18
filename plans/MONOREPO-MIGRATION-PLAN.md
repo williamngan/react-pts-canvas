@@ -1,5 +1,10 @@
 # Example workspace migration plan
 
+> **Status: completed (August 2026).** This is a historical implementation
+> record, not an active work queue. Use [`../API.md`](../API.md) for the current
+> public contract and the [README development section](../README.md#development)
+> for current repository instructions.
+
 ## Objective
 
 Move the maintained `react-pts-canvas-examples` gallery into the
