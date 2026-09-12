@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "vitest", "unicorn", "oxc"],
+  "rules": {
+    "eqeqeq": "error",
+    "react/jsx-key": "error",
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "error"
+  },
+  "settings": {
+    "react": {
+      "version": "19.2.8"
+    }
+  },
+  "ignorePatterns": ["dist", "coverage", "examples/gallery/dist"]
+}

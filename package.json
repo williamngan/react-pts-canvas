@@ -1,40 +1,93 @@
 {
   "name": "react-pts-canvas",
-  "private": false,
-  "version": "0.5.2",
+  "version": "1.0.0",
+  "description": "A React canvas component for the Pts creative-coding library.",
   "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "API.md",
+    "CHANGELOG.md",
+    "MIGRATION.md",
+    "llms.txt",
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc --p ./tsconfig-build.json && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "prepublishOnly": "pnpm run build"
+    "dev": "pnpm --filter @react-pts-canvas/gallery dev",
+    "build": "vite build && tsc --project tsconfig.lib.json && node scripts/create-cjs-declaration.mjs",
+    "build:examples": "pnpm --filter @react-pts-canvas/gallery build",
+    "typecheck": "tsc --project tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:package": "node scripts/check-packed-package.mjs",
+    "check:docs": "node scripts/check-docs.mjs",
+    "lint": "oxlint --react-plugin --vitest-plugin --deny-warnings src test scripts vite.config.ts",
+    "format": "prettier --write . --ignore-unknown",
+    "format:check": "prettier --check . --ignore-unknown",
+    "preview": "pnpm --filter @react-pts-canvas/gallery preview",
+    "check:package": "publint && attw --pack .",
+    "check:library": "pnpm lint && pnpm typecheck && pnpm test && pnpm check:docs && pnpm build && pnpm test:package && pnpm check:package",
+    "check:examples": "pnpm format:check && pnpm --filter @react-pts-canvas/gallery check",
+    "check": "pnpm check:library && pnpm check:examples",
+    "prepublishOnly": "pnpm check:library",
+    "prepack": "pnpm build"
   },
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "pts": "^0.12.8"
+    "pts": "^1.0.0",
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.19",
-    "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.19",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "eslint": "^8.56.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
-    "pts": "^0.12.8",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.1.0",
-    "vite-plugin-dts": "^3.7.2"
+    "@arethetypeswrong/cli": "0.18.5",
+    "@types/node": "26.2.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.0.5",
+    "@vitest/browser-playwright": "4.1.10",
+    "oxlint": "1.78.0",
+    "playwright": "1.62.1",
+    "prettier": "3.9.6",
+    "pts": "1.0.0",
+    "publint": "0.3.23",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "typescript": "7.0.2",
+    "vite": "8.2.1",
+    "vitest": "4.1.10"
   },
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "files": [
-    "dist"
-  ]
+  "keywords": [
+    "canvas",
+    "creative-coding",
+    "pts",
+    "react",
+    "visualization"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/williamngan/react-pts-canvas.git"
+  },
+  "bugs": {
+    "url": "https://github.com/williamngan/react-pts-canvas/issues"
+  },
+  "homepage": "https://github.com/williamngan/react-pts-canvas#readme",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@11.21.0"
 }

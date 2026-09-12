@@ -1,23 +1,34 @@
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
-import react from '@vitejs/plugin-react';
-import dts from 'vite-plugin-dts';
+import { resolve } from "node:path";
 
-// https://vitejs.dev/config/
+import react from "@vitejs/plugin-react";
+import { playwright } from "@vitest/browser-playwright";
+import { defineConfig } from "vitest/config";
+
 export default defineConfig({
-  plugins: [react(), dts({ include: ['lib'] })],
+  plugins: [react()],
+  optimizeDeps: {
+    include: ["react-dom/test-utils"],
+  },
   build: {
-    lib: {
-      entry: resolve(__dirname, 'lib/main.tsx'),
-      formats: ['es']
-    },
     copyPublicDir: false,
+    sourcemap: true,
+    lib: {
+      entry: resolve(import.meta.dirname, "src/index.tsx"),
+      formats: ["es", "cjs"],
+      fileName: (format) => (format === "es" ? "index.js" : "index.cjs"),
+    },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
-      output: {
-        assetFileNames: 'assets/[name][extname]',
-        entryFileNames: '[name].js'
-      }
-    }
-  }
+      external: ["pts", "react", "react/jsx-runtime"],
+    },
+  },
+  test: {
+    include: ["test/**/*.spec.tsx"],
+    restoreMocks: true,
+    browser: {
+      enabled: true,
+      provider: playwright(),
+      headless: true,
+      instances: [{ browser: "chromium" }],
+    },
+  },
 });
