@@ -1,2 +1,4 @@
 packages:
   - "examples/*"
+minimumReleaseAgeExclude:
+  - pts@1.0.0

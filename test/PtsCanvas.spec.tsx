@@ -148,7 +148,7 @@ describe("PtsCanvas", () => {
     await waitUntilReady(mounted.ref);
 
     const player = mounted.ref.current?.getPlayer();
-    player?.animate?.(0, 0, mounted.ref.current?.getSpace());
+    player?.animate?.(0, 0, mounted.ref.current!.getSpace()!);
     expect(firstAnimate).toHaveBeenCalledWith(
       mounted.ref.current?.getSpace(),
       mounted.ref.current?.getForm(),
@@ -166,7 +166,7 @@ describe("PtsCanvas", () => {
     await vi.waitFor(() => {
       expect(mounted.ref.current?.getSpace()?.isPlaying).toBe(true);
     });
-    player?.animate?.(16, 16, mounted.ref.current?.getSpace());
+    player?.animate?.(16, 16, mounted.ref.current!.getSpace()!);
     expect(firstAnimate).toHaveBeenCalledOnce();
     expect(secondAnimate).toHaveBeenCalled();
 
@@ -357,7 +357,7 @@ describe("PtsCanvas", () => {
     });
     mounted.ref.current
       ?.getPlayer()
-      ?.animate?.(1, 1, mounted.ref.current.getSpace());
+      ?.animate?.(1, 1, mounted.ref.current.getSpace()!);
     expect(onError).toHaveBeenCalledWith(
       animateError,
       expect.objectContaining({ phase: "animate" }),

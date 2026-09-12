@@ -24,9 +24,11 @@ pnpm add react-pts-canvas pts
 npm install react-pts-canvas pts
 ```
 
-The package supports Pts `^0.12.9`, React `^18.2.0` or React 19, and the matching
-React DOM version. It publishes ESM, CommonJS, and TypeScript declarations.
-React, React DOM, and Pts are peer dependencies rather than bundled code.
+The package requires Pts `^1.0.0`, React `^18.2.0` or React 19, and the
+matching React DOM version. It publishes ESM, CommonJS, and TypeScript
+declarations. React, React DOM, and Pts are peer dependencies rather than
+bundled code. Projects on `react-pts-canvas@0.5.2` must also move from Pts 0.12
+to Pts 1.0; see the [migration guide](./MIGRATION.md#upgrade-pts-to-10).
 
 ## Quick start
 

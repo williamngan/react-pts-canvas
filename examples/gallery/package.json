@@ -15,7 +15,7 @@
     "check": "pnpm lint && pnpm typecheck && pnpm build && pnpm test:smoke"
   },
   "dependencies": {
-    "pts": "0.12.9",
+    "pts": "1.0.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-pts-canvas": "workspace:*"

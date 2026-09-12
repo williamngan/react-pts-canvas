@@ -1,11 +1,12 @@
 # react-pts-canvas API reference
 
-This file is the canonical public contract for the unreleased repository
-version of `react-pts-canvas`. It is intentionally explicit enough for people,
-IDEs, and language models to use without reading the implementation.
+This file is the canonical public contract for the current version of
+`react-pts-canvas`, which targets Pts 1.0. It is intentionally explicit enough
+for people, IDEs, and language models to use without reading the
+implementation.
 
-For a first example, start with the [README](./README.md). For changes relative
-to npm 0.5.2, see [MIGRATION.md](./MIGRATION.md).
+For a first example, start with the [README](./README.md). For upgrading from
+npm 0.5.2, see [MIGRATION.md](./MIGRATION.md).
 
 ## Import
 
@@ -33,11 +34,12 @@ TypeScript type.
 
 ## Runtime environment
 
-Client-side initialization requires an HTML canvas 2D context,
-`requestAnimationFrame`, `MutationObserver`, and—while automatic resizing is
-enabled—`ResizeObserver`. Pointer input requires `PointerEvent`; touch and
-keyboard bindings use their corresponding DOM events. `IntersectionObserver`
-is optional and only affects `pauseWhenOffscreen`.
+The package requires the Pts `^1.0.0` peer dependency. Client-side
+initialization requires an HTML canvas 2D context, `requestAnimationFrame`,
+and—while automatic resizing is enabled—`ResizeObserver`. Pointer input
+requires `PointerEvent`; touch and keyboard bindings use their corresponding
+DOM events. `IntersectionObserver` is optional and only affects
+`pauseWhenOffscreen`.
 
 The automated component and gallery suites run in Chromium. The project does
 not currently publish a broader browser-version matrix. Server rendering does
@@ -168,8 +170,9 @@ type HandleResizeFn = (
 ```
 
 Called during the initial measurement and later Pts resize operations. The
-initial call can have no event and normally precedes `onReady`. This prop is
-named `onPtsResize` to avoid colliding with React's native canvas `onResize`
+initial call can have no event and normally precedes `onReady`. Pts reports a
+missing event as `null`; the component normalizes it to `undefined`. This prop
+is named `onPtsResize` to avoid colliding with React's native canvas `onResize`
 attribute.
 
 ### `onAction`

@@ -1,9 +1,8 @@
 # Migration guide
 
-This guide covers the unreleased repository version relative to the current npm
-release, `react-pts-canvas@0.5.2`. The eventual release version has not been
-selected. Use [CHANGELOG.md](./CHANGELOG.md) to confirm whether these changes
-have been published before applying them to an installed package.
+This guide covers upgrading from `react-pts-canvas@0.5.2` to the current
+version, which requires Pts 1.0. Use [CHANGELOG.md](./CHANGELOG.md) to confirm
+which changes are included in the version you install.
 
 The component remains source-compatible with most 0.5.2 usage. The main work is
 replacing deprecated DOM/input aliases and adopting the documented lifecycle
@@ -11,9 +10,9 @@ ownership rules.
 
 ## Peer and tool versions
 
-The unreleased package expects:
+The current package expects:
 
-- `pts@^0.12.9`
+- `pts@^1.0.0` (0.5.2 accepted `^0.12.8`)
 - `react@^18.2.0` or React 19
 - a matching `react-dom` version
 - Node 18 or newer when package engines are evaluated by consumer tooling
@@ -21,6 +20,27 @@ The unreleased package expects:
 Repository development has a narrower toolchain requirement: Node `^20.19.0`
 or `>=22.12.0` and pnpm. That contributor requirement does not change the
 browser component API.
+
+## Upgrade Pts to 1.0
+
+The Pts peer range moved from `^0.12.8` to `^1.0.0`. Upgrade both packages
+together:
+
+```bash
+pnpm add react-pts-canvas@latest pts@^1.0.0
+```
+
+The component's public props, callbacks, and exported types are unchanged by
+this peer update. Pts 1.0 narrows some of its own `IPlayer` callback types and
+reports a missing resize event as `null`; the component normalizes that value
+to `undefined`, so `HandleResizeFn` keeps its optional `Event` argument. Pts
+1.0 also publishes its own ESM and CommonJS entries, which the package resolves
+without bundler configuration.
+
+Drawing code that calls Pts directly should be checked against the
+[Pts 1.0 release notes](https://github.com/williamngan/pts/releases) and the
+[Pts guide](https://ptsjs.org/guide/); this guide covers only the React
+wrapper.
 
 ## Replace legacy DOM props
 

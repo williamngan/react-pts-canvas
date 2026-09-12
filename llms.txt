@@ -16,8 +16,8 @@ Core package facts:
 - Runtime export: `PtsCanvas`.
 - Primary types: `PtsCanvasProps`, `PtsCanvasImperative`, callback types,
   `PtsCanvasInputOptions`, `ActionType`, and error context/phase types.
-- Peer dependencies: Pts `^0.12.9`, React `^18.2.0` or React 19, and matching
-  React DOM.
+- Peer dependencies: Pts `^1.0.0`, React `^18.2.0` or React 19, and matching
+  React DOM. Upgrading from 0.5.2 also requires upgrading Pts from 0.12 to 1.0.
 - Entries: ESM and CommonJS with TypeScript declarations and a preserved
   `"use client"` directive.
 - DOM: one wrapper `div` containing one `canvas`; size the wrapper explicitly.

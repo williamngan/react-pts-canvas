@@ -24,7 +24,8 @@ These changes exist in the repository but are not part of npm 0.5.2.
 
 ### Changed
 
-- Updated the Pts peer range to `^0.12.9`.
+- **Breaking:** the Pts peer range is now `^1.0.0`. Install Pts 1.0 alongside
+  this release; 0.5.2 accepted Pts `^0.12.8`.
 - Callback functions, background, resizing, input, playback, refresh, frame
   timing, players, and tempo now update without reconstructing `CanvasSpace`.
 - Rendering-context changes reconstruct the space with deterministic cleanup.
@@ -40,6 +41,8 @@ These changes exist in the repository but are not part of npm 0.5.2.
 - Strict Mode no longer delivers stale ready callbacks or leaks owned spaces.
 - Callback changes no longer require a new canvas lifecycle.
 - Player, input, readiness, and disposal cleanup is deterministic.
+- `onPtsResize` receives `undefined` rather than `null` when Pts 1.0 reports a
+  resize without a DOM event.
 
 ## 0.5.2 - 2024-05-03
 

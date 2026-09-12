@@ -675,7 +675,7 @@ function PtsCanvasComponent(
               ownedSpace,
               ownedForm,
               bound,
-              event,
+              event ?? undefined,
             );
           } catch (error) {
             reportError(error, "resize", ownedSpace, ownedForm);
