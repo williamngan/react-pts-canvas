@@ -4,9 +4,7 @@ Notable changes to `react-pts-canvas` are recorded here. The project follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) categories. A release
 version is assigned by the maintainer before publication.
 
-## Unreleased
-
-These changes exist in the repository but are not part of npm 0.5.2.
+## v1.0.0 - 2026-9-12
 
 ### Added
 
@@ -44,9 +42,9 @@ These changes exist in the repository but are not part of npm 0.5.2.
 - `onPtsResize` receives `undefined` rather than `null` when Pts 1.0 reports a
   resize without a DOM event.
 
-## 0.5.2 - 2024-05-03
+## v0.5.2 - 2024-05-03
 
-Last published release before the current modernization. It supports React 18
+Last published release before the 1.0.0 rewrite. It supports React 18
 and Pts `^0.12.8`; consult that release's package declarations for its exact
 contract.
 

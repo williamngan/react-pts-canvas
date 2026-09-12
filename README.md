@@ -285,7 +285,6 @@ the drawing callbacks itself.
   update rule
 - [Migration guide](./MIGRATION.md): upgrading from npm 0.5.2 and replacing
   deprecated props
-- [Changelog](./CHANGELOG.md): released versus unreleased behavior
 - [`llms.txt`](./llms.txt): compact machine-oriented index and core invariants
 
 The maintained React 19 gallery is in
@@ -330,7 +329,7 @@ scripts/              Package and documentation validation
 examples/gallery/     Private React 19 + Vite gallery
 API.md                Canonical public API contract
 MIGRATION.md          Upgrade and deprecation guidance
-CHANGELOG.md          Released and unreleased behavior
+CHANGELOG.md          Release updates
 llms.txt              Machine-oriented documentation index
 plans/                Completed historical implementation records
 dist/                 Generated, ignored package output
@@ -366,8 +365,7 @@ React 19 gallery.
 - Update public JSDoc and [API.md](./API.md) together when behavior, defaults,
   precedence, or lifecycle semantics change.
 - Update [MIGRATION.md](./MIGRATION.md) for compatibility or deprecation changes
-  and record notable work under the Unreleased section of
-  [CHANGELOG.md](./CHANGELOG.md).
+  and record notable work
 - Keep [`llms.txt`](./llms.txt) concise and pointed at canonical documents. Keep
   displayed gallery snippets consistent with their maintained implementations.
 - Preserve the lifecycle and packaging invariants documented in

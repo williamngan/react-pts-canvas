@@ -1,6 +1,6 @@
 {
   "name": "react-pts-canvas",
-  "version": "0.5.2",
+  "version": "1.0.0",
   "description": "A React canvas component for the Pts creative-coding library.",
   "type": "module",
   "main": "./dist/index.cjs",
