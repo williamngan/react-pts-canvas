@@ -432,6 +432,74 @@ describe("PtsCanvas", () => {
     }
   });
 
+  it("delivers canvas-scoped keyboard actions to imperatively added players", async () => {
+    const action = vi.fn<NonNullable<IPlayer["action"]>>();
+    const mounted = await mountCanvas({
+      input: {
+        keyboard: true,
+        keyboardTarget: "canvas",
+        pointer: false,
+        touch: false,
+      },
+      style: { width: 200, height: 120 },
+    });
+    await waitUntilReady(mounted.ref);
+    const space = mounted.ref.current?.getSpace();
+    if (!space) throw new Error("Expected CanvasSpace");
+    space.add({ action });
+    await vi.waitFor(() => expect(space.isPlaying).toBe(true));
+
+    mounted.ref.current
+      ?.getCanvas()
+      ?.dispatchEvent(
+        new KeyboardEvent("keyup", { bubbles: true, shiftKey: true }),
+      );
+    expect(action).toHaveBeenCalledWith(
+      "keyup",
+      1,
+      0,
+      expect.any(KeyboardEvent),
+    );
+
+    const onAction = vi.fn<HandleActionFn>();
+    await mounted.render({
+      input: {
+        keyboard: true,
+        keyboardTarget: "document",
+        pointer: false,
+        touch: false,
+      },
+      onAction,
+      style: { width: 200, height: 120 },
+    });
+    document.dispatchEvent(new KeyboardEvent("keydown", { altKey: true }));
+    expect(onAction).toHaveBeenCalledWith(
+      space,
+      mounted.ref.current?.getForm(),
+      "keydown",
+      0,
+      1,
+      expect.any(KeyboardEvent),
+    );
+    expect(action).toHaveBeenCalledWith(
+      "keydown",
+      0,
+      1,
+      expect.any(KeyboardEvent),
+    );
+
+    await mounted.render({
+      input: { keyboard: false, pointer: false, touch: false },
+      onAction,
+      style: { width: 200, height: 120 },
+    });
+    document.dispatchEvent(new KeyboardEvent("keydown"));
+    mounted.ref.current
+      ?.getCanvas()
+      ?.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true }));
+    expect(onAction).toHaveBeenCalledOnce();
+  });
+
   it("pauses and resumes for document and viewport visibility", async () => {
     let hidden = false;
     vi.spyOn(document, "hidden", "get").mockImplementation(() => hidden);

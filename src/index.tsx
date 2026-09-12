@@ -387,14 +387,6 @@ function PtsCanvasComponent(
       }
     | undefined
   >(undefined);
-  const canvasKeyboardBindingRef = useRef<
-    | {
-        canvas: HTMLCanvasElement;
-        keydown: (event: KeyboardEvent) => void;
-        keyup: (event: KeyboardEvent) => void;
-      }
-    | undefined
-  >(undefined);
   const readyCleanupRef = useRef<PtsCanvasCleanup | undefined>(undefined);
   const requestedPlaybackRef = useRef<boolean | undefined>(undefined);
   const visibilityRef = useRef({
@@ -529,14 +521,6 @@ function PtsCanvasComponent(
     [],
   );
 
-  const unbindCanvasKeyboard = useCallback(() => {
-    const binding = canvasKeyboardBindingRef.current;
-    if (!binding) return;
-    binding.canvas.removeEventListener("keydown", binding.keydown);
-    binding.canvas.removeEventListener("keyup", binding.keyup);
-    canvasKeyboardBindingRef.current = undefined;
-  }, []);
-
   const syncInput = useCallback(
     (
       space: CanvasSpace,
@@ -566,39 +550,15 @@ function PtsCanvasComponent(
       }
 
       space.bindKeyboard(false);
-      unbindCanvasKeyboard();
       appliedInputRef.current = { input: nextInput, space };
 
       if (!nextInput.keyboard) return;
-      if (nextInput.keyboardTarget === "document") {
-        space.bindKeyboard();
-        return;
-      }
-
-      const dispatch = (type: "keydown" | "keyup", event: KeyboardEvent) => {
-        if (!space.isPlaying) return;
-        playerRef.current?.action?.(
-          type,
-          event.shiftKey ? 1 : 0,
-          event.altKey ? 1 : 0,
-          event,
-        );
-        for (const player of activePlayersRef.current) {
-          player.action?.(
-            type,
-            event.shiftKey ? 1 : 0,
-            event.altKey ? 1 : 0,
-            event,
-          );
-        }
-      };
-      const keydown = (event: KeyboardEvent) => dispatch("keydown", event);
-      const keyup = (event: KeyboardEvent) => dispatch("keyup", event);
-      canvas.addEventListener("keydown", keydown);
-      canvas.addEventListener("keyup", keyup);
-      canvasKeyboardBindingRef.current = { canvas, keydown, keyup };
+      space.bindKeyboard(
+        true,
+        nextInput.keyboardTarget === "canvas" ? canvas : undefined,
+      );
     },
-    [unbindCanvasKeyboard],
+    [],
   );
 
   const syncPlayback = useCallback(() => {
@@ -710,7 +670,6 @@ function PtsCanvasComponent(
       syncPlayers(space, initialBehavior.players, initialBehavior.tempo);
       syncPlayback();
     } catch (error) {
-      unbindCanvasKeyboard();
       try {
         space?.bindMouse(false).bindTouch(false).bindKeyboard(false);
         space?.dispose();
@@ -758,7 +717,6 @@ function PtsCanvasComponent(
       }
 
       try {
-        unbindCanvasKeyboard();
         try {
           ownedSpace.bindMouse(false).bindTouch(false).bindKeyboard(false);
         } finally {
@@ -791,7 +749,6 @@ function PtsCanvasComponent(
     syncInput,
     syncPlayback,
     syncPlayers,
-    unbindCanvasKeyboard,
   ]);
 
   useIsomorphicLayoutEffect(() => {

@@ -8,7 +8,7 @@ Canonical documentation:
 - [README](https://github.com/williamngan/react-pts-canvas/blob/master/README.md): installation, common workflows, React Server Component usage, repository setup, and validation commands
 - [API reference](https://github.com/williamngan/react-pts-canvas/blob/master/API.md): every public prop, default, callback, exported type, precedence rule, and lifecycle transition
 - [Migration guide](https://github.com/williamngan/react-pts-canvas/blob/master/MIGRATION.md): upgrading from npm 0.5.2 to 1.0.0 and deprecated-prop replacements
-- [Changelog](https://github.com/williamngan/react-pts-canvas/blob/master/CHANGELOG.md): released versus unreleased behavior
+- [Changelog](https://github.com/williamngan/react-pts-canvas/blob/master/CHANGELOG.md)
 - [Pts guide](https://ptsjs.org/guide/): the underlying Pts drawing and Space model
 
 Core package facts:

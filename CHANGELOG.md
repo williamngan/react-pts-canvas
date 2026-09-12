@@ -41,6 +41,8 @@ version is assigned by the maintainer before publication.
 - Player, input, readiness, and disposal cleanup is deterministic.
 - `onPtsResize` receives `undefined` rather than `null` when Pts 1.0 reports a
   resize without a DOM event.
+- Canvas-scoped keyboard input is bound through Pts, so players added directly
+  to the space receive key actions like players added through props.
 
 ## v0.5.2 - 2024-05-03
 
