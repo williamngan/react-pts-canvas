@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import apiSections from "../../../API.md?sections";
+import { highlight } from "./highlight";
 import {
   AnimationExample,
   BasicExample,
@@ -24,12 +25,75 @@ function gaussianData(variance: number): number[] {
   return points;
 }
 
-function CodeBlock({ children }: { children: string }) {
+/** A code panel in the cli.ptsjs.org style: language label, copy button. */
+function CodeBlock({
+  children,
+  language,
+}: {
+  children: string;
+  language: "bash" | "css" | "tsx";
+}) {
   return (
-    <pre tabIndex={0}>
-      <code>{children.trim()}</code>
-    </pre>
+    <div className="code-panel">
+      <div className="panel-head">
+        <span>{language}</span>
+        <button className="copy-button" type="button" aria-label="Copy code">
+          Copy
+        </button>
+      </div>
+      <pre tabIndex={0}>
+        <code
+          dangerouslySetInnerHTML={{
+            __html: highlight(children.trim(), language),
+          }}
+        />
+      </pre>
+    </div>
   );
+}
+
+/** Same strategy as cli.ptsjs.org: execCommand first, clipboard API second. */
+async function copyText(text: string) {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.append(textarea);
+  textarea.select();
+  const copied = document.execCommand("copy");
+  textarea.remove();
+  if (copied) return;
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  throw new Error("Copy command was unavailable");
+}
+
+/** One delegated handler serves both site and Markdown-rendered panels. */
+function useCopyButtons() {
+  useEffect(() => {
+    const onClick = async (event: MouseEvent) => {
+      const button = (event.target as Element | null)?.closest<HTMLElement>(
+        ".copy-button",
+      );
+      const code = button?.closest(".code-panel")?.querySelector("pre");
+      if (!button || !code) return;
+      const original = button.textContent;
+      try {
+        await copyText(code.innerText);
+        button.textContent = "Copied";
+      } catch {
+        button.textContent = "Copy failed";
+      }
+      window.setTimeout(() => {
+        button.textContent = original;
+      }, 1600);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
 }
 
 /** Keep this block identical to the README quick start. */
@@ -39,7 +103,7 @@ import { PtsCanvas } from "react-pts-canvas";
 export function Drawing() {
   return (
     <PtsCanvas
-      background="#182034"
+      background="#f1f3f9"
       containerProps={{ className: "drawing" }}
       canvasProps={{ "aria-label": "Interactive point drawing" }}
       input={{ pointer: true, touch: true }}
@@ -51,6 +115,10 @@ export function Drawing() {
     </PtsCanvas>
   );
 }
+`;
+
+const installCode = `
+npm install react-pts-canvas pts
 `;
 
 const sizingCode = `
@@ -220,17 +288,15 @@ function useActiveSection(ids: string[]): string {
 
 function SiteHeader() {
   return (
-    <header id="header">
-      <div id="pts">
-        <a href="https://ptsjs.org">
-          Pts<span>.</span>
+    <header className="site-header">
+      <nav className="nav" aria-label="Main navigation">
+        <a className="brand" href="#top" aria-label="react-pts-canvas home">
+          <strong>Pts.</strong>
+          <span>react</span>
         </a>
-        react
-      </div>
-      <nav id="topmenu" aria-label="Site links">
         <a href="https://ptsjs.org">Pts.js</a>
         <a href="https://www.npmjs.com/package/react-pts-canvas">npm</a>
-        <a href={repository}>github</a>
+        <a href={repository}>GitHub</a>
       </nav>
     </header>
   );
@@ -287,8 +353,8 @@ function Example({
         {title}
       </h3>
       {children}
-      <CodeBlock>{code}</CodeBlock>
       <div className="canvas-frame">{canvas}</div>
+      <CodeBlock language="tsx">{code}</CodeBlock>
     </article>
   );
 }
@@ -301,22 +367,19 @@ export default function App() {
   const topLevelIds = useMemo(() => menu.map((entry) => entry.id), []);
   const active = useActiveSection(topLevelIds);
   useInitialHashScroll();
+  useCopyButtons();
 
   return (
     <>
       <SiteHeader />
 
-      <div id="board">
+      <div id="board" className="hero">
         <div className="hero-canvas">
           <HeroExample classPrefix="pts-hero" />
         </div>
         <div className="hero-copy">
           <h1>react-pts-canvas</h1>
-          <p>
-            A typed React component that owns a Pts <code>CanvasSpace</code> and
-            connects drawing, input, players, and disposal to the React
-            lifecycle.
-          </p>
+          <p>Use this component to integrate Pts.js into your React app.</p>
         </div>
       </div>
 
@@ -345,8 +408,7 @@ export default function App() {
             Install the component and its Pts peer dependency in an existing
             React app:
           </p>
-          <CodeBlock>{"pnpm add react-pts-canvas pts"}</CodeBlock>
-          <CodeBlock>{"npm install react-pts-canvas pts"}</CodeBlock>
+          <CodeBlock language="bash">{installCode}</CodeBlock>
           <p>
             The package publishes ESM, CommonJS, and TypeScript declarations
             with a preserved <code>&quot;use client&quot;</code> directive.
@@ -469,16 +531,19 @@ export default function App() {
             callback. It receives the live space and form on every frame while
             the space is playing.
           </p>
-          <CodeBlock>{quickStartCode}</CodeBlock>
+          <div className="example">
+            <div className="canvas-frame quick-start-frame">
+              <QuickStartExample />
+            </div>
+            <CodeBlock language="tsx">{quickStartCode}</CodeBlock>
+          </div>
           <p>
             Give the wrapper an explicit size. Pts measures the wrapper and
             sizes the canvas to match it; canvas <code>width</code> and{" "}
             <code>height</code> attributes are not layout controls.
           </p>
-          <CodeBlock>{sizingCode}</CodeBlock>
-          <div className="canvas-frame quick-start-frame">
-            <QuickStartExample />
-          </div>
+          <CodeBlock language="css">{sizingCode}</CodeBlock>
+
           <h5>
             The quick start above, running live. Move across it. The drawing
             methods belong to Pts; start with the{" "}
@@ -500,7 +565,7 @@ export default function App() {
             rendering-context options such as <code>retina</code> and{" "}
             <code>offscreen</code> replace it.
           </p>
-          <CodeBlock>{lifecycleCode}</CodeBlock>
+          <CodeBlock language="tsx">{lifecycleCode}</CodeBlock>
           <p>
             The initial Pts resize callback normally runs before{" "}
             <code>onReady</code>. If <code>onReady</code> returns a function,
@@ -514,17 +579,11 @@ export default function App() {
             <code>onAction</code>. An external React control can still use the
             imperative ref:
           </p>
-          <CodeBlock>{imperativeCode}</CodeBlock>
+          <CodeBlock language="tsx">{imperativeCode}</CodeBlock>
         </section>
 
         <section id="reference">
           <h2>Reference</h2>
-          <h5>
-            Generated from{" "}
-            <a href={`${repository}/blob/master/API.md`}>API.md</a>, the
-            canonical contract for every prop, default, callback, exported type,
-            and update rule.
-          </h5>
           {apiSections.map((section) => (
             <section key={section.id} id={section.id} className="api-section">
               <h3>{section.title}</h3>

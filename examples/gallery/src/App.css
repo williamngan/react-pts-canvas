@@ -1,48 +1,59 @@
-/* Header, as on ptsjs.org guide and docs pages */
+/* Header, as on cli.ptsjs.org */
 
-#header {
-  position: relative;
-  z-index: 3;
-  font-size: 1.5em;
-  line-height: 70px;
+.site-header {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  height: 66px;
+  color: var(--paper);
+  background: var(--navy);
 }
 
-#header a {
-  color: var(--ink);
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 100%;
+  padding: 0 30px 0 40px;
+}
+
+.nav a {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  font-weight: 650;
   text-decoration: none;
 }
 
-#header a:hover {
-  color: var(--blue);
+.nav a:hover,
+.nav a:visited {
+  color: var(--paper);
 }
 
-#pts {
-  display: inline-block;
-  padding-left: 30px;
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-right: auto;
 }
 
-#pts a {
-  display: inline-block;
-  font-weight: bold;
+.nav a.brand {
+  color: var(--paper);
 }
 
-#pts a > span {
-  display: inline-block;
-  padding: 0 2px;
-  color: var(--blue);
+.brand strong {
+  font-size: 31px;
+  font-weight: 430;
+  line-height: 1;
+  letter-spacing: -0.03em;
 }
 
-#topmenu {
-  position: absolute;
-  top: 0;
-  right: 30px;
-  height: 100%;
-}
-
-#topmenu > a {
-  display: inline-block;
-  padding-left: 15px;
-  vertical-align: middle;
+.brand span {
+  color: rgba(255, 255, 255, 0.58);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 /* Cover board, as on the ptsjs.org home page */
@@ -50,7 +61,7 @@
 #board {
   position: relative;
   width: 100%;
-  height: 50vh;
+  height: calc(50vh - 66px);
   min-height: 18rem;
   overflow: hidden;
   color: #fff;
@@ -71,23 +82,24 @@
   position: relative;
   z-index: 1;
   max-width: 44rem;
-  padding: clamp(2rem, 8vh, 5rem) 30px 0 50px;
+  padding: 30vh 30px 0 40px;
   pointer-events: none;
 }
 
 .hero-copy h1 {
   margin: 0 0 0.35em;
-  font-size: clamp(2.6em, 6vw, 4.6em);
-  font-weight: 400;
+  font-size: clamp(40px, 5.6vw, 72px);
+  font-weight: 360;
   line-height: 1;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.03em;
 }
 
 .hero-copy p {
+  max-width: 630px;
   margin: 0 0 1em;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 1.4em;
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 18px;
+  line-height: 1.3;
 }
 
 .hero-copy code {
@@ -117,10 +129,10 @@
 
 #menu {
   position: sticky;
-  top: 0;
+  top: 66px;
   float: left;
   width: var(--menu-width);
-  max-height: 100vh;
+  max-height: calc(100vh - 66px);
   overflow-y: auto;
   padding: 40px 10px 50px 40px;
   counter-reset: c;
@@ -187,7 +199,6 @@
   min-width: 300px;
   margin-left: var(--post-left);
   margin-bottom: 100px;
-  border-bottom: 2px solid var(--ink);
   padding: 0 0 30px;
   color: var(--ink);
   font-size: 1.3em;
@@ -243,43 +254,118 @@
 }
 
 #post code {
-  color: #60636f;
   font-size: 0.85em;
 }
 
+#post p > code,
+#post li > code,
+#post h5 > code,
 #post a > code {
-  border: 1px solid var(--code-border);
+  display: inline-block;
+  border: 1px solid var(--line);
+  border-radius: 4px;
   padding: 0 5px;
-  background: var(--code-bg);
+  background: var(--soft);
+  line-height: 1.5;
 }
 
 #post a:hover > code {
-  border-color: var(--teal);
-  background: var(--teal);
-  color: #fff;
+  border-color: var(--blue);
+  color: var(--blue);
 }
 
-#post pre {
+/* Code panels, as on cli.ptsjs.org */
+
+.code-panel {
   max-width: 100%;
-  margin: 20px 0;
-  border-left: 2px solid var(--teal);
-  padding: 5px 0 5px 20px;
-  overflow-x: auto;
-  font-size: 0.9em;
-  line-height: 1.5;
+  margin: 20px 0 40px;
+  border-radius: 10px;
+  overflow: hidden;
+  color: var(--paper);
+  background: var(--navy-dark);
+}
+
+.example .code-panel {
+  margin-top: 0;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 42px;
+  padding: 0 8px 0 22px;
+  color: rgba(255, 255, 255, 0.56);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.copy-button {
+  min-height: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 4px;
+  padding: 0 10px;
+  color: rgba(255, 255, 255, 0.72);
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  cursor: pointer;
+}
+
+.copy-button:hover {
+  border-color: var(--paper);
+  color: var(--paper);
+}
+
+.code-panel pre {
+  margin: 0;
+  padding: 4px 23px 16px;
+  overflow: auto;
+  color: var(--code-text);
+  font-size: 13px;
+  line-height: 1.85;
   tab-size: 2;
 }
 
-#post pre code {
-  color: var(--ink-soft);
+.code-panel code {
+  color: inherit;
   font-size: 1em;
+}
+
+.tok-key {
+  color: #b7aaff;
+}
+
+.tok-string,
+.tok-prompt {
+  color: var(--green);
+}
+
+.tok-number {
+  color: #efb7c5;
+}
+
+.tok-function {
+  color: var(--sky);
+}
+
+.tok-comment {
+  color: #8aa0ad;
 }
 
 /* Reference tables rendered from API.md */
 
 .api-section h3 {
   padding-top: 20px;
-  border-top: 1px solid var(--code-border);
 }
 
 .table-scroll {
@@ -321,9 +407,10 @@
   position: relative;
   width: 100%;
   height: clamp(18rem, 42vw, 30rem);
-  margin: 20px 0;
+  margin: 20px 0 0;
   overflow: hidden;
-  outline: 1px solid var(--code-border);
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
 }
 
 .canvas-frame > div {
@@ -410,41 +497,34 @@
 }
 
 @media screen and (max-width: 768px) {
-  #header {
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    line-height: 70px;
-    font-size: 1.2em;
+  html {
+    scroll-padding-top: 112px;
   }
 
-  #pts {
-    padding-left: 0;
-    white-space: nowrap;
+  .site-header {
+    height: 62px;
   }
 
-  #topmenu {
-    position: static;
-    height: auto;
-    margin-left: auto;
-    white-space: nowrap;
+  .nav {
+    gap: 18px;
+    padding: 0 15px;
   }
 
-  #topmenu > a {
-    padding: 0 6px;
+  .brand strong {
+    font-size: 26px;
   }
 
-  #topmenu > a:last-child {
-    padding-right: 0;
+  #board {
+    height: calc(50vh - 62px);
   }
 
   .hero-copy {
-    padding: 2rem 24px 0;
+    padding: 25vh 16px 0;
   }
 
   #menu {
     position: sticky;
-    top: 0;
+    top: 62px;
     z-index: 2;
     float: none;
     width: 100%;
@@ -495,5 +575,10 @@
 
   .canvas-frame {
     height: min(70vw, 24rem);
+  }
+
+  .code-panel pre {
+    padding: 2px 18px 22px;
+    font-size: 11px;
   }
 }

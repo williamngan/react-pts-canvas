@@ -5,6 +5,8 @@ import react from "@vitejs/plugin-react";
 import MarkdownIt from "markdown-it";
 import { defineConfig, type Alias, type Plugin } from "vite";
 
+import { codePanel } from "./src/highlight";
+
 const repositoryUrl = "https://github.com/williamngan/react-pts-canvas";
 
 function localAliases(): Alias[] {
@@ -79,6 +81,10 @@ function markdownSections(idPrefix: string): Plugin {
       `${idPrefix}${slugify(inline?.content ?? "")}`,
     );
     return self.renderToken(tokens, index, options);
+  };
+  markdown.renderer.rules.fence = (tokens, index) => {
+    const token = tokens[index];
+    return codePanel(token?.content ?? "", token?.info.trim() ?? "");
   };
   markdown.renderer.rules.table_open = () =>
     '<div class="table-scroll"><table>';

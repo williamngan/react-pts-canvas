@@ -12,7 +12,16 @@
   --footer: #aeb7c1;
   --code-bg: #f1f3f7;
   --code-border: #e2e6ef;
-  --board: #123;
+  --board: #10283a;
+  --navy: #10283a;
+  --navy-dark: #0b1f2e;
+  --paper: #fff;
+  --soft: #f4f7f9;
+  --line: #d8e1e7;
+  --code-text: #dce7ee;
+  --green: #73dca9;
+  --sky: #79c9f5;
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   --menu-width: min(25%, 300px);
   --post-left: 30%;
   --post-width: min(60%, 60rem);
@@ -26,7 +35,7 @@ html {
   overflow-x: hidden;
   overflow-y: auto;
   scroll-behavior: smooth;
-  scroll-padding-top: 90px;
+  scroll-padding-top: 86px;
 }
 
 body {
@@ -68,8 +77,12 @@ input {
   font: inherit;
 }
 
+code,
+pre {
+  font-family: var(--mono);
+}
+
 code {
-  font-family: Menlo, Consolas, Monaco, monospace;
   font-size: 0.9em;
 }
 

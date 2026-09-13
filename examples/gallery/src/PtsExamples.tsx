@@ -79,7 +79,7 @@ export function HeroExample({ classPrefix }: HeroExampleProps) {
 
   return (
     <PtsCanvas
-      background="#123"
+      background="#10283a"
       canvasProps={{
         "aria-label": "A circle that follows the pointer through random points",
       }}
@@ -98,7 +98,7 @@ export function HeroExample({ classPrefix }: HeroExampleProps) {
 export function QuickStartExample() {
   return (
     <PtsCanvas
-      background="#182034"
+      background="#f1f3f9"
       containerProps={{ className: "drawing" }}
       canvasProps={{ "aria-label": "Interactive point drawing" }}
       input={{ pointer: true, touch: true }}
