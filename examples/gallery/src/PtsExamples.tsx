@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  Circle,
   Const,
   Create,
   Geom,
@@ -10,6 +11,7 @@ import {
   Pt,
   Sound,
   Triangle,
+  Util,
 } from "pts";
 import {
   PtsCanvas,
@@ -35,6 +37,95 @@ type SoundExampleProps = ExampleProps & {
   credit: string;
   file: string;
 };
+
+type HeroExampleProps = {
+  classPrefix: string;
+};
+
+/**
+ * Cover animation for the site header: the `circle.withinBound` demo from
+ * ptsjs.org. A circle follows the pointer through a field of random points;
+ * points inside the circle grow and drift toward its center.
+ */
+export function HeroExample({ classPrefix }: HeroExampleProps) {
+  const points = useRef<Group>(new Group());
+
+  const createPoints = useCallback((space: CanvasSpace) => {
+    points.current = Create.distributeRandom(space.innerBound, 500);
+  }, []);
+
+  const draw = useCallback<HandleAnimateFn>((space, form) => {
+    const colors = ["#ff2d5d", "#42dc8e", "#2e43eb", "#ffe359"];
+    const radius =
+      (Math.abs(space.pointer.x - space.center.x) / space.center.x) * 150 + 70;
+    const range = Circle.fromCenter(space.pointer, radius);
+
+    points.current.forEach((point, index) => {
+      if (Circle.withinBound(range, point)) {
+        const distance =
+          (radius - point.$subtract(space.pointer).magnitude()) / radius;
+        const grown = point
+          .$subtract(space.pointer)
+          .scale(1 + distance)
+          .add(space.pointer);
+        form
+          .fillOnly(colors[index % colors.length] ?? "#fff")
+          .point(grown, distance * 25, "circle");
+      } else {
+        form.fillOnly("#fff").point(point, 0.5);
+      }
+    });
+  }, []);
+
+  return (
+    <PtsCanvas
+      background="#123"
+      canvasProps={{
+        "aria-label": "A circle that follows the pointer through random points",
+      }}
+      classPrefix={classPrefix}
+      input={{ pointer: true, touch: true, touchPassive: true }}
+      onAnimate={draw}
+      onPtsResize={createPoints}
+      onReady={createPoints}
+      pauseWhenHidden
+      pauseWhenOffscreen
+    />
+  );
+}
+
+/** The README quick start, rendered live. Keep it in sync with README.md. */
+export function QuickStartExample() {
+  return (
+    <PtsCanvas
+      background="#182034"
+      containerProps={{ className: "drawing" }}
+      canvasProps={{ "aria-label": "Interactive point drawing" }}
+      input={{ pointer: true, touch: true }}
+      onAnimate={(space, form) => {
+        form.fillOnly("#f6c").point(space.pointer, 12);
+      }}
+    >
+      This drawing requires canvas support.
+    </PtsCanvas>
+  );
+}
+
+export function BasicExample({ background, classPrefix }: ExampleProps) {
+  return (
+    <PtsCanvas
+      background={background}
+      canvasProps={{ "aria-label": "Pointer-controlled line study" }}
+      classPrefix={classPrefix}
+      onAnimate={(space, form) => {
+        const lines = space.innerBound.map((point) =>
+          Line.subpoints([point, space.pointer], 30),
+        );
+        form.strokeOnly("#ffd4e1", 2).rects(Util.zip(lines));
+      }}
+    />
+  );
+}
 
 export function ChartExample({
   data,

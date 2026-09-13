@@ -60,7 +60,7 @@ try {
   await page.waitForFunction(() => {
     const canvases = [...document.querySelectorAll("canvas")];
     return (
-      canvases.length === 4 &&
+      canvases.length === 6 &&
       canvases.every((canvas) => canvas.width > 100 && canvas.height > 100)
     );
   });
@@ -101,6 +101,44 @@ try {
     throw new Error(`Expected every canvas to paint a background: ${painted}`);
   }
 
+  // Documentation structure: hero, reference generated from API.md, and a
+  // section menu whose every link resolves to an element on the page.
+  await page
+    .getByRole("heading", { level: 1, name: "react-pts-canvas" })
+    .waitFor();
+  for (const heading of [
+    "Quick start",
+    "Reference",
+    "Space and playback props",
+    "Lifecycle callback props",
+    "Examples",
+  ]) {
+    await page.getByRole("heading", { name: heading, exact: true }).waitFor();
+  }
+  const danglingLinks = await page
+    .locator("#menu a, #post a[href^='#']")
+    .evaluateAll((links) =>
+      links
+        .map((link) => link.getAttribute("href") ?? "")
+        .filter(
+          (href) =>
+            href.startsWith("#") && !document.getElementById(href.slice(1)),
+        ),
+    );
+  if (danglingLinks.length > 0) {
+    throw new Error(
+      `Menu or reference links without a target: ${danglingLinks.join(", ")}`,
+    );
+  }
+  const propRows = await page
+    .locator("#api-space-and-playback-props table tbody tr")
+    .count();
+  if (propRows < 10) {
+    throw new Error(
+      `Expected the props table from API.md, found ${propRows} rows`,
+    );
+  }
+
   await page.getByRole("button", { name: "Pause animation" }).click();
   await page.getByRole("button", { name: "Resume animation" }).waitFor();
   await page.getByLabel("Gaussian variance").fill("0.5");
@@ -114,7 +152,7 @@ try {
   }
 
   console.log(
-    `Rendered ${painted.length} interactive Pts canvases with no browser errors.`,
+    `Rendered ${painted.length} interactive Pts canvases, ${propRows} documented props, and no browser errors.`,
   );
 } finally {
   await browser?.close();

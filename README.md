@@ -287,11 +287,12 @@ the drawing callbacks itself.
   deprecated props
 - [`llms.txt`](./llms.txt): compact machine-oriented index and core invariants
 
-The maintained React 19 gallery is in
-[`examples/gallery`](https://github.com/williamngan/react-pts-canvas/tree/master/examples/gallery).
-Run `pnpm dev` to view it locally. CI builds and deploys the gallery from the
-default branch; a public URL should only be advertised after that deployment is
-available.
+The documentation site at [react.ptsjs.org](https://react.ptsjs.org) presents
+this material with a generated reference section and live examples. Its source
+is the React 19 application in
+[`examples/gallery`](https://github.com/williamngan/react-pts-canvas/tree/master/examples/gallery);
+run `pnpm dev` to view it locally. CI builds and deploys it from the default
+branch.
 
 ## Development
 
@@ -326,7 +327,7 @@ TypeScript continues to check against the installed Pts package.
 src/                  Public component source and types
 test/                 Real-browser component tests
 scripts/              Package and documentation validation
-examples/gallery/     Private React 19 + Vite gallery
+examples/gallery/     Documentation site (React 19 + Vite), react.ptsjs.org
 API.md                Canonical public API contract
 MIGRATION.md          Upgrade and deprecation guidance
 CHANGELOG.md          Release updates
@@ -345,7 +346,7 @@ Run commands from the repository root.
 
 | Command               | Purpose                                                                         |
 | --------------------- | ------------------------------------------------------------------------------- |
-| `pnpm dev`            | Develop the component and gallery together                                      |
+| `pnpm dev`            | Develop the component and documentation site together                           |
 | `pnpm test:watch`     | Watch the browser component tests                                               |
 | `pnpm test`           | Run the Chromium component tests once                                           |
 | `pnpm build`          | Generate ESM, CommonJS, source maps, and declarations                           |

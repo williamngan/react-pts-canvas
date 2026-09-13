@@ -71,6 +71,9 @@ importers:
         specifier: workspace:*
         version: link:../..
     devDependencies:
+      "@types/markdown-it":
+        specifier: 14.1.2
+        version: 14.1.2
       "@types/node":
         specifier: 26.2.0
         version: 26.2.0
@@ -83,6 +86,9 @@ importers:
       "@vitejs/plugin-react":
         specifier: 6.0.5
         version: 6.0.5(vite@8.2.1(@types/node@26.2.0))
+      markdown-it:
+        specifier: 14.1.0
+        version: 14.1.0
       oxlint:
         specifier: 1.78.0
         version: 1.78.0
@@ -519,6 +525,24 @@ packages:
         integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==,
       }
 
+  "@types/linkify-it@5.0.0":
+    resolution:
+      {
+        integrity: sha512-sVDA58zAw4eWAffKOaQH5/5j3XeayukzDk+ewSsnv3p4yJEZHCCzMDiZM8e0OUrRvmpGZ85jf4yDHkHsgBNr9Q==,
+      }
+
+  "@types/markdown-it@14.1.2":
+    resolution:
+      {
+        integrity: sha512-promo4eFwuiW+TfGxhi+0x3czqTYJkG8qB17ZUJiVF10Xm7NLVRSLUsfRTU/6h1e24VvRnXCx+hG7li58lkzog==,
+      }
+
+  "@types/mdurl@2.0.0":
+    resolution:
+      {
+        integrity: sha512-RGdgjQUZba5p6QEFAVx2OGb8rQDL/cPRG7GiedRzMcJ1tYnUANBncjbSB1NRGwbvjcPeikRABz2nshyPk1bhWg==,
+      }
+
   "@types/node@26.2.0":
     resolution:
       {
@@ -836,6 +860,12 @@ packages:
         integrity: sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A==,
       }
 
+  argparse@2.0.1:
+    resolution:
+      {
+        integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==,
+      }
+
   assertion-error@2.0.1:
     resolution:
       {
@@ -948,6 +978,13 @@ packages:
       {
         integrity: sha512-5U0rVMU5Y2n2+ykNLQqMoqklN9ICBT/KsvC1Gz6vqHbz2AXXGkG+Pm5rMWk/8Vjrr/mY9985Hi8DYzn1F09Nyw==,
       }
+
+  entities@4.5.0:
+    resolution:
+      {
+        integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==,
+      }
+    engines: { node: ">=0.12" }
 
   environment@1.1.0:
     resolution:
@@ -1153,6 +1190,12 @@ packages:
       }
     engines: { node: ">= 12.0.0" }
 
+  linkify-it@5.0.2:
+    resolution:
+      {
+        integrity: sha512-ONTm2jCMAVZjgQa/Fy1kScXsuOoF5NPTsoFBdE1KVIZ2vAh/r9+Bqo+0jINCBYnavTPQZz38QzFTme79ENoN3Q==,
+      }
+
   lru-cache@11.5.2:
     resolution:
       {
@@ -1165,6 +1208,13 @@ packages:
       {
         integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==,
       }
+
+  markdown-it@14.1.0:
+    resolution:
+      {
+        integrity: sha512-a54IwgWPaeBCAAsv13YgmALOF1elABB08FxO9i+r4VFk5Vl4pKokRPeX8u5TCgSsPi6ec1otfLjdOpVcgbpshg==,
+      }
+    hasBin: true
 
   marked-terminal@7.3.0:
     resolution:
@@ -1182,6 +1232,12 @@ packages:
       }
     engines: { node: ">= 16" }
     hasBin: true
+
+  mdurl@2.1.0:
+    resolution:
+      {
+        integrity: sha512-1+HBaOx0zi/dQWht8rNv9MYf9qqpqL/kxI0hXImU6Y547zM6Sni8BQibt7ifgMcYtQg41ao3Ivd6cnSM86inpg==,
+      }
 
   mri@1.2.0:
     resolution:
@@ -1342,6 +1398,13 @@ packages:
       }
     engines: { node: ">=18" }
     hasBin: true
+
+  punycode.js@2.3.1:
+    resolution:
+      {
+        integrity: sha512-uxFIHU0YlHYhDQtV4R9J6a52SLx28BCjT+4ieh7IGbgwVJWO+km431c4yRlREUAsAmt/uMjQUyQHNEPf0M39CA==,
+      }
+    engines: { node: ">=6" }
 
   react-dom@19.2.8:
     resolution:
@@ -1523,6 +1586,12 @@ packages:
       }
     engines: { node: ">=16.20.0" }
     hasBin: true
+
+  uc.micro@2.1.0:
+    resolution:
+      {
+        integrity: sha512-ARDJmphmdvUk6Glw7y9DQ2bFkKBHwQHLi2lsaH6PPmz/Ka9sFOBsBluozhDltWmnv9u/cF6Rt87znRTPV+yp/A==,
+      }
 
   undici-types@8.3.0:
     resolution:
@@ -1844,6 +1913,15 @@ snapshots:
 
   "@types/estree@1.0.9": {}
 
+  "@types/linkify-it@5.0.0": {}
+
+  "@types/markdown-it@14.1.2":
+    dependencies:
+      "@types/linkify-it": 5.0.0
+      "@types/mdurl": 2.0.0
+
+  "@types/mdurl@2.0.0": {}
+
   "@types/node@26.2.0":
     dependencies:
       undici-types: 8.3.0
@@ -2006,6 +2084,8 @@ snapshots:
 
   any-promise@1.3.0: {}
 
+  argparse@2.0.1: {}
+
   assertion-error@2.0.1: {}
 
   chai@6.2.2: {}
@@ -2059,6 +2139,8 @@ snapshots:
   emoji-regex@8.0.0: {}
 
   emojilib@2.4.0: {}
+
+  entities@4.5.0: {}
 
   environment@1.1.0: {}
 
@@ -2141,11 +2223,24 @@ snapshots:
       lightningcss-win32-arm64-msvc: 1.33.0
       lightningcss-win32-x64-msvc: 1.33.0
 
+  linkify-it@5.0.2:
+    dependencies:
+      uc.micro: 2.1.0
+
   lru-cache@11.5.2: {}
 
   magic-string@0.30.21:
     dependencies:
       "@jridgewell/sourcemap-codec": 1.5.5
+
+  markdown-it@14.1.0:
+    dependencies:
+      argparse: 2.0.1
+      entities: 4.5.0
+      linkify-it: 5.0.2
+      mdurl: 2.1.0
+      punycode.js: 2.3.1
+      uc.micro: 2.1.0
 
   marked-terminal@7.3.0(marked@9.1.6):
     dependencies:
@@ -2159,6 +2254,8 @@ snapshots:
       supports-hyperlinks: 3.2.0
 
   marked@9.1.6: {}
+
+  mdurl@2.1.0: {}
 
   mri@1.2.0: {}
 
@@ -2247,6 +2344,8 @@ snapshots:
       package-manager-detector: 1.8.0
       picocolors: 1.1.1
       sade: 1.8.1
+
+  punycode.js@2.3.1: {}
 
   react-dom@19.2.8(react@19.2.8):
     dependencies:
@@ -2367,6 +2466,8 @@ snapshots:
       "@typescript/typescript-sunos-x64": 7.0.2
       "@typescript/typescript-win32-arm64": 7.0.2
       "@typescript/typescript-win32-x64": 7.0.2
+
+  uc.micro@2.1.0: {}
 
   undici-types@8.3.0: {}
 

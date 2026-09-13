@@ -1,8 +1,21 @@
+/*
+ * Typography and color tokens follow ptsjs.org so react.ptsjs.org reads as
+ * part of the same site: 12px system-font base, #123 text, #42e accent.
+ */
 :root {
-  --page-gutter: clamp(1.25rem, 5vw, 5rem);
-  color: #151d31;
-  background: #fff;
-  font-synthesis: none;
+  --blue: #42e;
+  --teal: #0ca;
+  --ink: #123;
+  --ink-soft: #234;
+  --muted: #678;
+  --faint: #90959c;
+  --footer: #aeb7c1;
+  --code-bg: #f1f3f7;
+  --code-border: #e2e6ef;
+  --board: #123;
+  --menu-width: min(25%, 300px);
+  --post-left: 30%;
+  --post-width: min(60%, 60rem);
 }
 
 * {
@@ -10,24 +23,58 @@
 }
 
 html {
-  min-width: 320px;
-  background: #fff;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  color: var(--ink);
+  background: #fff;
   /* Keep this declaration identical to pts/assets/style.css. */
   /* prettier-ignore */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  font-synthesis: none;
 }
 
 a {
-  color: inherit;
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+a:visited {
+  color: var(--ink);
+}
+
+a:hover {
+  color: var(--blue);
+}
+
+a:focus-visible,
+button:focus-visible,
+pre:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
 }
 
 button,
 input {
   font: inherit;
+}
+
+code {
+  font-family: Menlo, Consolas, Monaco, monospace;
+  font-size: 0.9em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

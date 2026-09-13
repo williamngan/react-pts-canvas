@@ -1,176 +1,500 @@
-.hero {
-  width: min(calc(100% - 2 * var(--page-gutter)), 86rem);
-  margin: 0 auto;
-  border-bottom: 1px solid #dfe2ec;
-  padding: clamp(2.5rem, 6vw, 5rem) 0 clamp(2rem, 4vw, 3rem);
+/* Header, as on ptsjs.org guide and docs pages */
+
+#header {
+  position: relative;
+  z-index: 3;
+  font-size: 1.5em;
+  line-height: 70px;
 }
 
-.index {
-  margin: 0 0 1rem;
-  color: #8ce9df;
-  font-size: 0.76rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+#header a {
+  color: var(--ink);
+  text-decoration: none;
 }
 
-h1,
-h2,
-p {
-  margin-top: 0;
+#header a:hover {
+  color: var(--blue);
 }
 
-h1 {
-  margin-bottom: 1.25rem;
-  color: #131c31;
-  font-size: clamp(2.25rem, 5vw, 4.5rem);
-  font-weight: 650;
-  line-height: 1;
-  letter-spacing: -0.055em;
+#pts {
+  display: inline-block;
+  padding-left: 30px;
 }
 
-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1.5rem;
+#pts a {
+  display: inline-block;
+  font-weight: bold;
 }
 
-nav a {
-  color: #5547ce;
-  font-weight: 650;
-  text-underline-offset: 0.3em;
+#pts a > span {
+  display: inline-block;
+  padding: 0 2px;
+  color: var(--blue);
 }
 
-.examples {
-  padding: clamp(4rem, 8vw, 7rem) 0;
+#topmenu {
+  position: absolute;
+  top: 0;
+  right: 30px;
+  height: 100%;
 }
 
-.example-card {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(2.5rem, 6vw, 6rem);
-  align-items: center;
-  width: min(calc(100% - 2 * var(--page-gutter)), 86rem);
-  margin: 0 auto clamp(7rem, 14vw, 13rem);
+#topmenu > a {
+  display: inline-block;
+  padding-left: 15px;
+  vertical-align: middle;
 }
 
-.example-card.reverse .canvas-frame {
-  order: 2;
-}
+/* Cover board, as on the ptsjs.org home page */
 
-.canvas-frame {
-  min-width: 0;
-}
-
-.canvas-frame > div {
+#board {
   position: relative;
   width: 100%;
-  height: clamp(20rem, 48vw, 39rem);
+  height: 50vh;
+  min-height: 18rem;
   overflow: hidden;
-  border-radius: 1.5rem;
-  box-shadow:
-    0 2.5rem 6rem rgba(23, 30, 45, 0.16),
-    0 0 0 1px rgba(31, 39, 60, 0.08);
-}
-
-.copy {
-  min-width: 0;
-  max-width: 34rem;
-}
-
-.copy .index {
-  color: #6254d8;
-}
-
-h2 {
-  margin-bottom: 1.25rem;
-  color: #131c31;
-  font-size: clamp(2rem, 4.4vw, 4.25rem);
-  line-height: 1;
-  letter-spacing: -0.055em;
-}
-
-.copy > p:not(.index) {
-  color: #596177;
-  font-size: 1.02rem;
-  line-height: 1.7;
-}
-
-button {
-  border: 0;
-  border-radius: 999px;
-  padding: 0.7rem 1rem;
   color: #fff;
-  background: #5547ce;
+  background: var(--board);
+}
+
+.hero-canvas,
+.hero-canvas > div {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-canvas canvas {
+  display: block;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 44rem;
+  padding: clamp(2rem, 8vh, 5rem) 30px 0 50px;
+  pointer-events: none;
+}
+
+.hero-copy h1 {
+  margin: 0 0 0.35em;
+  font-size: clamp(2.6em, 6vw, 4.6em);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.hero-copy p {
+  margin: 0 0 1em;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 1.4em;
+  line-height: 1.5;
+}
+
+.hero-copy code {
+  color: #fff;
+}
+
+.cta {
+  display: inline-block;
+  margin: 20px 0;
+  border: 2px solid var(--blue);
+  padding: 12px 18px;
+  color: var(--blue);
+  background: transparent;
+  font-size: 1.15em;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
   cursor: pointer;
-  font: inherit;
-  font-weight: 700;
 }
 
-button:hover,
-button:focus-visible {
-  background: #3e32af;
+.cta:hover {
+  background: var(--blue);
+  color: #fff;
 }
 
-pre {
+/* Section menu, as on the ptsjs.org guide pages */
+
+#menu {
+  position: sticky;
+  top: 0;
+  float: left;
+  width: var(--menu-width);
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 40px 10px 50px 40px;
+  counter-reset: c;
+  line-height: 2.4;
+}
+
+#menu ol,
+#menu ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#menu ol > li {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 1.3em;
+}
+
+#menu ol > li::before {
+  counter-increment: c;
+  content: counter(c);
+  float: left;
+  min-width: 20px;
+  padding-right: 10px;
+  color: var(--blue);
+}
+
+#menu a {
+  display: block;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+#menu a:hover,
+#menu a[aria-current] {
+  color: var(--blue);
+}
+
+#menu ul {
+  clear: both;
+  margin: -4px 0 8px 30px;
+  line-height: 1.9;
+}
+
+#menu ul > li {
+  font-size: 0.8em;
+  padding-right: 10px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+  white-space: normal;
+}
+
+#menu ul a {
+  color: var(--muted);
+}
+
+/* Content column, as on the ptsjs.org guide pages */
+
+#post {
+  position: relative;
+  width: var(--post-width);
+  min-width: 300px;
+  margin-left: var(--post-left);
+  margin-bottom: 100px;
+  border-bottom: 2px solid var(--ink);
+  padding: 0 0 30px;
+  color: var(--ink);
+  font-size: 1.3em;
+}
+
+#post section {
+  scroll-margin-top: 30px;
+}
+
+#post h2 {
+  margin: 90px 0 30px;
+  color: var(--blue);
+  font-size: 3em;
+  font-weight: 500;
+  line-height: 1;
+}
+
+#post section:first-child h2 {
+  margin-top: 60px;
+}
+
+#post h3 {
+  margin: 50px 0 15px;
+  font-size: 1.6em;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+#post h4 {
+  margin: 35px 0 10px;
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+#post h5 {
+  margin: -0.4em 0 2.5em;
+  color: var(--faint);
+  font-size: 0.85em;
+  font-weight: normal;
+}
+
+#post p,
+#post li {
+  margin: 0 0 1.2em;
+}
+
+#post ul {
+  padding-left: 1.4em;
+}
+
+#post li {
+  margin-bottom: 0.6em;
+}
+
+#post code {
+  color: #60636f;
+  font-size: 0.85em;
+}
+
+#post a > code {
+  border: 1px solid var(--code-border);
+  padding: 0 5px;
+  background: var(--code-bg);
+}
+
+#post a:hover > code {
+  border-color: var(--teal);
+  background: var(--teal);
+  color: #fff;
+}
+
+#post pre {
   max-width: 100%;
-  margin: 1.75rem 0 0;
+  margin: 20px 0 40px;
+  border-left: 2px solid var(--teal);
+  padding: 5px 0 5px 20px;
   overflow-x: auto;
-  border: 1px solid #e1e4ef;
-  border-radius: 0.85rem;
-  padding: 1rem;
-  color: #33405a;
-  background: #f6f7fb;
-  font-size: 0.78rem;
-  line-height: 1.55;
+  font-size: 0.9em;
+  line-height: 1.5;
   tab-size: 2;
 }
 
-code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+#post pre code {
+  color: var(--ink-soft);
+  font-size: 1em;
 }
 
-label {
+/* Reference tables rendered from API.md */
+
+.api-section h3 {
+  padding-top: 20px;
+  border-top: 1px solid var(--code-border);
+}
+
+.table-scroll {
+  max-width: 100%;
+  margin: 20px 0 40px;
+  overflow-x: auto;
+}
+
+#post table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 44rem;
+  font-size: 0.9em;
+  line-height: 1.45;
+  overflow-wrap: normal;
+}
+
+#post th,
+#post td {
+  border-bottom: 1px solid var(--code-border);
+  padding: 8px 12px 8px 0;
+  text-align: left;
+  vertical-align: top;
+}
+
+#post th {
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+#post td:first-child {
+  white-space: nowrap;
+}
+
+/* Examples, embedded in the content column like guide demos */
+
+.canvas-frame {
+  position: relative;
+  width: 100%;
+  height: clamp(18rem, 42vw, 30rem);
+  margin: 20px 0;
+  overflow: hidden;
+  outline: 1px solid var(--code-border);
+}
+
+.canvas-frame > div {
+  position: absolute;
+  inset: 0;
+}
+
+.canvas-frame canvas {
+  display: block;
+}
+
+.quick-start-frame {
+  height: 24rem;
+}
+
+.example {
+  margin-top: 60px;
+}
+
+.example .index {
+  margin: 30px 0 0;
+  color: var(--blue);
+  font-size: 0.8em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.example h3 {
+  margin-top: 5px;
+}
+
+.example .cta {
+  margin: 0 0 20px;
+}
+
+#post label {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.25rem 0.75rem;
+  gap: 4px 12px;
   align-items: center;
-  margin: 1.5rem 0;
-  color: #353d54;
-  font-weight: 650;
+  max-width: 24rem;
+  margin: 0 0 20px;
+  font-weight: 600;
 }
 
-label strong {
+#post label strong {
   justify-self: end;
-  color: #6254d8;
+  color: var(--blue);
 }
 
-input[type="range"] {
+#post input[type="range"] {
   grid-column: 1 / -1;
   width: 100%;
-  accent-color: #6254d8;
+  accent-color: var(--blue);
 }
 
-footer {
-  width: min(calc(100% - 2 * var(--page-gutter)), 86rem);
-  margin: 0 auto;
-  border-top: 1px solid #dfe2ec;
-  padding: 2rem 0 3rem;
-  color: #747c91;
-  font-size: 0.9rem;
+/* Footer */
+
+#footer {
+  clear: both;
+  width: var(--post-width);
+  margin-left: var(--post-left);
+  padding: 0 0 40px;
+  color: var(--footer);
+  font-size: 1.1em;
 }
 
-@media (max-width: 760px) {
-  .example-card {
-    grid-template-columns: minmax(0, 1fr);
-    margin-bottom: 7rem;
+#footer a,
+#footer a:visited {
+  color: var(--footer);
+}
+
+#footer code {
+  color: inherit;
+}
+
+/* Responsive */
+
+@media screen and (max-width: 1024px) {
+  :root {
+    --post-left: 28%;
+    --post-width: 66%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #header {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    line-height: 70px;
+    font-size: 1.2em;
   }
 
-  .example-card.reverse .canvas-frame {
-    order: initial;
+  #pts {
+    padding-left: 0;
+    white-space: nowrap;
   }
 
-  .canvas-frame > div {
-    height: min(76vw, 31rem);
+  #topmenu {
+    position: static;
+    height: auto;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  #topmenu > a {
+    padding: 0 6px;
+  }
+
+  #topmenu > a:last-child {
+    padding-right: 0;
+  }
+
+  .hero-copy {
+    padding: 2rem 24px 0;
+  }
+
+  #menu {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    float: none;
+    width: 100%;
+    max-height: none;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--code-border);
+    background: #fff;
+    line-height: 44px;
+  }
+
+  #menu ol {
+    display: flex;
+    gap: 0 18px;
+    overflow-x: auto;
+  }
+
+  #menu ol > li {
+    display: inline-flex;
+    flex: 0 0 auto;
+    overflow: visible;
+    font-size: 1.1em;
+  }
+
+  #menu ol > li::before {
+    float: none;
+    min-width: 0;
+    padding-right: 6px;
+  }
+
+  #menu ul {
+    display: none;
+  }
+
+  #post,
+  #footer {
+    width: auto;
+    min-width: 0;
+    margin-left: 0;
+    padding-left: 24px;
+    padding-right: 24px;
+    overflow-wrap: anywhere;
+  }
+
+  #post h2 {
+    margin-top: 60px;
+    font-size: 2.4em;
+  }
+
+  .canvas-frame {
+    height: min(70vw, 24rem);
   }
 }
