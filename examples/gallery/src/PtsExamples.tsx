@@ -172,6 +172,7 @@ export function ChartExample({
       classPrefix={classPrefix}
       onAnimate={draw}
       onReady={(space) => space.playOnce()}
+      onPtsResize={(space) => space.playOnce()}
       play={false}
     />
   );
@@ -234,17 +235,25 @@ export function SoundExample({
 
     void Sound.load(file)
       .then((loaded) => {
-        if (!active) return;
-        sound.current = loaded.analyze(256);
+        if (!active) {
+          loaded.dispose();
+          return;
+        }
+        sound.current = loaded;
+        loaded.analyze(256);
         setStatus("ready");
       })
       .catch(() => {
-        if (active) setStatus("error");
+        if (active) {
+          sound.current?.dispose();
+          sound.current = null;
+          setStatus("error");
+        }
       });
 
     return () => {
       active = false;
-      if (sound.current?.playing) sound.current.stop();
+      sound.current?.dispose();
       sound.current = null;
     };
   }, [file]);

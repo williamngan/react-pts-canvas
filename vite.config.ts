@@ -22,6 +22,9 @@ export default defineConfig({
     },
   },
   test: {
+    alias: {
+      "react-pts-canvas": resolve(import.meta.dirname, "src/index.tsx"),
+    },
     include: ["test/**/*.spec.tsx"],
     restoreMocks: true,
     browser: {

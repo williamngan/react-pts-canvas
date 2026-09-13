@@ -566,6 +566,28 @@ describe("PtsCanvas", () => {
     expect(mounted.ref.current?.getSpace()?.pixelScale).toBe(1.5);
   });
 
+  it("preserves the space when density options keep the same effective scale", async () => {
+    vi.spyOn(window, "devicePixelRatio", "get").mockReturnValue(2);
+    const props = {
+      play: false,
+      style: { width: 200, height: 120 },
+    };
+    const mounted = await mountCanvas(props);
+    await waitUntilReady(mounted.ref);
+    const space = mounted.ref.current?.getSpace();
+    expect(space?.pixelScale).toBe(2);
+
+    for (const density of [
+      { pixelDensity: 2 },
+      { maxPixelDensity: 3 },
+      { pixelDensity: 4, maxPixelDensity: 2 },
+      {},
+    ]) {
+      await mounted.render({ ...props, ...density });
+      expect(mounted.ref.current?.getSpace()).toBe(space);
+    }
+  });
+
   it("survives React Strict Mode without delivering stale ready callbacks", async () => {
     const onReady = vi.fn<HandleReadyFn>();
     const mounted = await mountCanvas(

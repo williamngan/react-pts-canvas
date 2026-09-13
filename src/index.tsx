@@ -72,6 +72,7 @@ export type HandleAnimateFn = (
 /**
  * Called for the initial Pts measurement and later resize operations. The
  * initial call normally precedes `onReady` and can have no event.
+ * Stopped drawings can request a repaint with `space.playOnce()` here.
  */
 export type HandleResizeFn = (
   space: CanvasSpace,
@@ -357,13 +358,14 @@ function PtsCanvasComponent(
     maxPixelDensity,
   );
   const resolvedPixelDensity = (() => {
-    if (checkedMaxPixelDensity === undefined) return checkedPixelDensity;
     const requestedDensity =
       checkedPixelDensity ??
       (retina && typeof window !== "undefined"
         ? Math.max(1, window.devicePixelRatio || 1)
         : 1);
-    return Math.min(requestedDensity, checkedMaxPixelDensity);
+    return checkedMaxPixelDensity === undefined
+      ? requestedDensity
+      : Math.min(requestedDensity, checkedMaxPixelDensity);
   })();
   const resolvedMinFrameTime = checkedFrameTime(minFrameTime);
   const resolvedInput: Required<PtsCanvasInputOptions> = {

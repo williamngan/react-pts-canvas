@@ -185,6 +185,9 @@ React control:
 Do not rely on `onAction` to wake a stopped space because Pts will not dispatch
 that action.
 
+Automatic wrapper resizing clears the canvas buffer. A stopped drawing should
+also use `onPtsResize={(space) => space.playOnce()}` to repaint after resizing.
+
 ## Treat player arrays as immutable
 
 The new `players` prop reconciles Pts `IPlayer` objects by identity. Replace the

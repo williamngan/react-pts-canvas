@@ -142,6 +142,32 @@ try {
   await page.getByRole("button", { name: "Pause animation" }).click();
   await page.getByRole("button", { name: "Resume animation" }).waitFor();
   await page.getByLabel("Gaussian variance").fill("0.5");
+  const chart = page.getByLabel("Interactive Gaussian bar chart", {
+    exact: true,
+  });
+  const chartBeforeResize = await chart.evaluate((canvas) => canvas.width);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForFunction((oldWidth) => {
+    const canvas = document.querySelector(
+      'canvas[aria-label="Interactive Gaussian bar chart"]',
+    );
+    if (!canvas || canvas.width === oldWidth) return false;
+    const pixels = canvas
+      .getContext("2d")
+      .getImageData(0, 0, canvas.width, canvas.height).data;
+    // A stopped chart must redraw its bars after ResizeObserver clears
+    // the buffer. A background alone is not a successful chart render.
+    for (let index = 0; index < pixels.length; index += 4) {
+      if (
+        pixels[index + 3] > 0 &&
+        (pixels[index] !== 37 ||
+          pixels[index + 1] !== 220 ||
+          pixels[index + 2] !== 162)
+      )
+        return true;
+    }
+    return false;
+  }, chartBeforeResize);
   await page
     .locator("canvas")
     .first()

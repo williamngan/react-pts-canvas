@@ -4,6 +4,18 @@ Notable changes to `react-pts-canvas` are recorded here. The project follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) categories. A release
 version is assigned by the maintainer before publication.
 
+## Unreleased
+
+### Fixed
+
+- Preserve the existing space when adding or removing density options leaves
+  the effective pixel scale unchanged.
+- Redraw the stopped gallery chart after its wrapper resizes, and show the
+  data-change effect and resize callback in its displayed snippet.
+- Dispose gallery audio resources on file changes and unmount, including
+  sounds that finish loading after cleanup; show error handling in the snippet.
+- Match the README quick-start background to the displayed and running example.
+
 ## v1.0.0 - 2026-9-12
 
 ### Added

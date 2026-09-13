@@ -202,23 +202,49 @@ const animationCode = `
 `;
 
 const chartCode = `
+const canvas = useRef<PtsCanvasImperative>(null);
+
+useEffect(() => {
+  canvas.current?.getSpace()?.playOnce();
+}, [data]);
+
 <PtsCanvas
+  ref={canvas}
   background="#25dca2"
   onAnimate={drawChart}
   onReady={(space) => space.playOnce()}
+  onPtsResize={(space) => space.playOnce()}
   play={false}
 />
 `;
 
 const soundCode = `
+const sound = useRef<Sound | null>(null);
+const [status, setStatus] = useState("loading");
+
 useEffect(() => {
   let active = true;
-  void Sound.load(file).then((loaded) => {
-    if (active) sound.current = loaded.analyze(256);
-  });
+  setStatus("loading");
+  void Sound.load(file)
+    .then((loaded) => {
+      if (!active) {
+        loaded.dispose();
+        return;
+      }
+      sound.current = loaded;
+      loaded.analyze(256);
+      setStatus("ready");
+    })
+    .catch(() => {
+      if (active) {
+        sound.current?.dispose();
+        sound.current = null;
+        setStatus("error");
+      }
+    });
   return () => {
     active = false;
-    if (sound.current?.playing) sound.current.stop();
+    sound.current?.dispose();
     sound.current = null;
   };
 }, [file]);
@@ -483,7 +509,7 @@ export default function App() {
             <p>
               This chart keeps continuous playback off and calls{" "}
               <code>playOnce</code> after React calculates a new Gaussian
-              distribution.
+              distribution and when its wrapper resizes.
             </p>
             <label>
               Variance <strong>{variance.toFixed(2)}</strong>

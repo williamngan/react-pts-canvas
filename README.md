@@ -40,7 +40,7 @@ import { PtsCanvas } from "react-pts-canvas";
 export function Drawing() {
   return (
     <PtsCanvas
-      background="#182034"
+      background="#f1f3f9"
       containerProps={{ className: "drawing" }}
       canvasProps={{ "aria-label": "Interactive point drawing" }}
       input={{ pointer: true, touch: true }}
@@ -142,6 +142,10 @@ Pts dispatches pointer, touch, and keyboard actions only while the space is
 playing. Consequently, `play={false}`, `pauseWhenHidden`, and
 `pauseWhenOffscreen` also suspend `onAction` and pointer tracking. An external
 React control can still use the imperative ref to call `playOnce()`.
+
+For stopped drawings, request a frame when data changes and use
+`onPtsResize={(space) => space.playOnce()}` to repaint after wrapper resizing
+clears the canvas buffer. The gallery's chart demonstrates both triggers.
 
 ```tsx
 <PtsCanvas play={running} minFrameTime={1000 / 30} />

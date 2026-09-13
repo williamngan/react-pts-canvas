@@ -175,6 +175,10 @@ missing event as `null`; the component normalizes it to `undefined`. This prop
 is named `onPtsResize` to avoid colliding with React's native canvas `onResize`
 attribute.
 
+Automatic resizing resets the canvas pixel buffer. For a drawing with
+`play={false}`, call `space.playOnce()` from `onPtsResize` to repaint after a
+wrapper resize; also request a frame when drawing data changes.
+
 ### `onAction`
 
 ```ts

@@ -308,9 +308,6 @@ for (const path of documentationFiles) {
   }
 }
 
-await checkTypedCodeFences();
-await typeCheckSelectedCodeFences();
-
 for (const relativePath of [
   "examples/gallery/index.html",
   "examples/gallery/src/App.tsx",
@@ -372,12 +369,31 @@ const galleryApp = await readFile(
   join(repository, "examples/gallery/src/App.tsx"),
   "utf8",
 );
+for (const match of galleryApp.matchAll(/const (\w+Code) = `([\s\S]*?)`;/g)) {
+  const [, name, code] = match;
+  if (name === "installCode" || name === "sizingCode") continue;
+  typedCodeFences.push({ code, extension: "tsx", name: `gallery-${name}` });
+  if (name === "quickStartCode" || name === "imperativeCode") {
+    typeCheckedCodeFences.push(code);
+  }
+}
+const readme = await readFile(join(repository, "README.md"), "utf8");
+const readmeQuickStart = readme.match(/```tsx\n([\s\S]*?)```/)?.[1].trim();
+const galleryQuickStart = galleryApp
+  .match(/const quickStartCode = `([\s\S]*?)`;/)?.[1]
+  .trim();
+if (!readmeQuickStart || readmeQuickStart !== galleryQuickStart) {
+  report("The displayed gallery quick start differs from the README");
+}
 if (galleryApp.includes("onReady={loadSound}")) {
   report("The displayed sound example incorrectly loads audio in onReady");
 }
 if (!galleryApp.match(/const soundCode = `[\s\S]*?useEffect\(\(\) =>/u)) {
   report("The displayed sound example does not show React effect ownership");
 }
+
+await checkTypedCodeFences();
+await typeCheckSelectedCodeFences();
 
 if (process.env.SANDBOX_OFFLINE === "1") {
   console.log(
