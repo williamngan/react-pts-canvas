@@ -9,7 +9,7 @@ Canonical documentation:
 - [API reference](https://github.com/williamngan/react-pts-canvas/blob/master/API.md): every public prop, default, callback, exported type, precedence rule, and lifecycle transition
 - [Migration guide](https://github.com/williamngan/react-pts-canvas/blob/master/MIGRATION.md): upgrading from npm 0.5.2 to 1.0.0 and deprecated-prop replacements
 - [Changelog](https://github.com/williamngan/react-pts-canvas/blob/master/CHANGELOG.md)
-- [Pts guide](https://ptsjs.org/guide/): the underlying Pts drawing and Space model
+- [Pts](https://ptsjs.org/): the underlying Pts drawing and Space model. See llms.txt in the website to get started
 
 Core package facts:
 
@@ -41,3 +41,7 @@ Repository status:
 
 - `src/index.tsx` and `API.md` are the runtime and prose sources of truth.
 - `dist/` is generated. Run `pnpm check` for complete validation.
+
+Ecosystem:
+- [CLI](https://cli.ptsjs.org/): Use pts-render to create images directly in the command line
+- [Python](https://ptspy.org/): Pts for python, with similar approach and additional features.

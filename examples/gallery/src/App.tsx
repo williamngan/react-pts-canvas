@@ -281,11 +281,14 @@ function Example({
 }) {
   return (
     <article className="example" id={id}>
-      <div className="canvas-frame">{canvas}</div>
-      <p className="index">{index}</p>
-      <h3>{title}</h3>
+      <h3>
+        <span className="index">{index}</span>
+        <br />
+        {title}
+      </h3>
       {children}
       <CodeBlock>{code}</CodeBlock>
+      <div className="canvas-frame">{canvas}</div>
     </article>
   );
 }
@@ -362,17 +365,10 @@ export default function App() {
 
         <section id="examples">
           <h2>Examples</h2>
-          <h5>
-            Displayed code is condensed from the maintained components in{" "}
-            <a href={`${repository}/tree/master/examples/gallery`}>
-              examples/gallery
-            </a>
-            .
-          </h5>
 
           <Example
             id="example-pointer"
-            index="01 / Pointer"
+            index="1. Pointer"
             title="Start with one callback"
             canvas={<BasicExample background="#9ab" classPrefix="pts-basic" />}
             code={basicCode}
@@ -385,7 +381,7 @@ export default function App() {
 
           <Example
             id="example-animation"
-            index="02 / Animation"
+            index="2. Animation"
             title="Keep mutable drawing state outside React"
             canvas={
               <AnimationExample
@@ -411,7 +407,7 @@ export default function App() {
 
           <Example
             id="example-data"
-            index="03 / Data"
+            index="3. Data"
             title="Render only when data changes"
             canvas={
               <ChartExample
@@ -445,7 +441,7 @@ export default function App() {
 
           <Example
             id="example-sound"
-            index="04 / Sound"
+            index="4. Sound"
             title="Turn frequency data into points"
             canvas={
               <SoundExample
@@ -541,12 +537,12 @@ export default function App() {
           <h2>Resources</h2>
           <ul>
             <li>
-              <a href={`${repository}/blob/master/README.md`}>README</a>:
-              installation, common workflows, and React Server Component usage
+              <a href={`${repository}`}>react-pts-canvas Github</a>: Setup and
+              API documentations in the github repo.
             </li>
             <li>
-              <a href={`${repository}/blob/master/API.md`}>API reference</a>:
-              the canonical prose contract rendered above
+              <a href={`${repository}/blob/master/llms.txt`}>llms.txt</a>: Quick
+              start for your AI agents
             </li>
             <li>
               <a href={`${repository}/blob/master/MIGRATION.md`}>
@@ -555,22 +551,13 @@ export default function App() {
               : upgrading from 0.5.2 and replacing deprecated props
             </li>
             <li>
-              <a href={`${repository}/blob/master/CHANGELOG.md`}>Changelog</a>:
-              release history
+              <a href="https://ptsjs.org/">Pts.js</a> documentation
             </li>
             <li>
-              <a href={`${repository}/blob/master/llms.txt`}>llms.txt</a>:
-              compact machine-oriented index
-            </li>
-            <li>
-              <a href="https://ptsjs.org/docs/?p=Canvas_CanvasSpace">
-                Pts CanvasSpace
-              </a>{" "}
-              and{" "}
-              <a href="https://ptsjs.org/docs/?p=Canvas_CanvasForm">
-                CanvasForm
-              </a>{" "}
-              documentation
+              <a href="https://ptsjs.org/guide/Ecosystem-8000">Pts ecosystem</a>{" "}
+              which offers other options like{" "}
+              <a href="https://cli.ptsjs.org/">CLI</a> and{" "}
+              <a href="https://ptspy.org">Python</a>.
             </li>
           </ul>
         </section>

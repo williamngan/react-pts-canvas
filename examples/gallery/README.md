@@ -27,9 +27,11 @@ pnpm check:examples
 ```
 
 Vite and TypeScript resolve `react-pts-canvas` directly to `../../src`, so app
-development always exercises unpublished component changes. Edits in the root
-`src/` directory are hot-reloaded by `pnpm dev`; rebuilding the library first
-is not necessary. Run root `pnpm build` only when you need to generate or check
+development always exercises unpublished component changes. `pnpm dev` hot
+reloads every source of the site without a full page refresh: this
+application's own files, the component in the root `src/` directory, and the
+root `API.md` that feeds the reference section. Rebuilding the library first is
+not necessary. Run root `pnpm build` only when you need to generate or check
 the publishable `dist` package. The root packed-package checks independently
 verify those public exports.
 

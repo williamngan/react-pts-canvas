@@ -91,6 +91,15 @@ function markdownSections(idPrefix: string): Plugin {
       if (!source.endsWith(suffix) || !importer) return null;
       return resolve(importer, "..", source);
     },
+    // Editing the Markdown file re-renders its `?sections` module in place
+    // instead of reloading the page, so `pnpm dev` stays instant for docs.
+    hotUpdate({ file }) {
+      if (!file.endsWith(".md")) return;
+      const module = this.environment.moduleGraph.getModuleById(
+        `${file}${suffix}`,
+      );
+      return module ? [module] : [];
+    },
     load(id) {
       if (!id.endsWith(suffix)) return null;
       const path = id.slice(0, -suffix.length);
