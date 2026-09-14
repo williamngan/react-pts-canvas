@@ -8,6 +8,20 @@ version is assigned by the maintainer before publication.
 
 ### Fixed
 
+- Measure the wrapper initially with `resize={false}`, including environments
+  without `ResizeObserver`.
+- Start automatic playback after initial players finish their `start` callbacks.
+- Dispose partially initialized spaces when setup or input teardown fails, and
+  report unavailable main/offscreen 2D contexts through `onError`.
+- Preserve thrown cleanup values such as `undefined` and `null` after disposal.
+- Keep the documentation site rendered when a URL fragment contains invalid
+  percent escapes.
+- Correct imperative-ref teardown wording and label the published 1.0.1 changes.
+
+## v1.0.1 - 2026-09-13
+
+### Fixed
+
 - Preserve the existing space when adding or removing density options leaves
   the effective pixel scale unchanged.
 - Redraw the stopped gallery chart after its wrapper resizes, and show the

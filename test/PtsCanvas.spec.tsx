@@ -1,5 +1,6 @@
 import * as React from "react";
 import { createRoot, type Root } from "react-dom/client";
+import { flushSync } from "react-dom";
 import { act as reactDomAct } from "react-dom/test-utils";
 import { CanvasSpace, Tempo, type IPlayer } from "pts";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -602,5 +603,328 @@ describe("PtsCanvas", () => {
     await waitUntilReady(mounted.ref);
     expect(onReady).toHaveBeenCalledOnce();
     expect(mounted.container.querySelectorAll("canvas")).toHaveLength(1);
+  });
+  it("starts initial players before automatic animation reaches them", async () => {
+    const order: string[] = [];
+    const player: IPlayer = {
+      start: () => {
+        order.push("start");
+      },
+      animate: () => {
+        order.push("animate");
+      },
+    };
+    const mounted = await mountCanvas({
+      players: [player],
+      style: { width: 200, height: 120 },
+    });
+    await waitUntilReady(mounted.ref);
+    await vi.waitFor(() => expect(order).toContain("animate"));
+    expect(order[0]).toBe("start");
+  });
+
+  it("waits for player start when onReady synchronously enables playback", async () => {
+    const order: string[] = [];
+    const player: IPlayer = {
+      start: () => {
+        order.push("start");
+      },
+      animate: () => {
+        order.push("animate");
+      },
+    };
+    const props = { players: [player], style: { width: 200, height: 120 } };
+    const mounted = await mountCanvas({
+      ...props,
+      play: false,
+      onReady: () => {
+        void act(() => {
+          flushSync(() => {
+            mounted.root.render(
+              <PtsCanvas {...props} ref={mounted.ref} play />,
+            );
+          });
+        });
+      },
+    });
+    await waitUntilReady(mounted.ref);
+    await vi.waitFor(() => expect(order).toContain("animate"));
+    expect(order[0]).toBe("start");
+  });
+
+  it("disposes the created space when setup throws", async () => {
+    const failure = new Error("setup failed");
+    const original = CanvasSpace.prototype.setup;
+    const created: CanvasSpace[] = [];
+    vi.spyOn(CanvasSpace.prototype, "setup").mockImplementation(function (
+      this: CanvasSpace,
+      options,
+    ) {
+      created.push(this);
+      original.call(this, options);
+      throw failure;
+    });
+    const dispose = vi.spyOn(CanvasSpace.prototype, "dispose");
+    const onError = vi.fn<HandleErrorFn>();
+    try {
+      const mounted = await mountCanvas({
+        onError,
+        style: { width: 200, height: 120 },
+      });
+      expect(onError).toHaveBeenCalledWith(
+        failure,
+        expect.objectContaining({ phase: "initialize", space: created[0] }),
+      );
+      expect(dispose).toHaveBeenCalledOnce();
+      expect(mounted.ref.current?.getSpace()).toBeUndefined();
+    } finally {
+      created[0]?.dispose();
+    }
+  });
+
+  it("still disposes after input teardown throws during initialization recovery", async () => {
+    const failure = new Error("input binding failed");
+    const created: CanvasSpace[] = [];
+    const bindMouse = vi
+      .spyOn(CanvasSpace.prototype, "bindMouse")
+      .mockImplementation(function (this: CanvasSpace) {
+        created.push(this);
+        throw failure;
+      });
+    const dispose = vi.spyOn(CanvasSpace.prototype, "dispose");
+    const onError = vi.fn<HandleErrorFn>();
+    try {
+      await mountCanvas({ onError, style: { width: 200, height: 120 } });
+      expect(onError).toHaveBeenCalledWith(
+        failure,
+        expect.objectContaining({ phase: "initialize" }),
+      );
+      expect(dispose).toHaveBeenCalledOnce();
+    } finally {
+      bindMouse.mockRestore();
+      created[0]?.dispose();
+    }
+  });
+
+  it.each([false, true])(
+    "reports an unavailable 2D context (offscreen: %s)",
+    async (offscreen) => {
+      const original = HTMLCanvasElement.prototype.getContext;
+      vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(
+        function (this: HTMLCanvasElement, type, options) {
+          if (!offscreen || this.id.endsWith("_offscreen")) return null;
+          return original.call(this, type, options);
+        },
+      );
+      const onError = vi.fn<HandleErrorFn>();
+      const mounted = await mountCanvas({
+        onError,
+        offscreen,
+        style: { width: 200, height: 120 },
+      });
+      expect(onError).toHaveBeenCalledWith(
+        expect.any(Error),
+        expect.objectContaining({ phase: "initialize" }),
+      );
+      expect(mounted.ref.current?.getSpace()).toBeUndefined();
+    },
+  );
+
+  it("does not deliver input after playback stops", async () => {
+    const onAction = vi.fn<HandleActionFn>();
+    const props = {
+      onAction,
+      input: { keyboard: true },
+      style: { width: 200, height: 120 },
+    };
+    const mounted = await mountCanvas(props);
+    await waitUntilReady(mounted.ref);
+    await mounted.render({ ...props, play: false });
+    await vi.waitFor(() =>
+      expect(mounted.ref.current?.getSpace()?.isPlaying).toBe(false),
+    );
+    onAction.mockClear();
+    const canvas = mounted.ref.current!.getCanvas()!;
+    canvas.dispatchEvent(
+      new PointerEvent("pointermove", {
+        clientX: 20,
+        clientY: 20,
+        bubbles: true,
+      }),
+    );
+    canvas.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "a", bubbles: true }),
+    );
+    expect(onAction).not.toHaveBeenCalled();
+  });
+
+  it("cancels pending readiness across rapid replacement and unmount", async () => {
+    const onReady = vi.fn<HandleReadyFn>();
+    const dispose = vi.spyOn(CanvasSpace.prototype, "dispose");
+    const props = { onReady, play: false, style: { width: 200, height: 120 } };
+    const mounted = await mountCanvas(props);
+    await mounted.render({ ...props, offscreen: true });
+    await unmountCanvas(mounted);
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    expect(onReady).not.toHaveBeenCalled();
+    expect(dispose).toHaveBeenCalledTimes(2);
+  });
+
+  it("keeps cleanup order and clears a retained handle after disposal", async () => {
+    const order: string[] = [];
+    const observedSpaces: (CanvasSpace | undefined)[] = [];
+    let handle: PtsCanvasImperative;
+    const mounted = await mountCanvas({
+      play: false,
+      style: { width: 200, height: 120 },
+      onReady: () => () => {
+        order.push("cleanup");
+        observedSpaces.push(handle.getSpace());
+      },
+      onDispose: () => {
+        order.push("onDispose");
+        observedSpaces.push(handle.getSpace());
+      },
+    });
+    await waitUntilReady(mounted.ref);
+    handle = mounted.ref.current!;
+    const space = handle.getSpace()!;
+    const dispose = space.dispose.bind(space);
+    vi.spyOn(space, "dispose").mockImplementation(() => {
+      order.push("dispose");
+      return dispose();
+    });
+    await unmountCanvas(mounted);
+    expect(order).toEqual(["cleanup", "onDispose", "dispose"]);
+    expect(observedSpaces).toEqual([space, space]);
+    expect(handle.getSpace()).toBeUndefined();
+    expect(handle.getForm()).toBeUndefined();
+    expect(handle.getPlayer()).toBeUndefined();
+    expect(handle.getCanvas()).toBeNull();
+    expect(handle.getContainer()).toBeNull();
+  });
+  it("switches real touch listeners between active, passive, and disabled", async () => {
+    const onAction = vi.fn<HandleActionFn>();
+    const props = { onAction, style: { width: 200, height: 120 } };
+    const mounted = await mountCanvas({
+      ...props,
+      input: { pointer: false, touch: true },
+    });
+    await waitUntilReady(mounted.ref);
+    const canvas = mounted.ref.current!.getCanvas()!;
+    const dispatch = () => {
+      const point = new Touch({
+        identifier: 1,
+        target: canvas,
+        clientX: 30,
+        clientY: 40,
+        pageX: 30,
+        pageY: 40,
+      });
+      const event = new TouchEvent("touchmove", {
+        bubbles: true,
+        cancelable: true,
+        touches: [point],
+        changedTouches: [point],
+        targetTouches: [point],
+      });
+      canvas.dispatchEvent(event);
+      return event;
+    };
+    expect(dispatch().defaultPrevented).toBe(true);
+    expect(onAction).toHaveBeenCalled();
+    await mounted.render({
+      ...props,
+      input: { pointer: false, touch: true, touchPassive: true },
+    });
+    onAction.mockClear();
+    expect(dispatch().defaultPrevented).toBe(false);
+    expect(onAction).toHaveBeenCalledOnce();
+    await mounted.render({ ...props, input: { pointer: false, touch: false } });
+    onAction.mockClear();
+    expect(dispatch().defaultPrevented).toBe(false);
+    expect(onAction).not.toHaveBeenCalled();
+  });
+
+  it("measures once without ResizeObserver when automatic resizing is disabled", async () => {
+    vi.stubGlobal("ResizeObserver", undefined);
+    const onResize = vi.fn<NonNullable<PtsCanvasProps["onPtsResize"]>>();
+    const mounted = await mountCanvas({
+      resize: false,
+      play: false,
+      onPtsResize: onResize,
+      style: { width: 200, height: 120 },
+    });
+    await waitUntilReady(mounted.ref);
+    expect(mounted.ref.current!.getSpace()!.size.x).toBe(200);
+    expect(onResize).toHaveBeenCalledOnce();
+    expect(onResize.mock.calls[0]?.[3]).toBeUndefined();
+  });
+
+  it("plays without IntersectionObserver when viewport pausing is requested", async () => {
+    vi.stubGlobal("IntersectionObserver", undefined);
+    const mounted = await mountCanvas({
+      pauseWhenOffscreen: true,
+      style: { width: 200, height: 120 },
+    });
+    await waitUntilReady(mounted.ref);
+    expect(mounted.ref.current!.getSpace()!.isPlaying).toBe(true);
+  });
+
+  it("reports resize and action failures through their lifecycle phases", async () => {
+    const resizeError = new Error("resize failed");
+    const actionError = new Error("action failed");
+    const onError = vi.fn<HandleErrorFn>();
+    const mounted = await mountCanvas({
+      onError,
+      onPtsResize: () => {
+        throw resizeError;
+      },
+      onAction: () => {
+        throw actionError;
+      },
+      style: { width: 200, height: 120 },
+    });
+    await waitUntilReady(mounted.ref);
+    mounted.ref.current!.getCanvas()!.dispatchEvent(
+      new PointerEvent("pointermove", {
+        clientX: 30,
+        clientY: 40,
+        bubbles: true,
+      }),
+    );
+    expect(onError).toHaveBeenCalledWith(
+      resizeError,
+      expect.objectContaining({ phase: "resize" }),
+    );
+    expect(onError).toHaveBeenCalledWith(
+      actionError,
+      expect.objectContaining({ phase: "action" }),
+    );
+  });
+
+  it("propagates undefined thrown during cleanup after disposing the space", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const mounted = await mountCanvas({
+      play: false,
+      onReady: () => () => {
+        throw undefined;
+      },
+      style: { width: 200, height: 120 },
+    });
+    await waitUntilReady(mounted.ref);
+    const space = mounted.ref.current!.getSpace()!;
+    const dispose = vi.spyOn(space, "dispose");
+    let caught = false;
+    let caughtValue: unknown;
+    try {
+      await unmountCanvas(mounted);
+    } catch (error) {
+      caught = true;
+      caughtValue = error;
+    }
+    expect(dispose).toHaveBeenCalledOnce();
+    expect(caught).toBe(true);
+    expect(caughtValue).toBeUndefined();
   });
 });

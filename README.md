@@ -113,6 +113,9 @@ throwing behavior. React error boundaries do not catch errors from animation
 frames or native event handlers. Invalid numeric props throw during React
 rendering and do not go through `onError`.
 
+If a 2D context is unavailable or space setup fails, `onError` receives the
+`initialize` phase and the component disposes any space it already created.
+
 Most behavior updates the existing space. `retina`, `offscreen`, and changes to
 the effective pixel density replace it. Replacement runs the same cleanup and
 disposal sequence before calling `onReady` for the new space.
@@ -201,6 +204,10 @@ Players are added and removed by object identity without replacing the space.
 Treat the `players` array as immutable and replace it when membership changes.
 A player object should belong to only one mounted canvas at a time. The `tempo`
 prop is a convenience for one Pts `Tempo` player.
+
+Automatic playback waits until initial players finish their `start` callbacks.
+If those players initialize drawing state in `start`, let `play` control
+startup rather than calling an immediate `space.playOnce()` inside `onReady`.
 
 The optional performance controls are:
 

@@ -278,7 +278,13 @@ const menu: MenuEntry[] = [
  */
 function useInitialHashScroll() {
   useEffect(() => {
-    const id = decodeURIComponent(window.location.hash.slice(1));
+    let id: string;
+    try {
+      id = decodeURIComponent(window.location.hash.slice(1));
+    } catch {
+      // A malformed fragment should not prevent the documentation rendering.
+      return;
+    }
     if (!id) return;
     document.getElementById(id)?.scrollIntoView();
   }, []);

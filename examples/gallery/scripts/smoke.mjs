@@ -55,7 +55,8 @@ try {
   });
   page.on("pageerror", (error) => errors.push(`page: ${error.message}`));
 
-  await page.goto(address, { waitUntil: "domcontentloaded" });
+  // Invalid percent escapes must not crash the initial hash-scroll effect.
+  await page.goto(`${address}/#%`, { waitUntil: "domcontentloaded" });
   await page.waitForSelector("canvas");
   await page.waitForFunction(() => {
     const canvases = [...document.querySelectorAll("canvas")];

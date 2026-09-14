@@ -32,7 +32,8 @@ import { useIsomorphicLayoutEffect } from "./hooks";
  * Read-only access to objects owned by {@link PtsCanvas}.
  *
  * Do not dispose the returned space or mutate the internal callback player.
- * Values are unavailable before initialization and during teardown.
+ * Values are unavailable before initialization and after disposal. A retained
+ * handle can still inspect the old objects during cleanup and `onDispose`.
  */
 export type PtsCanvasImperative = {
   /** Return the owned Pts space, or `undefined` while unavailable. */
@@ -263,7 +264,8 @@ export type PtsCanvasProps = NativeCanvasProps & {
   onDispose?: HandleDisposeFn;
   /**
    * Additional Pts players reconciled by identity. Defaults to empty. Replace
-   * the array rather than mutating it in place.
+   * the array rather than mutating it in place. Automatic playback waits for
+   * the initial players' start callbacks to finish.
    */
   players?: readonly IPlayer[];
   /** Convenience Tempo membership. Prefer `players` for multiple players. */
@@ -289,6 +291,12 @@ type LiveBehavior = {
 };
 
 const EMPTY_PLAYERS: readonly IPlayer[] = [];
+
+// Pts normally enables initial wrapper measurement only for canvases it
+// creates. React supplies an existing canvas, but its wrapper still owns size.
+class MountedCanvasSpace extends CanvasSpace {
+  protected override _initialResize = true;
+}
 
 function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
   if (typeof ref === "function") ref(value);
@@ -391,6 +399,7 @@ function PtsCanvasComponent(
   >(undefined);
   const readyCleanupRef = useRef<PtsCanvasCleanup | undefined>(undefined);
   const requestedPlaybackRef = useRef<boolean | undefined>(undefined);
+  const startedSpaceRef = useRef<CanvasSpace | undefined>(undefined);
   const visibilityRef = useRef({
     documentHidden: typeof document !== "undefined" ? document.hidden : false,
     offscreen: false,
@@ -574,7 +583,7 @@ function PtsCanvasComponent(
       (!behavior.pauseWhenHidden || !visibility.documentHidden) &&
       (!behavior.pauseWhenOffscreen || !visibility.offscreen);
 
-    if (shouldPlay && !space.ready) {
+    if (shouldPlay && (!space.ready || startedSpaceRef.current !== space)) {
       requestedPlaybackRef.current = undefined;
       return;
     }
@@ -593,13 +602,19 @@ function PtsCanvasComponent(
     let form: CanvasForm | undefined;
     try {
       const initialBehavior = behaviorRef.current;
-      space = new CanvasSpace(canvas).setup({
+      startedSpaceRef.current = undefined;
+      space = new MountedCanvasSpace(canvas);
+      if (!space.ctx) throw new Error("Canvas 2D context is unavailable");
+      space.setup({
         bgcolor: initialBehavior.background,
         resize: initialBehavior.resize,
         retina,
         offscreen,
         pixelDensity: resolvedPixelDensity,
       });
+      if (offscreen && !space.offscreenCtx) {
+        throw new Error("Offscreen canvas 2D context is unavailable");
+      }
       form = space.getForm();
       const ownedSpace = space;
       const ownedForm = form;
@@ -617,7 +632,15 @@ function PtsCanvasComponent(
           } catch (error) {
             reportError(error, "ready", ownedSpace, ownedForm);
           }
-          syncPlayback();
+          // Pts calls players' start methods in registration order. Its
+          // replay() draws synchronously, so let all initial players start
+          // before automatic playback can reach their animate methods.
+          queueMicrotask(() => {
+            if (spaceRef.current === ownedSpace) {
+              startedSpaceRef.current = ownedSpace;
+              syncPlayback();
+            }
+          });
         },
         animate: (time, frameTime) => {
           try {
@@ -673,8 +696,11 @@ function PtsCanvasComponent(
       syncPlayback();
     } catch (error) {
       try {
-        space?.bindMouse(false).bindTouch(false).bindKeyboard(false);
-        space?.dispose();
+        try {
+          space?.bindMouse(false).bindTouch(false).bindKeyboard(false);
+        } finally {
+          space?.dispose();
+        }
       } catch {
         // Preserve the initialization error; teardown is best-effort here.
       }
@@ -694,6 +720,7 @@ function PtsCanvasComponent(
     const ownedForm = form;
     return () => {
       let pendingError: unknown;
+      let hasPendingError = false;
       const cleanup = readyCleanupRef.current;
       readyCleanupRef.current = undefined;
 
@@ -705,6 +732,7 @@ function PtsCanvasComponent(
             reportError(error, "cleanup", ownedSpace, ownedForm);
           } catch (reportedError) {
             pendingError = reportedError;
+            hasPendingError = true;
           }
         }
       }
@@ -714,7 +742,8 @@ function PtsCanvasComponent(
         try {
           reportError(error, "dispose", ownedSpace, ownedForm);
         } catch (reportedError) {
-          pendingError ??= reportedError;
+          if (!hasPendingError) pendingError = reportedError;
+          hasPendingError = true;
         }
       }
 
@@ -728,7 +757,8 @@ function PtsCanvasComponent(
         try {
           reportError(error, "dispose", ownedSpace, ownedForm);
         } catch (reportedError) {
-          pendingError ??= reportedError;
+          if (!hasPendingError) pendingError = reportedError;
+          hasPendingError = true;
         }
       } finally {
         appliedInputRef.current = undefined;
@@ -736,12 +766,13 @@ function PtsCanvasComponent(
         requestedPlaybackRef.current = undefined;
 
         if (spaceRef.current === ownedSpace) {
+          startedSpaceRef.current = undefined;
           spaceRef.current = undefined;
           formRef.current = undefined;
           playerRef.current = undefined;
         }
       }
-      if (pendingError !== undefined) throw pendingError;
+      if (hasPendingError) throw pendingError;
     };
   }, [
     offscreen,

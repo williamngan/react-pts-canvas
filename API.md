@@ -36,7 +36,7 @@ TypeScript type.
 
 The package requires the Pts `^1.0.0` peer dependency. Client-side
 initialization requires an HTML canvas 2D context, `requestAnimationFrame`,
-and—while automatic resizing is enabled—`ResizeObserver`. Pointer input
+`queueMicrotask`, and—while automatic resizing is enabled—`ResizeObserver`. Pointer input
 requires `PointerEvent`; touch and keyboard bindings use their corresponding
 DOM events. `IntersectionObserver` is optional and only affects
 `pauseWhenOffscreen`.
@@ -245,7 +245,9 @@ behavior.
 | `dispose`    | `onDispose`, input teardown, or `CanvasSpace.dispose()`            |
 
 The context can contain partially initialized `space` or `form` values during
-`initialize`. Render-time prop validation is outside this error channel.
+`initialize`. Unavailable main or requested offscreen 2D contexts are reported
+through this phase, and any created space is disposed when initialization
+fails. Render-time prop validation is outside this error channel.
 
 ## Player props
 
@@ -260,7 +262,11 @@ An `IPlayer` should belong to only one mounted canvas at a time because Pts
 assigns and uses identity state on the player.
 
 Players present during initialization participate in the normal Pts start
-lifecycle. Pts does not call a late-added player's `start` method automatically;
+lifecycle. Automatic playback begins after their `start` callbacks finish.
+Explicit imperative playback calls inside `onReady` still run immediately, so
+avoid those calls when other players need their `start` callbacks first.
+
+Pts does not call a late-added player's `start` method automatically;
 initialize late player state before adding it or in its resize callback.
 
 ## DOM output and prop precedence
@@ -357,8 +363,9 @@ the canvas DOM ref; use `canvasRef` for the element itself.
 - `getCanvas()` and `getContainer()` return the rendered DOM elements.
 
 Space, form, and player getters return `undefined` before initialization and
-during teardown. DOM getters return `null` when their elements are unavailable.
-The forwarded React ref itself becomes `null` after unmount.
+after disposal. A retained handle can still inspect the old objects during
+returned cleanup and `onDispose`. DOM getters return `null` when their elements
+are unavailable. The forwarded React ref itself becomes `null` after unmount.
 
 The component owns input binding, player membership, playback synchronization,
 and disposal. Do not dispose the space or mutate the internal player. A later

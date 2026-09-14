@@ -164,6 +164,11 @@ Providing `onError` swallows the original owned-lifecycle error after reporting
 it. Without `onError`, it is rethrown normally. Invalid density and frame-time
 props throw while React renders and therefore do not use this channel.
 
+Initialization failures, including unavailable 2D contexts, dispose any space
+already created before reporting the `initialize` phase. Cleanup errors are
+re-thrown after disposal when no handler swallows them, even when the thrown
+value is `undefined` or `null`.
+
 ## Account for stopped input
 
 Pts only updates its pointer and dispatches action callbacks while a space is
@@ -200,6 +205,10 @@ array when membership changes:
 Do not mutate and reuse the same array, and do not share one player object
 between mounted canvases. `tempo` remains as a convenience prop and participates
 in the same identity set.
+
+Automatic playback waits for initial players' `start` callbacks. An explicit
+playback call inside `onReady` still runs immediately; avoid it if those players
+need to initialize state first.
 
 ## React Server Component applications
 
