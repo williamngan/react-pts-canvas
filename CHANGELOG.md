@@ -6,6 +6,20 @@ version is assigned by the maintainer before publication.
 
 ## Unreleased
 
+## v1.0.3 - 2026-09-19
+
+### Changed
+
+- Update the library development dependency and gallery to Pts 1.0.1. The
+  compatible Pts peer range remains `^1.0.0`.
+
+### Fixed
+
+- Infer the browser test ref type from React's `createRef` so the suite
+  type-checks with both React 18 and React 19 declarations.
+
+## v1.0.2
+
 ### Fixed
 
 - Measure the wrapper initially with `resize={false}`, including environments

@@ -23,7 +23,7 @@ const act =
 
 type MountedCanvas = {
   container: HTMLDivElement;
-  ref: React.RefObject<PtsCanvasImperative | null>;
+  ref: ReturnType<typeof React.createRef<PtsCanvasImperative>>;
   render: (props: PtsCanvasProps, strict?: boolean) => Promise<void>;
   root: Root;
 };
