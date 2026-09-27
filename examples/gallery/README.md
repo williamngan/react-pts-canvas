@@ -16,8 +16,8 @@ callback.
 
 The visual design follows [ptsjs.org](https://ptsjs.org): the same system font
 stack, 12px base size, `#123` text, `#42e` accent, guide-style section menu,
-and a cover canvas drawn by `PtsCanvas` itself, running the
-`circle.withinBound` demo from ptsjs.org.
+and a cover canvas drawn by `PtsCanvas` itself, showing a grid of lines that
+follows the pointer direction.
 
 Run it from the repository root:
 

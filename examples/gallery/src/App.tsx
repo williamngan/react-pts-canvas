@@ -411,7 +411,6 @@ export default function App() {
         </div>
         <div className="hero-copy">
           <h1>react-pts-canvas</h1>
-          <p>Use this component to integrate Pts.js into your React app.</p>
         </div>
       </div>
 

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Circle,
   Const,
   Create,
   Geom,
@@ -42,52 +41,38 @@ type HeroExampleProps = {
   classPrefix: string;
 };
 
-/**
- * Cover animation for the site header: the `circle.withinBound` demo from
- * ptsjs.org. A circle follows the pointer through a field of random points;
- * points inside the circle grow and drift toward its center.
- */
+/** Cover animation: a grid of lines that follows the pointer's direction. */
 export function HeroExample({ classPrefix }: HeroExampleProps) {
-  const points = useRef<Group>(new Group());
-
-  const createPoints = useCallback((space: CanvasSpace) => {
-    points.current = Create.distributeRandom(space.innerBound, 500);
-  }, []);
-
   const draw = useCallback<HandleAnimateFn>((space, form) => {
-    const colors = ["#ff2d5d", "#42dc8e", "#2e43eb", "#ffe359"];
-    const radius =
-      (Math.abs(space.pointer.x - space.center.x) / space.center.x) * 150 + 70;
-    const range = Circle.fromCenter(space.pointer, radius);
+    // Use the pointer's offset from the center for direction and magnitude.
+    const offset = space.pointer.$subtract(space.center.$add(0.1));
+    const direction = offset.$unit();
+    const magnitude = offset.magnitude();
+    const diagonal = space.size.magnitude();
+    if (diagonal === 0) return;
 
-    points.current.forEach((point, index) => {
-      if (Circle.withinBound(range, point)) {
-        const distance =
-          (radius - point.$subtract(space.pointer).magnitude()) / radius;
-        const grown = point
-          .$subtract(space.pointer)
-          .scale(1 + distance)
-          .add(space.pointer);
-        form
-          .fillOnly(colors[index % colors.length] ?? "#fff")
-          .point(grown, distance * 25, "circle");
-      } else {
-        form.fillOnly("#fff").point(point, 0.5);
-      }
+    const columns = Math.max(1, Math.min(Math.floor(space.width / 50), 20));
+    const lines = Create.gridPts(space.innerBound, columns, 10).map((point) => {
+      const distance = point.$subtract(space.center).magnitude() / diagonal;
+      return new Group(
+        point,
+        point.$add(direction.$multiply(distance * (20 + magnitude / 5))),
+      );
     });
+
+    form.strokeOnly("#fe3").line([space.center, space.pointer]);
+    form.strokeOnly("#fff").lines(lines);
   }, []);
 
   return (
     <PtsCanvas
       background="#10283a"
       canvasProps={{
-        "aria-label": "A circle that follows the pointer through random points",
+        "aria-label": "A grid of lines that follows the pointer direction",
       }}
       classPrefix={classPrefix}
       input={{ pointer: true, touch: true, touchPassive: true }}
       onAnimate={draw}
-      onPtsResize={createPoints}
-      onReady={createPoints}
       pauseWhenHidden
       pauseWhenOffscreen
     />
