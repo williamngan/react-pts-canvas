@@ -6,6 +6,15 @@ version is assigned by the maintainer before publication.
 
 ## Unreleased
 
+## v1.0.4 - 2026-10-03
+
+### Changed
+
+- Update the library development dependency and gallery to Pts 1.0.2, which
+  tree-shakes better: a minified bundle of `PtsCanvas` alone drops from about
+  157 kB to 111 kB, and the gallery bundle from 392 kB to 357 kB. The
+  compatible Pts peer range remains `^1.0.0`.
+
 ## v1.0.3 - 2026-09-19
 
 ### Changed
