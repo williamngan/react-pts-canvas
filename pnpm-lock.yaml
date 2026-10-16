@@ -35,8 +35,8 @@ importers:
         specifier: 3.9.6
         version: 3.9.6
       pts:
-        specifier: 1.0.2
-        version: 1.0.2
+        specifier: 1.0.3
+        version: 1.0.3
       publint:
         specifier: 0.3.23
         version: 0.3.23
@@ -59,8 +59,8 @@ importers:
   examples/gallery:
     dependencies:
       pts:
-        specifier: 1.0.2
-        version: 1.0.2
+        specifier: ^1.0.0
+        version: 1.0.3
       react:
         specifier: 19.2.8
         version: 19.2.8
@@ -1385,10 +1385,10 @@ packages:
     engines: { node: ">=14" }
     hasBin: true
 
-  pts@1.0.2:
+  pts@1.0.3:
     resolution:
       {
-        integrity: sha512-i1Bklw+MHqt3iB4YuMAfzDhZzwF91a2Ccw4rGeAmKHnJLMSo60R/Bv1cH0VfehDrNlApTdRD9okOWn2+UkDYeA==,
+        integrity: sha512-/NBesRCN44UD4SJeTdiCM8c8L0hlidXkra0A1+gF/yJuQ2xTTYpjhxGlsjsXmVRUe7+S6CM1dDKqCJX0VE/t4A==,
       }
 
   publint@0.3.23:
@@ -2336,7 +2336,7 @@ snapshots:
 
   prettier@3.9.6: {}
 
-  pts@1.0.2: {}
+  pts@1.0.3: {}
 
   publint@0.3.23:
     dependencies:

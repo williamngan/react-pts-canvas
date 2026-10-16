@@ -6,6 +6,14 @@ version is assigned by the maintainer before publication.
 
 ## Unreleased
 
+## v1.0.5 - 2026-10-16
+
+### Changed
+
+- Update the library development dependency to Pts 1.0.3, and let the gallery
+  track `^1.0.0` (the lockfile resolves 1.0.3). The compatible Pts peer range
+  remains `^1.0.0`.
+
 ## v1.0.4 - 2026-10-03
 
 ### Changed
